@@ -18,7 +18,7 @@ The main goal is speedup the development procces and make it more comfortable an
 ---------------------------------------------
 
 #### Releases
-[ latest version: 0.0.54b -- 5 April 2022 ](https://forums.taleworlds.com/index.php?pages/modding) 
+[ latest version: 0.0.54.2b -- 6 April 2022 ](https://forums.taleworlds.com/index.php?pages/modding) 
 ##### Change log:
 0.0.54b
 - First Release 
