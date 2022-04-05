@@ -40,6 +40,10 @@ Please report any bugs to BDT TWforums thread.
 ---------------------------------------------
 
 ## Editors Documentation & Overview
+```diff
+! Note:                     
+Documentation may be updated
+```
 
 ### Tools setup and configuartion
 #### - [Tools setup](docs_BDT/tools_setup.md)
