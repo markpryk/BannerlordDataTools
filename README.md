@@ -1,6 +1,6 @@
 # BannerlordDataTools
 
-![ScreenShot](Images/bdt_logo.png)
+![ScreenShot](docs_BDT/Images/bdt_logo.png)
 
 #### What Is BDT?
 
