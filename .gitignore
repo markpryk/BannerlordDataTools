@@ -58,3 +58,15 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+#Modules
+[Aa]ssets/Resources/Data/*
+[Aa]ssets/Resources/SubModulesData/*
+[Aa]ssets/Settings/Definitions/**/*.meta
+[Aa]ssets/Settings/Definitions/CraftingPieces/*
+[Aa]ssets/Settings/Definitions/ItemTypes/*
+[Aa]ssets/Settings/Definitions/Languages/*
+[Aa]ssets/Settings/Definitions/LocationComplexTemplate/*
+[Aa]ssets/ViewData/*
+
+Assets/Settings/BDT_settings.asset.meta
+Assets/Settings/BDT_settings.asset
