@@ -79,7 +79,7 @@ public class BNDataExporter : EditorWindow
         expSettings.Kingdom_xml_name = EditorGUILayout.TextField("Kingdoms", expSettings.Kingdom_xml_name);
 
         expSettings.Hero_xml_name = EditorGUILayout.TextField("Heroes", expSettings.Hero_xml_name);
-        expSettings.Culture_xml_name = EditorGUILayout.TextField("NPCCharacters", expSettings.NPCCharacter_xml_name);
+        expSettings.NPCCharacter_xml_name = EditorGUILayout.TextField("NPCCharacters", expSettings.NPCCharacter_xml_name);
 
         expSettings.Item_xml_name = EditorGUILayout.TextField("Items", expSettings.Item_xml_name);
         expSettings.PartyTemplate_xml_name = EditorGUILayout.TextField("Party Templates", expSettings.PartyTemplate_xml_name);
@@ -174,18 +174,26 @@ public class BNDataExporter : EditorWindow
                     //     Directory.CreateDirectory(export_path + exported_Mod.id);
                     // }
 
+                    if(exported_Mod.modFilesData.factionsData.factions.Count != 0)
                     WriteFactionAssets();
-                    WriteCulturesAssets();
-                    WriteHeroAsset();
-                    WriteItemAsset();
-                    WriteKingdomAsset();
-                    WriteNPCAsset();
-                    WritePartyTemplateAsset();
-                    WriteSettlementAsset();
-
-                    WriteEquipmentAsset();
-
-                    WriteTranslationStrings();
+                    if (exported_Mod.modFilesData.culturesData.cultures.Count != 0)
+                        WriteCulturesAssets();
+                    if (exported_Mod.modFilesData.heroesData.heroes.Count != 0)
+                        WriteHeroAsset();
+                    if (exported_Mod.modFilesData.itemsData.items.Count != 0)
+                        WriteItemAsset();
+                    if (exported_Mod.modFilesData.kingdomsData.kingdoms.Count != 0)
+                        WriteKingdomAsset();
+                    if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0)
+                        WriteNPCAsset();
+                    if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0)
+                        WritePartyTemplateAsset();
+                    if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0)
+                        WriteSettlementAsset();
+                    if (exported_Mod.modFilesData.equipmentsData.equipmentSets.Count != 0)
+                        WriteEquipmentAsset();
+                    if (exported_Mod.modFilesData.translationData.translationStrings.Count != 0)
+                        WriteTranslationStrings();
 
 
                     if (expSettings.exportDataToScene)
@@ -210,7 +218,7 @@ public class BNDataExporter : EditorWindow
                             {
                                 node.Attributes["value"].Value = exported_Mod.version;
                                 break;
-                            }    
+                            }
 
                         }
 
@@ -387,7 +395,7 @@ public class BNDataExporter : EditorWindow
             Debug.LogError($" Same backup folder already exist: {backUp_path_dest}, rename it first");
             isCreated = false;
             return;
-           
+
             //if (Directory.Exists(backUp_path_dest))
             //{
 
@@ -960,8 +968,7 @@ public class BNDataExporter : EditorWindow
 
         var path = export_path + exported_Mod.modFilesData.exportSettings.Faction_xml_name;
         // var path = export_path + exported_Mod.id + "/" + exported_Mod.modFilesData.exportSettings.Faction_xml_name;
-
-
+      
 
         XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
         {
@@ -1029,6 +1036,23 @@ public class BNDataExporter : EditorWindow
         // var path = export_path + exported_Mod.id + "/" + exported_Mod.modFilesData.exportSettings.Culture_xml_name;
         var path = export_path + exported_Mod.modFilesData.exportSettings.Culture_xml_name;
 
+        //if (!File.Exists(path))
+        //{
+        //    XmlDocument doc = new XmlDocument();
+
+        //    //xml declaration is recommended, but not mandatory
+        //    XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
+
+        //    //create the root element
+        //    XmlElement root = doc.DocumentElement;
+        //    doc.InsertBefore(xmlDeclaration, root);
+
+        //    //string.Empty makes cleaner code
+        //    XmlElement element1 = doc.CreateElement(string.Empty, "Mainbody", string.Empty);
+        //    doc.AppendChild(element1);
+
+        //    doc.Save(path);
+        //}
 
         XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
         {
@@ -1123,18 +1147,6 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "gear_dummy", cult.gear_dummy);
                 CheckAndWriteAttribute(BNXmlWriter, "board_game_type", cult.board_game_type);
 
-                WriteNamesNodes(BNXmlWriter, "male_names", cult.male_names);
-                WriteNamesNodes(BNXmlWriter, "female_names", cult.female_names);
-                WriteNamesNodes(BNXmlWriter, "clan_names", cult.clan_names);
-
-                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_one_participant", cult.TTT_one_participants);
-                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_two_participant", cult.TTT_two_participants);
-                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_four_participant", cult.TTT_four_participants);
-
-                // 1.72 update 
-                WriteVassalRewards(BNXmlWriter, "vassal_reward_items", cult.reward_item_id);
-                WriteCulturalFeats(BNXmlWriter, "cultural_feats", cult.reward_item_id);
-                WritePossibleClanIcons(BNXmlWriter, "possible_clan_banner_icon_ids", cult.reward_item_id);
 
                 CheckAndWriteAttribute(BNXmlWriter, "vassal_reward_party_template", cult.vassal_reward_party_template);
                 CheckAndWriteAttribute(BNXmlWriter, "faction_banner_key", cult.faction_banner_key);
@@ -1146,6 +1158,23 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "bandit_bandit", cult.bandit_bandit);
                 CheckAndWriteAttribute(BNXmlWriter, "bandit_boss", cult.bandit_boss);
                 CheckAndWriteAttribute(BNXmlWriter, "bandit_boss_party_template", cult.bandit_boss_party_template);
+
+
+                WriteNamesNodes(BNXmlWriter, "male_names", cult.male_names);
+                WriteNamesNodes(BNXmlWriter, "female_names", cult.female_names);
+                WriteNamesNodes(BNXmlWriter, "clan_names", cult.clan_names);
+
+                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_one_participant", cult.TTT_one_participants);
+                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_two_participant", cult.TTT_two_participants);
+                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_four_participant", cult.TTT_four_participants);
+
+
+
+                // 1.72 update 
+                WriteVassalRewards(BNXmlWriter, "vassal_reward_items", cult.reward_item_id);
+                WriteCulturalFeats(BNXmlWriter, "cultural_feats", cult.reward_item_id);
+                WritePossibleClanIcons(BNXmlWriter, "possible_clan_banner_icon_ids", cult.reward_item_id);
+
 
 
                 BNXmlWriter.WriteFullEndElement();
@@ -3087,7 +3116,7 @@ public class BNDataExporter : EditorWindow
     }
     private static void WriteNamesNodes(XmlWriter BNXmlWriter, string blockName, string[] namesContainer)
     {
-        if (namesContainer.Length != 0)
+        if (namesContainer != null && namesContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 

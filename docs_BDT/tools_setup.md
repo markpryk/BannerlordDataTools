@@ -5,8 +5,7 @@
 First at all you need to install anyone Unity3D version 2018+ (I am using now 2021.2)
 #### - Best practice is using [UnityHub](https://unity3d.com/get-unity/download)
 
-Download last BDT version, or simple clone repository.
-#### - [ latest version: 0.0.54b -- 5 April 2022 ](https://github.com/markpryk/BannerlordDataTools/releases/download/Releases/BDT_0.0.54b.zip)
+Clone repository with the lasted BDT version.
 
 ### Step 2
 

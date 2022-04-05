@@ -19,10 +19,13 @@ Originally made it for my personal mod as student project, but after some revisi
 - Bannerlord e.1.7.2
 
 #### Releases
-[ latest version: 0.0.54b -- 5 April 2022 ](https://github.com/markpryk/BannerlordDataTools/releases/download/Releases/BDT_0.0.54b.zip) 
+[ latest version: 0.0.54.1b -- 5 April 2022 ]
 ##### Change log:
-0.0.54b
-- First Release 
+###### 0.0.54.1b
+###### - Fixed exporting .xml names issue
+###### - Fixed culture exporting nodes write order
+###### 0.0.54b
+###### - First Release 
 
 ---------------------------------------------
 
