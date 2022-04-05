@@ -15,6 +15,8 @@ Toolset can import .XML data, and convert it to special assets (unity scriptable
 Originally made it for my personal mod as student project, but after some revisions I'm decide make it public in new release branch, for all modding community. The main goal is speedup the development process and make it more comfortable and easy, for each modder.
 
 ---------------------------------------------
+#### Compatibility
+- Bannerlord e.1.7.2
 
 #### Releases
 [ latest version: 0.0.54b -- 5 April 2022 ](https://github.com/markpryk/BannerlordDataTools/releases/download/Releases/BDT_0.0.54b.zip) 
