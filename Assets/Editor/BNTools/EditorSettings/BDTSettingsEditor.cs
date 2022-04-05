@@ -19,6 +19,9 @@ public class BDTSettingsEditor : EditorWindow
     //bool write_debug_data_log = false;
     //bool assign_definitions = true;
 
+    public string BDT_Version = "0.0.54.2b";
+    public string BN_Version_compatibility = "e1.7.2";
+
     /// <summary>
     /// BD Settings
     /// </summary>
@@ -82,7 +85,8 @@ public class BDTSettingsEditor : EditorWindow
         EditorGUILayout.LabelField("BDT - Settings", headerLabelStyle);
         // GUILayout.Space(2);
         DrawUILine(colUILine, 1, 4);
-
+        EditorGUILayout.HelpBox($" BDT Version {BDT_Version} {Environment.NewLine} Bannerlord compatibility {BN_Version_compatibility}", MessageType.None);
+        DrawUILine(colUILine, 1, 4);
 
         if (Directory.Exists(settingsAsset.BNModulesPath + "Native"))
         {

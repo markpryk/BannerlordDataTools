@@ -5,9 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BDT_settings.asset", menuName = "BDT/Settings Asset", order = 1)]
 public class BDTSettings : ScriptableObject
 {
-    public string BDT_Version = "0.0.54b";
-    public string BN_Version_compatibility = "e1.7.2";
-   
     public bool load_a;
     public bool load_b;
     

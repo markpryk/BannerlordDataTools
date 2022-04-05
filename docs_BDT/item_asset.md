@@ -5,6 +5,7 @@
 ![ScreenShot](Images/item_editor_03.PNG)
 ![ScreenShot](Images/item_editor_04.PNG)
 ![ScreenShot](Images/item_editor_05.PNG)
+![ScreenShot](Images/item_editor_06.PNG)
 
 ---------------------------------------------
 #### [Equipment asset -->](equip_asset.md)

@@ -32,7 +32,7 @@ You can change the hosted entity, adding yours customs template for each settlem
 + MapSettlementsTemplates.xml
 Assets/Settings/Definitions/MapSettlementsTemplates.xml
 ```
-![ScreenShot](Images/wp_editor/custom_entity.PNG)
+(Images/wp_editor/custom_entity.PNG)
 
 ### - Update settlements positions
 Write X,Y settlements position data

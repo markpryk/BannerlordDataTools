@@ -1,36 +1,32 @@
 # BannerlordDataTools
 
-![ScreenShot](docs_BDT/Images/bdt_logo.png)
-
 #### What Is BDT?
 
-BannerlordDataTools is a unofficial open source modding toolset, based on Unity3D Editor. That contains special editors for all most important moddeable data in Mount&Blade: Bannerlord.
+BannerlordDataTools is a unnoficial open source modding toolset, based on Unity3D Editor. 
+That contains special editors for all most important moddeable data in Mount&Blade: Bannerlord.
 
 #### How does it work?
 
-Toolset can import .XML data, and convert it to special assets (unity scriptable objects). Load .XML data by one click and modify it, including they links and dependencies, easily manipulate with different assets types i.e. copy, edit, create, configure, assign and share between modules.Provides lots of features and tools in comfortable visual environment.
+Toolset can import .XML data, and convert it to special assets (unity scriptable objects).
+Load .XML data by one click and modify it, including they links and dependencies, easly manipulte with diferent assets types i.e. copy, edit, create, configure, assign and share between modules.Provides lots of features and tools in comfortable visual environment.
 
 #### What is the goal of this project? 
 
-Originally made it for my personal mod as student project, but after some revisions I'm decide make it public in new release branch, for all modding community. The main goal is speedup the development process and make it more comfortable and easy, for each modder.
+Originally made it for my personal mod as student project, but after some revisions i'm decide make it public in new release branch, for all modding community. 
+The main goal is speedup the development procces and make it more comfortable and easy, for each modder.
 
 ---------------------------------------------
-#### Compatibility
-- Bannerlord e.1.7.2
 
 #### Releases
-[ latest version: 0.0.54.1b -- 5 April 2022 ]
+[ latest version: 0.0.54b -- 5 April 2022 ](https://forums.taleworlds.com/index.php?pages/modding) 
 ##### Change log:
-###### 0.0.54.1b
-###### - Fixed exporting .xml names issue
-###### - Fixed culture exporting nodes write order
-###### 0.0.54b
-###### - First Release 
+0.0.54b
+- First Release 
 
 ---------------------------------------------
 
 #### Links
-##### - [BDT TWforums thread](https://forums.taleworlds.com/index.php?threads/bannerlorddatatools-0-0-54b.451014/)
+##### - [BDT TWforums thread](https://forums.taleworlds.com/index.php?pages/modding)
 ##### - [Taleworlds Modding forums](https://forums.taleworlds.com/index.php?pages/modding/)
 ##### - [Taleworlds Modding Discord](https://discord.gg/ZKtkdmxY)
 
@@ -43,10 +39,6 @@ Please report any bugs to BDT TWforums thread.
 ---------------------------------------------
 
 ## Editors Documentation & Overview
-```diff
-! Note:                     
-Documentation may be updated
-```
 
 ### Tools setup and configuartion
 #### - [Tools setup](docs_BDT/tools_setup.md)
