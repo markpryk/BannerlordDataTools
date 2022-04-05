@@ -1,5 +1,7 @@
 # BannerlordDataTools
 
+![ScreenShot](Images/bdt_logo.png)
+
 #### What Is BDT?
 
 BannerlordDataTools is a unofficial open source modding toolset, based on Unity3D Editor. That contains special editors for all most important moddeable data in Mount&Blade: Bannerlord.
@@ -15,7 +17,7 @@ Originally made it for my personal mod as student project, but after some revisi
 ---------------------------------------------
 
 #### Releases
-[ latest version: 0.0.54b -- 5 April 2022 ](https://forums.taleworlds.com/index.php?pages/modding) 
+[ latest version: 0.0.54b -- 5 April 2022 ](https://github.com/markpryk/BannerlordDataTools/releases/download/Releases/BDT_0.0.54b.zip) 
 ##### Change log:
 0.0.54b
 - First Release 
