@@ -25,7 +25,7 @@ Originally made it for my personal mod as student project, but after some revisi
 ---------------------------------------------
 
 #### Links
-##### - [BDT TWforums thread](https://forums.taleworlds.com/index.php?pages/modding)
+##### - [BDT TWforums thread](https://forums.taleworlds.com/index.php?threads/bannerlorddatatools-0-0-54b.451014/)
 ##### - [Taleworlds Modding forums](https://forums.taleworlds.com/index.php?pages/modding/)
 ##### - [Taleworlds Modding Discord](https://discord.gg/ZKtkdmxY)
 
