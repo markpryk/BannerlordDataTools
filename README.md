@@ -23,7 +23,7 @@ The main goal is speedup the development procces and make it more comfortable an
 ---------------------------------------------
 
 #### Links
-##### - [BDT Official Discord](https://discord.gg/7ZgzqD5r)
+##### - [BDT Official Discord](https://discord.gg/UuWNAg9z)
 ##### - [Taleworlds Modding Discord](https://discord.gg/ZKtkdmxY)
 ##### - [BDT TWforums thread](https://forums.taleworlds.com/index.php?pages/modding)
 ##### - [Taleworlds Modding forums](https://forums.taleworlds.com/index.php?pages/modding/)
