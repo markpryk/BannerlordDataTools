@@ -18,22 +18,21 @@ The main goal is speedup the development procces and make it more comfortable an
 ---------------------------------------------
 
 #### Releases
-[ latest version: 0.0.54.2b -- 6 April 2022 ](https://forums.taleworlds.com/index.php?pages/modding) 
-##### Change log:
-0.0.54b
-- First Release 
+##### latest version: 0.0.54.2b -- 6 April 2022 
 
 ---------------------------------------------
 
 #### Links
+##### - [BDT Official Discord](https://discord.gg/7ZgzqD5r)
+##### - [Taleworlds Modding Discord](https://discord.gg/ZKtkdmxY)
 ##### - [BDT TWforums thread](https://forums.taleworlds.com/index.php?pages/modding)
 ##### - [Taleworlds Modding forums](https://forums.taleworlds.com/index.php?pages/modding/)
-##### - [Taleworlds Modding Discord](https://discord.gg/ZKtkdmxY)
 
 #### - Bug Reports
 
-```diff                                                                            The tools still in active development.
-Please report any bugs to BDT TWforums thread.
+```diff
+- The tools still in active development.                                     
+Please report any bugs to official Discord server or in BDT TW forums thread.
 ```
 
 ---------------------------------------------
