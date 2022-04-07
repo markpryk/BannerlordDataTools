@@ -19,7 +19,7 @@ public class BDTSettingsEditor : EditorWindow
     //bool write_debug_data_log = false;
     //bool assign_definitions = true;
 
-    public string BDT_Version = "0.0.55.1b";
+    public string BDT_Version = "0.0.55.2b";
     public string BN_Version_compatibility = "e1.7.2";
 
     /// <summary>

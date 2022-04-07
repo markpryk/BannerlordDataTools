@@ -1802,6 +1802,36 @@ public class BNDataExporter : EditorWindow
                 }
                 BNXmlWriter.WriteFullEndElement();
 
+                // target
+                BNXmlWriter.WriteStartElement("upgrade_targets");
+                i = 0;
+                foreach (var val in npc.upgrade_targets)
+                {
+                    if (val != "")
+                    {
+                        BNXmlWriter.WriteStartElement("upgrade_target");
+
+                        CheckAndWriteAttribute(BNXmlWriter, "id", npc.upgrade_targets[i]);
+
+                        BNXmlWriter.WriteFullEndElement();
+
+                    }
+                    i++;
+                }
+                BNXmlWriter.WriteFullEndElement();
+
+                if (npc.COMP_Companion != "")
+                {
+                    BNXmlWriter.WriteStartElement("Components");
+                    BNXmlWriter.WriteStartElement("Companion");
+
+                    CheckAndWriteAttribute(BNXmlWriter, "id", npc.COMP_Companion);
+
+                    BNXmlWriter.WriteFullEndElement();
+                    BNXmlWriter.WriteFullEndElement();
+
+                }
+
                 // Write Items - Rosters - Sets
 
                 if (npc.equipment_Main != "" || npc.equipment_Roster.Length != 0 || npc.equipment_Set.Length != 0)
@@ -1830,7 +1860,9 @@ public class BNDataExporter : EditorWindow
 
 
                     }
+                   
 
+                    // equipment
                     if (npc.equipment_Set.Length != 0)
                     {
 
@@ -1871,34 +1903,7 @@ public class BNDataExporter : EditorWindow
 
                 // WriteEquipmentSets(BNXmlWriter, npc);
 
-                BNXmlWriter.WriteStartElement("upgrade_targets");
-                i = 0;
-                foreach (var val in npc.upgrade_targets)
-                {
-                    if (val != "")
-                    {
-                        BNXmlWriter.WriteStartElement("upgrade_target");
-
-                        CheckAndWriteAttribute(BNXmlWriter, "id", npc.upgrade_targets[i]);
-
-                        BNXmlWriter.WriteFullEndElement();
-
-                    }
-                    i++;
-                }
-                BNXmlWriter.WriteFullEndElement();
-
-                if (npc.COMP_Companion != "")
-                {
-                    BNXmlWriter.WriteStartElement("Components");
-                    BNXmlWriter.WriteStartElement("Companion");
-
-                    CheckAndWriteAttribute(BNXmlWriter, "id", npc.COMP_Companion);
-
-                    BNXmlWriter.WriteFullEndElement();
-                    BNXmlWriter.WriteFullEndElement();
-
-                }
+                
 
                 BNXmlWriter.WriteFullEndElement();
             }
