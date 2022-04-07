@@ -174,8 +174,8 @@ public class BNDataExporter : EditorWindow
                     //     Directory.CreateDirectory(export_path + exported_Mod.id);
                     // }
 
-                    if(exported_Mod.modFilesData.factionsData.factions.Count != 0)
-                    WriteFactionAssets();
+                    if (exported_Mod.modFilesData.factionsData.factions.Count != 0)
+                        WriteFactionAssets();
                     if (exported_Mod.modFilesData.culturesData.cultures.Count != 0)
                         WriteCulturesAssets();
                     if (exported_Mod.modFilesData.heroesData.heroes.Count != 0)
@@ -744,7 +744,7 @@ public class BNDataExporter : EditorWindow
         var ModLanguages = new Dictionary<string, string>();
         foreach (var translation in exported_Mod.modFilesData.translationData.translationStrings)
         {
-            if (translation != null && translation.lenguage_short_Tag != "")
+            if (translation != null && translation.lenguage_short_Tag != null && translation.lenguage_short_Tag != "")
             {
                 // Debug.Log(TS.lenguage_short_Tag);
                 if (!ModLanguages.ContainsKey(translation.lenguage_short_Tag))
@@ -968,7 +968,7 @@ public class BNDataExporter : EditorWindow
 
         var path = export_path + exported_Mod.modFilesData.exportSettings.Faction_xml_name;
         // var path = export_path + exported_Mod.id + "/" + exported_Mod.modFilesData.exportSettings.Faction_xml_name;
-      
+
 
         XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
         {
@@ -1159,21 +1159,29 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "bandit_boss", cult.bandit_boss);
                 CheckAndWriteAttribute(BNXmlWriter, "bandit_boss_party_template", cult.bandit_boss_party_template);
 
+                WriteVassalRewards(BNXmlWriter, "vassal_reward_items", cult.reward_item_id);
 
                 WriteNamesNodes(BNXmlWriter, "male_names", cult.male_names);
                 WriteNamesNodes(BNXmlWriter, "female_names", cult.female_names);
                 WriteNamesNodes(BNXmlWriter, "clan_names", cult.clan_names);
 
-                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_one_participant", cult.TTT_one_participants);
-                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_two_participant", cult.TTT_two_participants);
-                WriteTournamenTemplatesNodes(BNXmlWriter, "tournament_team_templates_four_participant", cult.TTT_four_participants);
-
-
+                WriteCulturalFeats(BNXmlWriter, "cultural_feats", cult.cultural_feat_id);
+                WritePossibleClanIcons(BNXmlWriter, "possible_clan_banner_icon_ids", cult.banner_icon_id);
 
                 // 1.72 update 
-                WriteVassalRewards(BNXmlWriter, "vassal_reward_items", cult.reward_item_id);
-                WriteCulturalFeats(BNXmlWriter, "cultural_feats", cult.reward_item_id);
-                WritePossibleClanIcons(BNXmlWriter, "possible_clan_banner_icon_ids", cult.reward_item_id);
+                WriteNPCTemplatesNodes(BNXmlWriter, "child_character_templates", cult.child_character_templates);
+                WriteNPCTemplatesNodes(BNXmlWriter, "notable_and_wanderer_templates", cult.notable_and_wanderer_templates);
+                WriteNPCTemplatesNodes(BNXmlWriter, "lord_templates", cult.lord_templates);
+                WriteNPCTemplatesNodes(BNXmlWriter, "rebellion_hero_templates", cult.rebellion_hero_templates);
+
+                WriteNPCTemplatesNodes(BNXmlWriter, "tournament_team_templates_one_participant", cult.TTT_one_participants);
+                WriteNPCTemplatesNodes(BNXmlWriter, "tournament_team_templates_two_participant", cult.TTT_two_participants);
+                WriteNPCTemplatesNodes(BNXmlWriter, "tournament_team_templates_four_participant", cult.TTT_four_participants);
+
+
+
+
+
 
 
 
@@ -3137,7 +3145,7 @@ public class BNDataExporter : EditorWindow
         }
 
     }
-    private static void WriteTournamenTemplatesNodes(XmlWriter BNXmlWriter, string blockName, string[] tournamentContainer)
+    private static void WriteNPCTemplatesNodes(XmlWriter BNXmlWriter, string blockName, string[] tournamentContainer)
     {
         if (tournamentContainer.Length != 0)
         {
@@ -3160,6 +3168,7 @@ public class BNDataExporter : EditorWindow
         }
 
     }
+
 
     private static void WriteVassalRewards(XmlWriter BNXmlWriter, string blockName, string[] itemsContainer)
     {

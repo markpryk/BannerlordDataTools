@@ -60,7 +60,7 @@ public class ModFilesManager : Editor
 
     }
 
-    public void CreateModSettings()
+    public void CreateModSettings(ref bool imp_cult, ref bool imp_kgd, ref bool imp_fac, ref bool imp_hero, ref bool imp_npc, ref bool imp_item, ref bool imp_eqp, ref bool imp_pt, ref bool imp_settl)
     {
         if (module != null)
         {
@@ -91,7 +91,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(kingdomConfig, ModDataConfigsPath);
-           // AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             configs.Add("kingdoms", ModDataConfigsPath);
 
@@ -106,7 +106,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(factionsConfig, ModDataConfigsPath);
-          //  AssetDatabase.SaveAssets();
+            //  AssetDatabase.SaveAssets();
 
             configs.Add("factions", ModDataConfigsPath);
 
@@ -121,7 +121,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(settlementsConfig, ModDataConfigsPath);
-           // AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             configs.Add("settlements", ModDataConfigsPath);
 
@@ -136,7 +136,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(npcChrConfig, ModDataConfigsPath);
-          //  AssetDatabase.SaveAssets();
+            //  AssetDatabase.SaveAssets();
 
             configs.Add("NPCCharacters", ModDataConfigsPath);
 
@@ -151,7 +151,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(culturesConfig, ModDataConfigsPath);
-         //   AssetDatabase.SaveAssets();
+            //   AssetDatabase.SaveAssets();
 
             configs.Add("cultures", ModDataConfigsPath);
 
@@ -166,7 +166,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(PTconfig, ModDataConfigsPath);
-         //   AssetDatabase.SaveAssets();
+            //   AssetDatabase.SaveAssets();
 
             configs.Add("partyTemplates", ModDataConfigsPath);
 
@@ -181,7 +181,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(heroesConfig, ModDataConfigsPath);
-           // AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             configs.Add("heroes", ModDataConfigsPath);
 
@@ -211,7 +211,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(languagesConfig, ModDataConfigsPath);
-           // AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             configs.Add("languages", ModDataConfigsPath);
 
@@ -226,7 +226,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(itemsConfig, ModDataConfigsPath);
-          //  AssetDatabase.SaveAssets();
+            //  AssetDatabase.SaveAssets();
 
             configs.Add("items", ModDataConfigsPath);
 
@@ -241,7 +241,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(eqpSetConfig, ModDataConfigsPath);
-           // AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             configs.Add("equipmentSets", ModDataConfigsPath);
             // Sets Data List
@@ -255,7 +255,7 @@ public class ModFilesManager : Editor
             }
 
             AssetDatabase.CreateAsset(eqpConfig, ModDataConfigsPath);
-           // AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             configs.Add("equipments", ModDataConfigsPath);
 
@@ -264,13 +264,13 @@ public class ModFilesManager : Editor
             ModDataConfigsPath = asset.modSettingsPath + "/ModDataConfigs/" + "export_" + module.id + ".asset";
 
             AssetDatabase.CreateAsset(exportConfigs, ModDataConfigsPath);
-           // AssetDatabase.SaveAssets();
+            // AssetDatabase.SaveAssets();
 
             asset.exportSettings = exportConfigs;
             configs.Add("export", ModDataConfigsPath);
 
 
-            ReadModuleXml(asset);
+            ReadModuleXml(asset, ref imp_cult, ref imp_kgd, ref imp_fac, ref imp_hero, ref imp_npc, ref imp_item, ref imp_eqp, ref imp_pt, ref imp_settl);
 
 
         }
@@ -1974,7 +1974,7 @@ public class ModFilesManager : Editor
             //         }
             //     }
 
-            
+
         }
 
 
@@ -2444,6 +2444,11 @@ public class ModFilesManager : Editor
                 }
             }
 
+            WriteNPCTemplate(relNode,ref cultAsset.child_character_templates, "child_character_templates");
+            WriteNPCTemplate( relNode,ref cultAsset.notable_and_wanderer_templates, "notable_and_wanderer_templates");
+            WriteNPCTemplate(relNode,ref cultAsset.lord_templates, "lord_templates");
+            WriteNPCTemplate( relNode,ref cultAsset.rebellion_hero_templates, "rebellion_hero_templates");
+
             // Tournament Templates
             if (relNode.LocalName == "tournament_team_templates_one_participant")
             {
@@ -2635,7 +2640,37 @@ public class ModFilesManager : Editor
         // AssetDatabase.SaveAssets();
     }
 
+    private static void WriteNPCTemplate( XmlNode relNode,ref string[] string_array, string templatesID )
+    {
+        if (relNode.LocalName == templatesID)
+        {
+            //Debug.Log(templatesID);
+            int countArray = 0;
+            foreach (XmlNode childRelation in relNode.ChildNodes)
+            {
+                if (childRelation.LocalName != "#comment")
+                {
+                    countArray++;
+                }
+            }
 
+            int i = 0;
+            string_array = new string[countArray];
+
+            foreach (XmlNode childRelation in relNode.ChildNodes)
+            {
+                if (childRelation.LocalName == "template" && childRelation.Attributes["name"] != null)
+                {
+                    if (childRelation.Attributes["name"] != null)
+                    {
+                        string_array[i] = childRelation.Attributes["name"].Value;
+                    }
+
+                    i++;
+                }
+            }
+        }
+    }
 
     public void CreatePTAsset(XmlNode node, ModFiles modFilesAsset, string xmlFile)
     {
@@ -3403,7 +3438,7 @@ public class ModFilesManager : Editor
         return set;
     }
 
-    public void ReadModuleXml(ModFiles modFilesAsset)
+    public void ReadModuleXml(ModFiles modFilesAsset, ref bool imp_cult, ref bool imp_kgd, ref bool imp_fac, ref bool imp_hero, ref bool imp_npc, ref bool imp_item, ref bool imp_eqp, ref bool imp_pt, ref bool imp_settl)
     {
         string[] XMLfiles = Directory.GetFiles(modFilesAsset.BNResourcesPath, "*.XML");
 
@@ -3424,44 +3459,44 @@ public class ModFilesManager : Editor
 
             foreach (XmlNode node in Root.ChildNodes)
             {
-                // Debug.Log(node.Name);
-                if (node.Name == "Kingdom")
+                 //Debug.Log(node.Name);
+                if (node.Name == "Kingdom" && imp_kgd)
                 {
                     CreateKingdomAssets(node, modFilesAsset, file);
                 }
 
-                if (node.Name == "Faction")
+                if (node.Name == "Faction" && imp_fac)
                 {
                     CreateFactionAssets(node, modFilesAsset, file);
                 }
 
-                if (node.Name == "Settlement")
+                if (node.Name == "Settlement" && imp_settl)
                 {
                     // Debug.Log("Settlement");
                     CreateSettlementAssets(node, modFilesAsset, file);
                 }
 
-                if (node.Name == "NPCCharacter")
+                if (node.Name == "NPCCharacter" && imp_npc)
                 {
                     // Debug.Log("Settlement");
                     CreateNPCAsset(node, modFilesAsset, file);
                 }
-                if (node.Name == "Culture")
+                if (node.Name == "Culture" && imp_cult)
                 {
-                    // Debug.Log("Settlement");
+                     //Debug.Log(node.Name);
                     CreateCultureAsset(node, modFilesAsset, file);
                 }
-                if (node.Name == "MBPartyTemplate")
+                if (node.Name == "MBPartyTemplate" && imp_pt)
                 {
                     // Debug.Log("Settlement");
                     CreatePTAsset(node, modFilesAsset, file);
                 }
-                if (node.Name == "Hero")
+                if (node.Name == "Hero" && imp_hero)
                 {
                     // Debug.Log("Settlement");
                     CreateHeroAsset(node, modFilesAsset, file);
                 }
-                if (node.Name == "EquipmentRoster")
+                if (node.Name == "EquipmentRoster" && imp_eqp)
                 {
                     // Debug.Log("Settlement");
                     CreateEquipments(node, modFilesAsset, file);
@@ -3469,34 +3504,36 @@ public class ModFilesManager : Editor
             }
         }
 
-        // Search Items
-        string[] directories = Directory.GetDirectories(modFilesAsset.BNResourcesPath);
-
-        foreach (var dir in directories)
+        if (imp_item)
         {
-            XMLfiles = Directory.GetFiles(dir, "*.XML");
-            // Read module
-            foreach (string file in XMLfiles)
-            {
-                // Debug.Log(file);
-                XmlDocument Doc = new XmlDocument();
-                // UTF 8 - 16
-                StreamReader reader = new StreamReader(file);
-                Doc.Load(reader);
-                reader.Close();
+            // Search Items
+            string[] directories = Directory.GetDirectories(modFilesAsset.BNResourcesPath);
 
-                XmlElement Root = Doc.DocumentElement;
-                XmlNodeList XNL = Root.ChildNodes;
-                foreach (XmlNode node in Root.ChildNodes)
+            foreach (var dir in directories)
+            {
+                XMLfiles = Directory.GetFiles(dir, "*.XML");
+                // Read module
+                foreach (string file in XMLfiles)
                 {
-                    if (node.Name != "#comment" && Root.Name != "base")
+                    // Debug.Log(file);
+                    XmlDocument Doc = new XmlDocument();
+                    // UTF 8 - 16
+                    StreamReader reader = new StreamReader(file);
+                    Doc.Load(reader);
+                    reader.Close();
+
+                    XmlElement Root = Doc.DocumentElement;
+                    XmlNodeList XNL = Root.ChildNodes;
+                    foreach (XmlNode node in Root.ChildNodes)
                     {
-                        CreateItemAsset(node, modFilesAsset, file);
+                        if (node.Name != "#comment" && Root.Name != "base")
+                        {
+                            CreateItemAsset(node, modFilesAsset, file);
+                        }
                     }
                 }
             }
         }
-
 
         // Debug.Log("Kingdom " + kingd_Assets.Count);
         // Debug.Log("Faction " + fac_Assets.Count);
@@ -3507,9 +3544,9 @@ public class ModFilesManager : Editor
         // Debug.Log("Hero " + hero_Assets.Count);
         // Debug.Log("Translation Strings " + TS_Assets.Count);
         // Debug.Log("Items " + item_Assets.Count);
-
-        CreateLanguages(modFilesAsset);
-        CheckSettingsLanguages(modFilesAsset);
+        //#
+        //CreateLanguages(modFilesAsset);
+        //CheckSettingsLanguages(modFilesAsset);
 
         CreateAssetsFile(modFilesAsset);
 
@@ -3520,7 +3557,9 @@ public class ModFilesManager : Editor
 
         // CREATE TRANSLATION DATA for deafault language (eng)
         // CreateLanguagesData(modFilesAsset);
-        CopyLanguages(modFilesAsset);
+       
+        //#
+        //CopyLanguages(modFilesAsset);
 
     }
 

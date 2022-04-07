@@ -18,8 +18,8 @@ The main goal is speedup the development procces and make it more comfortable an
 ---------------------------------------------
 
 #### Releases
-##### latest version: 0.0.54.2b -- 6 April 2022 
-
+##### latest version: 0.0.55b -- 7 April 2022 
+##### - [Changelog (Discord server)](https://discord.gg/A8RyB3gr)
 ---------------------------------------------
 
 #### Links

@@ -20,6 +20,18 @@ public class ModListPopup : EditorWindow
 
     // public List<ModuleReceiver> modDependencies;
     // [MenuItem("Examples/Editor GUILayout Popup usage")]
+
+    public bool _showImportOptions;
+
+    public bool _cultures = true;
+    public bool _kingdoms = true;
+    public bool _factions = true;
+    public bool _heroes = true;
+    public bool _NPC = true;
+    public bool _items = true;
+    public bool _equip = true;
+    public bool _settlement = true;
+    public bool _pt = true;
     static void Init()
     {
         EditorWindow window = GetWindow(typeof(ModListPopup));
@@ -211,11 +223,44 @@ public class ModListPopup : EditorWindow
         }
 
         DrawUILine(colUILine, 3, 12);
+
+        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        hiderStyle.fontSize = 10;
+
+        var showEditorLabel = "Hide";
+        if (!_showImportOptions)
+        {
+            hiderStyle.fontSize = 16;
+            showEditorLabel = "Import Options";
+        }
+
+        _showImportOptions = EditorGUILayout.Foldout(_showImportOptions, showEditorLabel, hiderStyle);
+
+
+        if (_showImportOptions)
+        {
+            var textDimensions = GUI.skin.label.CalcSize(new GUIContent("Party Templates  "));
+            EditorGUIUtility.labelWidth = textDimensions.x;
+
+            _cultures = EditorGUILayout.Toggle("Cultures", _cultures);
+            _equip = EditorGUILayout.Toggle("Equipments", _equip);
+            _factions = EditorGUILayout.Toggle("Factions", _factions);
+            _heroes = EditorGUILayout.Toggle("Heroes", _heroes);
+            _items = EditorGUILayout.Toggle("Items", _items);
+            _kingdoms = EditorGUILayout.Toggle("Kingdoms", _kingdoms);
+            _NPC = EditorGUILayout.Toggle("NPCCharacters", _NPC);
+            _pt = EditorGUILayout.Toggle("Party Templates", _pt);
+            _settlement = EditorGUILayout.Toggle("Settlements", _settlement);
+
+        }
+        EditorGUIUtility.labelWidth = originLabelWidth;
+        DrawUILine(colUILine, 3, 12);
+
         // Debug.Log("Index on GUI" + index);
         if (GUILayout.Button(doString))
         {
             ImportData();
-           // AssetDatabase.Refresh();
+            // AssetDatabase.Refresh();
         }
     }
 
@@ -240,9 +285,13 @@ public class ModListPopup : EditorWindow
                 {
                     Directory.CreateDirectory(headModuleResourcesPath);
                 }
+                
+                //var mod_asset_path = headModulePath + asset.id + ".asset";
+                //if (!File.Exists(mod_asset_path))
+                    AssetDatabase.CreateAsset(asset, headModulePath + asset.id + ".asset");
+                // AssetDatabase.SaveAssets();
 
-                AssetDatabase.CreateAsset(asset, headModulePath + asset.id + ".asset");
-               // AssetDatabase.SaveAssets();
+
                 DataWindow.currentMod = asset;
                 DataWindow.source = asset;
 
@@ -254,7 +303,7 @@ public class ModListPopup : EditorWindow
                 filesManager.modsResourcesPath = headModuleResourcesPath;
 
                 filesManager.CreateLoadDictionaries();
-                filesManager.CreateModSettings();
+                filesManager.CreateModSettings(ref _cultures,ref _kingdoms,ref _factions,ref _heroes,ref _NPC,ref _items, ref _equip,ref _pt,ref _settlement);
 
                 foreach (string dependency in modList[index].modDependencies)
                 {
@@ -284,7 +333,7 @@ public class ModListPopup : EditorWindow
                                 }
 
                                 AssetDatabase.CreateAsset(DPDasset, dpdModPath + DPDasset.id + ".asset");
-                              //  AssetDatabase.SaveAssets();
+                                //  AssetDatabase.SaveAssets();
                                 // DataWindow.currentMod = DPDasset;
                                 // DataWindow.source = DPDasset;
 
@@ -297,7 +346,7 @@ public class ModListPopup : EditorWindow
 
 
                                 dpdFileManager.CreateLoadDictionaries();
-                                dpdFileManager.CreateModSettings();
+                                dpdFileManager.CreateModSettings(ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
                             }
 
                         }

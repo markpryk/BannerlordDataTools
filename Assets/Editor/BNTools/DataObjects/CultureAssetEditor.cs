@@ -26,6 +26,18 @@ public class CultureAssetEditor : Editor
     public NPCCharacter[] TTT_NPC_one;
     public NPCCharacter[] TTT_NPC_two;
     public NPCCharacter[] TTT_NPC_four;
+
+    bool show_chld_template;
+    public NPCCharacter[] child_character_templates;
+    bool show_notable_and_wanderer_templates;
+
+    public NPCCharacter[] notable_and_wanderer_templates;
+    bool show_lord_templates;
+
+    public NPCCharacter[] lord_templates;
+    bool show_rebellion_hero_templates;
+
+    public NPCCharacter[] rebellion_hero_templates;
     //
 
     string[] m_soloName = new string[3];
@@ -210,6 +222,23 @@ public class CultureAssetEditor : Editor
             TTT_NPC_one = new NPCCharacter[cult.TTT_one_participants.Length];
             TTT_NPC_two = new NPCCharacter[cult.TTT_two_participants.Length];
             TTT_NPC_four = new NPCCharacter[cult.TTT_four_participants.Length];
+        }
+
+        if (cult.child_character_templates != null && cult.child_character_templates.Length > 0)
+        {
+            child_character_templates = new NPCCharacter[cult.child_character_templates.Length];
+        } 
+        if (cult.notable_and_wanderer_templates != null && cult.notable_and_wanderer_templates.Length > 0)
+        {
+            notable_and_wanderer_templates = new NPCCharacter[cult.notable_and_wanderer_templates.Length];
+        } 
+        if (cult.lord_templates != null && cult.lord_templates.Length > 0)
+        {
+            lord_templates = new NPCCharacter[cult.lord_templates.Length];
+        }
+        if (cult.rebellion_hero_templates != null && cult.rebellion_hero_templates.Length > 0)
+        {
+            rebellion_hero_templates = new NPCCharacter[cult.rebellion_hero_templates.Length];
         }
 
         CreateFeatsOptions(ref cultural_feats_options, ref cultural_feats_index, settingsAsset.CulturalFeatsDefinitions);
@@ -840,6 +869,19 @@ public class CultureAssetEditor : Editor
 
         DrawUILine(colUILine, 3, 12);
 
+        DrawNPCTemplatesEditor(ref show_chld_template,ref cult.child_character_templates, ref child_character_templates, "Child Character", "#00bce4", "#0cb9c1");
+        DrawUILine(colUILine, 3, 12);
+
+        DrawNPCTemplatesEditor(ref show_notable_and_wanderer_templates, ref cult.notable_and_wanderer_templates, ref notable_and_wanderer_templates, "Notable and Wanderer", "#00c16e", "#00a78e");
+        DrawUILine(colUILine, 3, 12);
+
+        DrawNPCTemplatesEditor(ref show_lord_templates, ref cult.lord_templates, ref lord_templates, "Lord", "#ffc845", "#f48924");
+        DrawUILine(colUILine, 3, 12);
+
+        DrawNPCTemplatesEditor(ref show_rebellion_hero_templates, ref cult.rebellion_hero_templates, ref rebellion_hero_templates, "Rebellion Hero", "#ff4f81", "#ff6c5f");
+
+        DrawUILine(colUILine, 3, 12);
+
         GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
         titleStyle.fontSize = 16;
 
@@ -899,6 +941,160 @@ public class CultureAssetEditor : Editor
         SetTextFieldTS(ref cult.text, ref soloText, ref textTranslationString, folder, translationStringDescription, "Culture Description Text:", cult.moduleID, cult, -1, cult.id);
 
 
+    }
+
+    void DrawNPCTemplatesEditor(ref bool show_template_editor, ref string[] templates_array,ref NPCCharacter[] characters, string editor_name, string colorA, string colorB)
+    {
+        Vector2 textDimensions;
+        GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButtonLeft);
+        buttonStyle.fontStyle = FontStyle.Bold;
+        buttonStyle.hover.textColor = Color.green;
+
+        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
+        titleStyle.fontSize = 16;
+
+        Color newCol;
+        ColorUtility.TryParseHtmlString(colorA, out newCol);
+        Color newCol2;
+        ColorUtility.TryParseHtmlString(colorB, out newCol2);
+        titleStyle.normal.textColor = newCol;
+
+        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        hiderStyle.fontSize = 10;
+        hiderStyle.normal.textColor = newCol;
+
+        var originDimensions = EditorGUIUtility.labelWidth;
+
+        textDimensions = GUI.skin.label.CalcSize(new GUIContent(editor_name));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+
+        var showEditorLabel = "Hide";
+        if (!show_template_editor)
+        {
+            hiderStyle.fontSize = 16;
+            showEditorLabel = editor_name + " Templates";
+        }
+
+        show_template_editor = EditorGUILayout.Foldout(show_template_editor, showEditorLabel, hiderStyle);
+
+        if (show_template_editor)
+        {
+
+
+
+            EditorGUILayout.LabelField(editor_name+ " Templates", titleStyle, GUILayout.ExpandWidth(true));
+            EditorGUILayout.Space(4);
+            DrawUILine(colUILine, 1, 6);
+
+
+            if (GUILayout.Button((new GUIContent("Add Template", "Add new "+ editor_name + " template")), buttonStyle, GUILayout.Width(128)))
+            {
+
+
+                var temp = new string[templates_array.Length + 1];
+                templates_array.CopyTo(temp, 0);
+                templates_array = temp;
+
+                templates_array[templates_array.Length - 1] = "";
+
+                characters = new NPCCharacter[templates_array.Length];
+
+                return;
+            }
+
+
+            if (templates_array != null && templates_array.Length > 0)
+            {
+
+                int i = 0;
+                foreach (var targetAsset in templates_array)
+                {
+                     //Debug.Log(targetAsset);
+                    GetNPCAsset(ref templates_array[i], ref characters[i], false);
+                    if (characters[i] == null)
+                    {
+                        GetNPCAsset(ref templates_array[i], ref characters[i], true);
+                    }
+                    i++;
+                }
+
+                DrawUILine(colUILine, 3, 12);
+
+                i = 0;
+                foreach (var targetAsset in templates_array)
+                {
+
+                    // EditorGUILayout.LabelField("Upgrade Target:", EditorStyles.label);
+
+
+                    ColorUtility.TryParseHtmlString("#F25022", out newCol);
+                    titleStyle.normal.textColor = newCol;
+
+                    titleStyle.fontSize = 11;
+                    EditorGUILayout.LabelField(editor_name +" - " + i, titleStyle, GUILayout.ExpandWidth(true));
+                    // EditorGUILayout.Space(8);
+                    ColorUtility.TryParseHtmlString("#FF9900", out newCol);
+                    titleStyle.normal.textColor = newCol;
+
+                    titleStyle.fontSize = 12;
+
+                    string nameLabel = "None";
+                    if (characters[i] != null)
+                    {
+                        nameLabel = characters[i].npcName;
+                    }
+
+                    RemoveTSString(ref nameLabel);
+
+                    EditorGUILayout.LabelField(nameLabel, titleStyle, GUILayout.ExpandWidth(true));
+                    // EditorGUILayout.Space(8);
+
+                    //EditorGUILayout.BeginHorizontal();
+                    object npcTargetField = EditorGUILayout.ObjectField(characters[i], typeof(NPCCharacter), true, GUILayout.MaxWidth(320));
+                    characters[i] = (NPCCharacter)npcTargetField;
+
+                    if (characters[i] != null)
+                    {
+                        templates_array[i] = "NPCCharacter." + characters[i].id;
+                    }
+                    else
+                    {
+                        templates_array[i] = "";
+                    }
+
+                    buttonStyle.hover.textColor = Color.red;
+
+                    if (GUILayout.Button((new GUIContent("X", "Remove Template")), buttonStyle, GUILayout.Width(32)))
+                    {
+
+                        var count = templates_array.Length - 1;
+                        var pt_troop = new string[count];
+
+
+                        int i2 = 0;
+                        int i3 = 0;
+                        foreach (string trg in templates_array)
+                        {
+                            if (i3 != i)
+                            {
+                                pt_troop[i2] = templates_array[i3];
+                                i2++;
+                            }
+                            i3++;
+                        }
+
+                        templates_array = pt_troop;
+
+                        characters = new NPCCharacter[templates_array.Length];
+
+                        return;
+                    }
+
+                    DrawUILine(colUILine, 1, 4);
+                    i++;
+                }
+            }
+        }
     }
     void DrawTournamentTemplatesEditor(ref string[] tournamentTemplates, ref NPCCharacter[] npcObj, ref bool TTT_show, int editorID)
     {

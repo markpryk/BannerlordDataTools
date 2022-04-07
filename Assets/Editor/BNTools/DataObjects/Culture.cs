@@ -109,4 +109,10 @@ public class Culture : ScriptableObject
     public string[] TTT_one_participants;
     public string[] TTT_two_participants;
     public string[] TTT_four_participants;
+
+    public string[] child_character_templates;
+    public string[] notable_and_wanderer_templates;
+    public string[] lord_templates;
+    public string[] rebellion_hero_templates;
+
 }

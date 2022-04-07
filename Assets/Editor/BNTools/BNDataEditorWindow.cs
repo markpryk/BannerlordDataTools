@@ -55,14 +55,13 @@ public class BNDataEditorWindow : EditorWindow
 
                 string[] ModulesData = Directory.GetFiles(modsSettingsPath, "*.asset");
 
-                foreach (var mod in ModulesData)
-                {
-                    ModuleReceiver loadMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
-                    LoadModProjectData(loadMod);
-                }
+                //foreach (var mod in ModulesData)
+                //{
+                //    ModuleReceiver loadMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
+                //    //LoadModProjectData(loadMod);
+                //}
 
-                if (currentMod != null)
-                    EditorUtility.SetDirty(currentMod);
+          
 
                 EditorUtility.SetDirty(settingsAsset);
             }
@@ -74,7 +73,10 @@ public class BNDataEditorWindow : EditorWindow
 
         }
 
+        FullDataBaseRefresh();
 
+        if (currentMod != null)
+            EditorUtility.SetDirty(currentMod);
     }
 
     void OnGUI()
@@ -87,17 +89,20 @@ public class BNDataEditorWindow : EditorWindow
 
                 string[] ModulesData = Directory.GetFiles(modsSettingsPath, "*.asset");
 
-                foreach (var mod in ModulesData)
-                {
-                    ModuleReceiver loadMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
-                    LoadModProjectData(loadMod);
-                }
-
-                if (currentMod != null)
-                    EditorUtility.SetDirty(currentMod);
-
+                //foreach (var mod in ModulesData)
+                //{
+                //    ModuleReceiver loadMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
+                //    LoadModProjectData(loadMod);
+                //}
+               
                 EditorUtility.SetDirty(settingsAsset);
             }
+
+            FullDataBaseRefresh();
+
+            if (currentMod != null)
+                EditorUtility.SetDirty(currentMod);
+
         }
 
         if (settingsAsset != null && settingsAsset.load_a && settingsAsset.load_b)
@@ -142,6 +147,7 @@ public class BNDataEditorWindow : EditorWindow
             if (GUILayout.Button("Import Module"))
             {
                 CreateSubModuleData();
+                FullDataBaseRefresh();
             }
             // EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             DrawUILine(col, 3, 12);
@@ -272,7 +278,23 @@ public class BNDataEditorWindow : EditorWindow
                     foreach (string file in npcAssetFiles)
                     {
                         NPCCharacter npc = (NPCCharacter)AssetDatabase.LoadAssetAtPath(file, typeof(NPCCharacter));
-                        if (npc)
+                        if (npc != null)
+                        {
+                            modToLoad.modFilesData.npcChrData.NPCCharacters.Add(npc);
+                        }
+                    }
+                }
+
+                // Load Templates
+                path = "Assets/Resources/Data/" + modToLoad.id + "/_Templates/NPCtemplates";
+                if (AssetDatabase.IsValidFolder(path))
+                {
+                    //modToLoad.modFilesData.npcChrData.NPCCharacters = new List<NPCCharacter>();
+                    string[] npcAssetFiles = Directory.GetFiles(path, "*.asset");
+                    foreach (string file in npcAssetFiles)
+                    {
+                        NPCCharacter npc = (NPCCharacter)AssetDatabase.LoadAssetAtPath(file, typeof(NPCCharacter));
+                        if (npc != null)
                         {
                             modToLoad.modFilesData.npcChrData.NPCCharacters.Add(npc);
                         }
@@ -746,15 +768,14 @@ public class BNDataEditorWindow : EditorWindow
             GUILayout.Space(-12);
             DrawUILine(col, 6, 24);
 
-            /// Debug refresh data base
-            //if (GUILayout.Button("Refresh DataBase"))
-            //{
-            //    //Debug.Log(currentMod.id);
-            //    EditorUtility.SetDirty(currentMod);
-            //    LoadModProjectData(currentMod);
-            //    //  AssetDatabase.Refresh();
-            //    Debug.Log("BDT - REFRESH DATA BASE");
-            //}
+            //Debug refresh data base
+            if (GUILayout.Button("Refresh DataBase"))
+            {
+                FullDataBaseRefresh();
+
+                Debug.Log("BDT - REFRESH DATA BASE");
+            }
+
             //DrawUILine(col, 3, 6);
 
             if (GUILayout.Button("Delete Module"))
@@ -783,6 +804,28 @@ public class BNDataEditorWindow : EditorWindow
             /// DEBUG
             //DrawDebugOptions();
 
+        }
+    }
+
+    private void FullDataBaseRefresh()
+    {
+        var path = "Assets/SubModulesData";
+        if (AssetDatabase.IsValidFolder(path))
+        {
+            //modToLoad.modFilesData.npcChrData.NPCCharacters = new List<NPCCharacter>();
+            string[] mod_assets = Directory.GetFiles(path, "*.asset");
+            foreach (string mod_name in mod_assets)
+            {
+                ModuleReceiver mod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod_name, typeof(ModuleReceiver));
+
+                if (mod != null)
+                {
+                    //Debug.Log(currentMod.id);
+                    EditorUtility.SetDirty(mod);
+                    LoadModProjectData(mod);
+                    //  AssetDatabase.Refresh();
+                }
+            }
         }
     }
 
@@ -1518,31 +1561,34 @@ public class BNDataEditorWindow : EditorWindow
 
             if (currentMod != null)
             {
-                if (currentMod.modDependencies != null)
-                {
-                    foreach (var dependency in currentMod.modDependencies)
-                    {
-                        string asset = modsSettingsPath + dependency + ".asset";
+                //if (currentMod.modDependencies != null)
+                //{
+                //    foreach (var dependency in currentMod.modDependencies)
+                //    {
+                //        string asset = modsSettingsPath + dependency + ".asset";
 
-                        if (System.IO.File.Exists(asset))
-                        {
-                            ModuleReceiver dpdMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(asset, typeof(ModuleReceiver));
+                //        if (System.IO.File.Exists(asset))
+                //        {
+                //            ModuleReceiver dpdMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(asset, typeof(ModuleReceiver));
 
-                            if (dpdMod.modFilesData == null)
-                            {
-                                LoadModProjectData(dpdMod);
-                            }
-                        }
+                //            if (dpdMod.modFilesData == null)
+                //            {
+                //                LoadModProjectData(dpdMod);
+                //            }
+                //        }
 
-                    }
-                }
+                //    }
+                //}
+
+                FullDataBaseRefresh();
 
                 currentMod = (ModuleReceiver)source;
                 settingsAsset.currentModule = currentMod.id;
 
                 if (currentMod.modFilesData == null)
                 {
-                    LoadModProjectData(currentMod);
+                    //LoadModProjectData(currentMod);
+                    FullDataBaseRefresh();
                 }
             }
 
