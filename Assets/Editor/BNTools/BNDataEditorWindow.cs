@@ -191,7 +191,6 @@ public class BNDataEditorWindow : EditorWindow
 
         if (modToLoad.modFilesData != null)
         {
-
             // load asset configs
             path = "Assets/Resources/SubModulesData/" + modToLoad.id + "/ModDataConfigs/" + "kng_" + modToLoad.id + ".asset";
             if (System.IO.File.Exists(path))
@@ -264,6 +263,7 @@ public class BNDataEditorWindow : EditorWindow
             }
 
             path = "Assets/Resources/SubModulesData/" + modToLoad.id + "/ModDataConfigs/" + "npc_" + modToLoad.id + ".asset";
+
             if (System.IO.File.Exists(path))
             {
                 NPCCharactersData npcData = (NPCCharactersData)AssetDatabase.LoadAssetAtPath(path, typeof(NPCCharactersData));
@@ -769,12 +769,12 @@ public class BNDataEditorWindow : EditorWindow
             DrawUILine(col, 6, 24);
 
             //Debug refresh data base
-            if (GUILayout.Button("Refresh DataBase"))
-            {
-                FullDataBaseRefresh();
+            //if (GUILayout.Button("Refresh DataBase"))
+            //{
+            //    FullDataBaseRefresh();
 
-                Debug.Log("BDT - REFRESH DATA BASE");
-            }
+            //    Debug.Log("BDT - REFRESH DATA BASE");
+            //}
 
             //DrawUILine(col, 3, 6);
 
@@ -809,7 +809,7 @@ public class BNDataEditorWindow : EditorWindow
 
     private void FullDataBaseRefresh()
     {
-        var path = "Assets/SubModulesData";
+        var path = "Assets/Resources/SubModulesData";
         if (AssetDatabase.IsValidFolder(path))
         {
             //modToLoad.modFilesData.npcChrData.NPCCharacters = new List<NPCCharacter>();
@@ -1454,53 +1454,7 @@ public class BNDataEditorWindow : EditorWindow
 
             }
         }
-        if (GUILayout.Button("Refresh DataBase"))
-        {
-
-            // string path = "Assets/Settings/Definitions/ItemTypes" + def + ".asset";
-            // string lordsNPC = "E:/Games/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/SandBox/ModuleData/bandits.xml";
-            // string[] npcXmls = Directory.GetFiles("E:/Games/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/SandBox/ModuleData", "*.xml"); ;
-
-            // foreach (var lordsNPC in npcXmls)
-            // {
-            //     XmlDocument Doc = new XmlDocument();
-            //     // UTF 8 - 16
-            //     StreamReader reader = new StreamReader(lordsNPC);
-            //     Doc.Load(reader);
-            //     reader.Close();
-
-            //     XmlElement Root = Doc.DocumentElement;
-            //     XmlNodeList XNL = Root.ChildNodes;
-
-            //     List<string> eqpSlots = new List<string>();
-
-            //     foreach (XmlNode node in Root.ChildNodes)
-            //     {
-            //         if (node.LocalName == "Kingdom")
-            //         {
-            //             foreach (XmlNode nodeChild in node.ChildNodes)
-            //             {
-            //                 if (nodeChild.LocalName == "policies")
-            //                     foreach (XmlNode nodePolicie in nodeChild.ChildNodes)
-            //                     {
-            //                         Debug.Log(nodePolicie.Attributes["id"].Value);
-
-            //                     }
-            //             }
-
-            //         }
-            //     }
-
-            // }
-
-            //Debug.Log(currentMod.id);
-            EditorUtility.SetDirty(currentMod);
-            LoadModProjectData(currentMod);
-            //  AssetDatabase.Refresh();
-
-            Debug.Log("BDT - REFRESH DATA BASE");
-
-        }
+      
     }
 
 
