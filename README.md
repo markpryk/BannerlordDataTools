@@ -62,5 +62,5 @@ Please report any bugs to official Discord server or in BDT TW forums thread.
 
 ### Common
 #### - [Assets Browsers](docs_BDT/asset_browsers.md)
-#### - [Tips and tricks](docs_BDT/tips.md)
+#### - [Common Information](docs_BDT/tips.md)
 #### - [Exporting Process](docs_BDT/export.md)
