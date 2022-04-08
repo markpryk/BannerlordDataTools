@@ -1008,6 +1008,7 @@ public class NPCEditorManager : EditorWindow
             asstPath = asstPath.Replace(dic.Value.moduleID, currMod.id);
 
             hero.id = naming;
+            hero.moduleID = currMod.id;
 			
 			EditorUtility.SetDirty (hero);
             AssetDatabase.CreateAsset(hero, asstPath);
