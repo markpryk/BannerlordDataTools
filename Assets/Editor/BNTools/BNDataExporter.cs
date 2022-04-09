@@ -73,18 +73,26 @@ public class BNDataExporter : EditorWindow
         EditorGUILayout.LabelField("Output XML File Names", EditorStyles.boldLabel);
 
         ExportSettings expSettings = exported_Mod.modFilesData.exportSettings;
-
-        expSettings.Culture_xml_name = EditorGUILayout.TextField("Cultures", expSettings.Culture_xml_name);
-        expSettings.Faction_xml_name = EditorGUILayout.TextField("Factions", expSettings.Faction_xml_name);
-        expSettings.Kingdom_xml_name = EditorGUILayout.TextField("Kingdoms", expSettings.Kingdom_xml_name);
-
-        expSettings.Hero_xml_name = EditorGUILayout.TextField("Heroes", expSettings.Hero_xml_name);
-        expSettings.NPCCharacter_xml_name = EditorGUILayout.TextField("NPCCharacters", expSettings.NPCCharacter_xml_name);
-
-        expSettings.Item_xml_name = EditorGUILayout.TextField("Items", expSettings.Item_xml_name);
-        expSettings.PartyTemplate_xml_name = EditorGUILayout.TextField("Party Templates", expSettings.PartyTemplate_xml_name);
-        expSettings.Settlement_xml_name = EditorGUILayout.TextField("Settlements", expSettings.Settlement_xml_name);
-        expSettings.EquipmentSet_xml_name = EditorGUILayout.TextField("EquipmentSets", expSettings.EquipmentSet_xml_name);
+        EditorUtility.SetDirty(expSettings);
+       
+        if (exported_Mod.modFilesData.culturesData.cultures.Count != 0)
+            expSettings.Culture_xml_name = EditorGUILayout.TextField("Cultures", expSettings.Culture_xml_name);
+        if (exported_Mod.modFilesData.factionsData.factions.Count != 0)
+            expSettings.Faction_xml_name = EditorGUILayout.TextField("Factions", expSettings.Faction_xml_name);
+        if (exported_Mod.modFilesData.kingdomsData.kingdoms.Count != 0)
+            expSettings.Kingdom_xml_name = EditorGUILayout.TextField("Kingdoms", expSettings.Kingdom_xml_name);
+        if (exported_Mod.modFilesData.heroesData.heroes.Count != 0)
+            expSettings.Hero_xml_name = EditorGUILayout.TextField("Heroes", expSettings.Hero_xml_name);
+        if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0)
+            expSettings.NPCCharacter_xml_name = EditorGUILayout.TextField("NPCCharacters", expSettings.NPCCharacter_xml_name);
+        if (exported_Mod.modFilesData.itemsData.items.Count != 0)
+            expSettings.Item_xml_name = EditorGUILayout.TextField("Items", expSettings.Item_xml_name);
+        if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0)
+            expSettings.PartyTemplate_xml_name = EditorGUILayout.TextField("Party Templates", expSettings.PartyTemplate_xml_name);
+        if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0)
+            expSettings.Settlement_xml_name = EditorGUILayout.TextField("Settlements", expSettings.Settlement_xml_name);
+        if (exported_Mod.modFilesData.equipmentsData.equipmentSets.Count != 0)
+            expSettings.EquipmentSet_xml_name = EditorGUILayout.TextField("EquipmentSets", expSettings.EquipmentSet_xml_name);
 
         DrawUILine(colUILine, 3, 12);
 
@@ -240,14 +248,11 @@ public class BNDataExporter : EditorWindow
     {
         string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene";
 
-        var tempName = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/TEMP_SCENE_NAME.xscene";
 
         XmlDocument Doc = new XmlDocument();
         // UTF 8 - 16
-        StreamReader reader = new StreamReader(pathScene);
-        StreamWriter writer = new StreamWriter(tempName);
 
-        Doc.Load(reader);
+        Doc.Load(pathScene);
 
         XmlElement Root = Doc.DocumentElement;
         XmlNodeList XNL = Root.ChildNodes;
@@ -275,27 +280,16 @@ public class BNDataExporter : EditorWindow
             }
         }
 
-        Doc.Save(writer);
-        writer.Close();
-        reader.Close();
-        File.Replace(tempName, pathScene, "TEMP_SCENE_NAME_BCKP");
+        Doc.Save(pathScene);
     }
 
     private void WriteSettlementsPositions()
     {
 
         string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene";
-        var tempName = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/TEMP_SCENE_NAME.xscene";
-
-        //if(File.Exists(tempName))
-        //File.Delete(tempName);
-
         XmlDocument Doc = new XmlDocument();
         // UTF 8 - 16
-        StreamReader reader = new StreamReader(pathScene);
-        StreamWriter writer = new StreamWriter(tempName);
-
-        Doc.Load(reader);
+        Doc.Load(pathScene);
 
         XmlElement Root = Doc.DocumentElement;
         XmlNodeList XNL = Root.ChildNodes;
@@ -343,10 +337,7 @@ public class BNDataExporter : EditorWindow
 
         }
 
-        Doc.Save(writer);
-        writer.Close();
-        reader.Close();
-        File.Replace(tempName, pathScene, "TEMP_SCENE_NAME_BCKP");
+        Doc.Save(pathScene);
     }
 
 
@@ -420,19 +411,11 @@ public class BNDataExporter : EditorWindow
         List<XmlNode> added_comp_list = new List<XmlNode>();
 
         var xScene_source = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene";
-        var tempName = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/TEMP_SCENE_NAME.xscene";
-
         var templates = SttlNodeTemplates();
-
-        //if(File.Exists(tempName))
-        //File.Delete(tempName);
-
         XmlDocument Doc = new XmlDocument();
         // UTF 8 - 16
-        StreamReader reader = new StreamReader(xScene_source);
-        StreamWriter writer = new StreamWriter(tempName);
 
-        Doc.Load(reader);
+        Doc.Load(xScene_source);
 
         XmlElement Root = Doc.DocumentElement;
         XmlNodeList XNL = Root.ChildNodes;
@@ -469,10 +452,7 @@ public class BNDataExporter : EditorWindow
             }
         }
 
-        Doc.Save(writer);
-        writer.Close();
-        reader.Close();
-        File.Replace(tempName, xScene_source, "TEMP_SCENE_NAME_BCKP");
+        Doc.Save(xScene_source);
     }
 
     private void AppendNodeToXscene(int id, XmlNode[] templates, XmlElement Root, Settlement settl)

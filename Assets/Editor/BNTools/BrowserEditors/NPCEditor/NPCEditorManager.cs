@@ -1009,6 +1009,9 @@ public class NPCEditorManager : EditorWindow
 
             hero.id = naming;
             hero.moduleID = currMod.id;
+           
+            hero.node_X = 0;
+            hero.node_Y = 0;
 			
 			EditorUtility.SetDirty (hero);
             AssetDatabase.CreateAsset(hero, asstPath);
