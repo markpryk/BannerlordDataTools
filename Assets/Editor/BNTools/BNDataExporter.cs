@@ -3132,7 +3132,7 @@ public class BNDataExporter : EditorWindow
     }
     private static void WriteNPCTemplatesNodes(XmlWriter BNXmlWriter, string blockName, string[] tournamentContainer)
     {
-        if (tournamentContainer.Length != 0)
+        if (tournamentContainer != null && tournamentContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
@@ -3157,7 +3157,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WriteVassalRewards(XmlWriter BNXmlWriter, string blockName, string[] itemsContainer)
     {
-        if (itemsContainer.Length != 0)
+        if (itemsContainer != null && itemsContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
@@ -3181,7 +3181,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WriteHairBodyTags(XmlWriter BNXmlWriter, string blockName, string[] itemsContainer)
     {
-        if (itemsContainer.Length != 0)
+        if (itemsContainer!= null && itemsContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
@@ -3205,7 +3205,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WriteBeardBodyTags(XmlWriter BNXmlWriter, string blockName, string[] itemsContainer)
     {
-        if (itemsContainer.Length != 0)
+        if (itemsContainer!= null && itemsContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
@@ -3229,7 +3229,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WriteCulturalFeats(XmlWriter BNXmlWriter, string blockName, string[] dataContainer)
     {
-        if (dataContainer.Length != 0)
+        if (dataContainer != null && dataContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
@@ -3253,7 +3253,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WriteMinorFactiontemplates(XmlWriter BNXmlWriter, string blockName, string[] dataContainer)
     {
-        if (dataContainer.Length != 0)
+        if (dataContainer != null && dataContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
@@ -3277,7 +3277,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WritePossibleClanIcons(XmlWriter BNXmlWriter, string blockName, string[] dataContainer)
     {
-        if (dataContainer.Length != 0)
+        if (dataContainer != null && dataContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
