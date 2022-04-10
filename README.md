@@ -18,7 +18,7 @@ The main goal is speedup the development procces and make it more comfortable an
 ---------------------------------------------
 
 #### Releases
-##### latest version: 0.0.55.5b -- 9 April 2022 
+##### latest version: 0.0.55.5b -- 11 April 2022 
 ##### - [Changelog (Discord server)](https://discord.gg/Fz7GQA6C9K)
 ---------------------------------------------
 
@@ -43,17 +43,6 @@ Please report any bugs to official Discord server or in BDT TW forums thread.
 #### - [Tools setup](docs_BDT/tools_setup.md)
 #### - [Importing modules](docs_BDT/importing_modules.md)
 
-### Common
-#### - [Assets Browsers](docs_BDT/asset_browsers.md)
-#### - [Common Information](docs_BDT/tips.md)
-#### - [Exporting Process](docs_BDT/export.md)
-
-### Data editors
-#### - [FamilyTree Nodes](docs_BDT/famly_tree.md)
-#### - [World Positions Editor](docs_BDT/world_pos.md)
-#### - [Banner Editor](docs_BDT/banner_editor.md)
-#### - [Translation Tools](docs_BDT/translations.md)
-
 ### Asset types editors
 #### - [Culture asset](docs_BDT/culture_asset.md)
 #### - [Kingdom asset ](docs_BDT/kingdom_asset.md)
@@ -64,5 +53,16 @@ Please report any bugs to official Discord server or in BDT TW forums thread.
 #### - [Item asset](docs_BDT/item_asset.md)
 #### - [Equipment asset](docs_BDT/equip_asset.md)
 #### - [Party Template asset](docs_BDT/pt_asset.md)
+
+### Data editors
+#### - [FamilyTree Nodes](docs_BDT/famly_tree.md)
+#### - [World Positions Editor](docs_BDT/world_pos.md)
+#### - [Banner Editor](docs_BDT/banner_editor.md)
+#### - [Translation Tools](docs_BDT/translations.md)
+
+### Common
+#### - [Assets Browsers](docs_BDT/asset_browsers.md)
+#### - [Common Information](docs_BDT/tips.md)
+#### - [Exporting Process](docs_BDT/export.md)
 
 
