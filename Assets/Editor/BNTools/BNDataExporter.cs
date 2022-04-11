@@ -74,7 +74,7 @@ public class BNDataExporter : EditorWindow
 
         ExportSettings expSettings = exported_Mod.modFilesData.exportSettings;
         EditorUtility.SetDirty(expSettings);
-       
+
         if (exported_Mod.modFilesData.culturesData.cultures.Count != 0)
             expSettings.Culture_xml_name = EditorGUILayout.TextField("Cultures", expSettings.Culture_xml_name);
         if (exported_Mod.modFilesData.factionsData.factions.Count != 0)
@@ -1709,12 +1709,12 @@ public class BNDataExporter : EditorWindow
                 {
                     BNXmlWriter.WriteStartElement("BodyProperties");
 
-                    CheckAndWriteAttribute(BNXmlWriter, "version", npc.BP_version);
-                    CheckAndWriteAttribute(BNXmlWriter, "age", npc.BP_age);
-                    CheckAndWriteAttribute(BNXmlWriter, "weight", npc.BP_weight);
+                    CheckZeroWriteAttribute(BNXmlWriter, "version", npc.BP_version);
+                    CheckZeroWriteAttribute(BNXmlWriter, "age", npc.BP_age);
+                    CheckZeroWriteAttribute(BNXmlWriter, "weight", npc.BP_weight);
 
-                    CheckAndWriteAttribute(BNXmlWriter, "build", npc.BP_build);
-                    CheckAndWriteAttribute(BNXmlWriter, "key", npc.BP_key);
+                    CheckZeroWriteAttribute(BNXmlWriter, "build", npc.BP_build);
+                    CheckZeroWriteAttribute(BNXmlWriter, "key", npc.BP_key);
 
                     BNXmlWriter.WriteFullEndElement();
                 }
@@ -1722,12 +1722,12 @@ public class BNDataExporter : EditorWindow
                 {
                     BNXmlWriter.WriteStartElement("BodyPropertiesMax");
 
-                    CheckAndWriteAttribute(BNXmlWriter, "version", npc.Max_BP_version);
-                    CheckAndWriteAttribute(BNXmlWriter, "age", npc.Max_BP_age);
-                    CheckAndWriteAttribute(BNXmlWriter, "weight", npc.Max_BP_weight);
+                    CheckZeroWriteAttribute(BNXmlWriter, "version", npc.Max_BP_version);
+                    CheckZeroWriteAttribute(BNXmlWriter, "age", npc.Max_BP_age);
+                    CheckZeroWriteAttribute(BNXmlWriter, "weight", npc.Max_BP_weight);
 
-                    CheckAndWriteAttribute(BNXmlWriter, "build", npc.Max_BP_build);
-                    CheckAndWriteAttribute(BNXmlWriter, "key", npc.Max_BP_key);
+                    CheckZeroWriteAttribute(BNXmlWriter, "build", npc.Max_BP_build);
+                    CheckZeroWriteAttribute(BNXmlWriter, "key", npc.Max_BP_key);
 
                     BNXmlWriter.WriteFullEndElement();
                 }
@@ -1764,21 +1764,26 @@ public class BNDataExporter : EditorWindow
                 }
                 BNXmlWriter.WriteFullEndElement();
 
+
                 BNXmlWriter.WriteStartElement("Traits");
-                i = 0;
-                foreach (var val in npc.traits)
+                // Check 18+
+                if (int.Parse(npc.age) > 17)
                 {
-                    if (val != "")
+                    i = 0;
+                    foreach (var val in npc.traits)
                     {
-                        BNXmlWriter.WriteStartElement("Trait");
+                        if (val != "")
+                        {
+                            BNXmlWriter.WriteStartElement("Trait");
 
-                        CheckAndWriteAttribute(BNXmlWriter, "id", npc.traits[i]);
-                        CheckAndWriteAttribute(BNXmlWriter, "value", npc.traitValues[i]);
+                            CheckAndWriteAttribute(BNXmlWriter, "id", npc.traits[i]);
+                            CheckAndWriteAttribute(BNXmlWriter, "value", npc.traitValues[i]);
 
-                        BNXmlWriter.WriteFullEndElement();
+                            BNXmlWriter.WriteFullEndElement();
 
+                        }
+                        i++;
                     }
-                    i++;
                 }
                 BNXmlWriter.WriteFullEndElement();
 
@@ -1840,7 +1845,7 @@ public class BNDataExporter : EditorWindow
 
 
                     }
-                   
+
 
                     // equipment
                     if (npc.equipment_Set.Length != 0)
@@ -1883,7 +1888,7 @@ public class BNDataExporter : EditorWindow
 
                 // WriteEquipmentSets(BNXmlWriter, npc);
 
-                
+
 
                 BNXmlWriter.WriteFullEndElement();
             }
@@ -3181,7 +3186,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WriteHairBodyTags(XmlWriter BNXmlWriter, string blockName, string[] itemsContainer)
     {
-        if (itemsContainer!= null && itemsContainer.Length != 0)
+        if (itemsContainer != null && itemsContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 
@@ -3205,7 +3210,7 @@ public class BNDataExporter : EditorWindow
 
     private static void WriteBeardBodyTags(XmlWriter BNXmlWriter, string blockName, string[] itemsContainer)
     {
-        if (itemsContainer!= null && itemsContainer.Length != 0)
+        if (itemsContainer != null && itemsContainer.Length != 0)
         {
             BNXmlWriter.WriteStartElement(blockName);
 

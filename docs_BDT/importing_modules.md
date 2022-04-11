@@ -29,6 +29,9 @@ Used for [World Position editor](world_pos.md) base canvas, this texture is for 
 Used in [Export](export.md) for elevate your positioned settlements by Z, according heightmap. 
 If not exist, you can write only X,Y for settlements positions.
 
+You need to load this textures to Unity, drag and drop this from windows explorer, to Unity at folder ../Assets/ViewData/. 
+Or copy peaste, directly in windows explorer, to this directory ../BannerlorDataTools/Assets/ViewData/. 
+
 ```diff
 ! Note:                                                                                   
 Is a same height map texture you can used for scene terrain creation, in Bannerlord Mod Kit.

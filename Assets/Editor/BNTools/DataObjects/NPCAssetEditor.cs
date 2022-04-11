@@ -3254,10 +3254,16 @@ public class NPCAssetEditor : Editor
 
         if (showTraitsEditor)
         {
-
+            
             EditorGUILayout.LabelField("Traits Editor", titleStyle, GUILayout.ExpandWidth(true));
             DrawUILine(colUILine, 3, 12);
 
+            // Check 18+
+            if (int.Parse(npc.age) < 18)
+            {
+                EditorGUILayout.HelpBox("You can assign traits only for 18+, in other case traits for this NPC will by ignored at export.", MessageType.Error);
+                DrawUILine(colUILine, 3, 12);
+            }
 
             if (npc.traits == null || npc.traits.Length < settingsAsset.TraitsDefinitions.Length)
             {
