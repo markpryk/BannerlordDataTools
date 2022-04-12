@@ -110,7 +110,7 @@ public class BNDataExporter : EditorWindow
 
         EditorGUILayout.LabelField("Main Map .xscene Settings", EditorStyles.boldLabel);
 
-        if (File.Exists($"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene"))
+        if (File.Exists($"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene"))
         {
 
             textDimensions = GUI.skin.label.CalcSize(new GUIContent("Create entities for unexisted settlements   "));
@@ -149,7 +149,7 @@ public class BNDataExporter : EditorWindow
         }
         else
         {
-            EditorGUILayout.HelpBox("/Main_map/scene.xscene not exist in " + exported_Mod.id + " Folder. \n You need main map scene to activate .xscene export settings.", MessageType.Warning);
+            EditorGUILayout.HelpBox(exported_Mod.world_map_xscene_id+ "/scene.xscene not exist in " + exported_Mod.id + " Folder. \n You need main map scene to activate .xscene export settings.", MessageType.Warning);
         }
 
         DrawUILine(colUILine, 3, 12);
@@ -246,7 +246,7 @@ public class BNDataExporter : EditorWindow
 
     private void ResetSettlementsZ()
     {
-        string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene";
+        string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene";
 
 
         XmlDocument Doc = new XmlDocument();
@@ -286,7 +286,7 @@ public class BNDataExporter : EditorWindow
     private void WriteSettlementsPositions()
     {
 
-        string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene";
+        string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene";
         XmlDocument Doc = new XmlDocument();
         // UTF 8 - 16
         Doc.Load(pathScene);
@@ -375,7 +375,7 @@ public class BNDataExporter : EditorWindow
         string backUp_path_source = export_path;
         string backUp_path_dest = $"{settingsAsset.BNModulesPath}_BDT_BackUPs/{exported_Mod.id}/BackUp_{exported_Mod.version}_{backupID}/";
 
-        var xScene_source = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene";
+        var xScene_source = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene";
         var xScene_dest = backUp_path_dest + "scene.xscene";
 
         if (Directory.Exists(backUp_path_dest))
@@ -410,7 +410,7 @@ public class BNDataExporter : EditorWindow
         List<string> existed_comp_list = new List<string>();
         List<XmlNode> added_comp_list = new List<XmlNode>();
 
-        var xScene_source = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/Main_map/scene.xscene";
+        var xScene_source = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene";
         var templates = SttlNodeTemplates();
         XmlDocument Doc = new XmlDocument();
         // UTF 8 - 16
@@ -1786,6 +1786,7 @@ public class BNDataExporter : EditorWindow
                     }
                 }
                 BNXmlWriter.WriteFullEndElement();
+
 
                 // target
                 BNXmlWriter.WriteStartElement("upgrade_targets");

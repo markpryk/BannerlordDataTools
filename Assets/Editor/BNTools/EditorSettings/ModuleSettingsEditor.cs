@@ -65,7 +65,7 @@ public class ModuleSettingsEditor : EditorWindow
 
             if (currMod.load_xscene)
             {
-                var xScene_file = $"{settingsAsset.BNModulesPath}{currMod.id}/SceneObj/Main_map/scene.xscene";
+                var xScene_file = $"{settingsAsset.BNModulesPath}{currMod.id}/SceneObj/{currMod.world_map_xscene_id}/scene.xscene";
 
                 if (File.Exists(xScene_file))
                     ReadXscene(xScene_file);
@@ -133,7 +133,11 @@ public class ModuleSettingsEditor : EditorWindow
 
             DrawUILine(colUILine, 2, 6);
 
-            var xScene_file = $"{settingsAsset.BNModulesPath}{currMod.id}/SceneObj/Main_map/scene.xscene";
+            currMod.world_map_xscene_id = EditorGUILayout.TextField("  Main Map name:", currMod.world_map_xscene_id);
+
+            DrawUILine(colUILine, 2, 6);
+
+            var xScene_file = $"{settingsAsset.BNModulesPath}{currMod.id}/SceneObj/{currMod.world_map_xscene_id}/scene.xscene";
 
             if (File.Exists(xScene_file))
             {
@@ -158,7 +162,7 @@ public class ModuleSettingsEditor : EditorWindow
             }
             else
             {
-                EditorGUILayout.HelpBox("/Main_map/scene.xscene not exist in " + currMod.id + " Folder. \n You need main map scene to load terain data from module.", MessageType.Warning);
+                EditorGUILayout.HelpBox(currMod.world_map_xscene_id+"/scene.xscene not exist in " + currMod.id + " Folder. \n You need main map scene to load terain data from module.", MessageType.Warning);
             }
 
             DrawUILine(colUILine, 3, 12);

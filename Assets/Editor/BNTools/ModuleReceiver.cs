@@ -19,6 +19,8 @@ public class ModuleReceiver : ScriptableObject
 
     public bool load_xscene;
 
+    public string world_map_xscene_id = "Main_map";
+
     public int W_X_Size;
     public int W_Y_Size;
     public int W_SingleNodeSize;
