@@ -2444,10 +2444,10 @@ public class ModFilesManager : Editor
                 }
             }
 
-            WriteNPCTemplate(relNode,ref cultAsset.child_character_templates, "child_character_templates");
-            WriteNPCTemplate( relNode,ref cultAsset.notable_and_wanderer_templates, "notable_and_wanderer_templates");
-            WriteNPCTemplate(relNode,ref cultAsset.lord_templates, "lord_templates");
-            WriteNPCTemplate( relNode,ref cultAsset.rebellion_hero_templates, "rebellion_hero_templates");
+            WriteNPCTemplate(relNode, ref cultAsset.child_character_templates, "child_character_templates");
+            WriteNPCTemplate(relNode, ref cultAsset.notable_and_wanderer_templates, "notable_and_wanderer_templates");
+            WriteNPCTemplate(relNode, ref cultAsset.lord_templates, "lord_templates");
+            WriteNPCTemplate(relNode, ref cultAsset.rebellion_hero_templates, "rebellion_hero_templates");
 
             // Tournament Templates
             if (relNode.LocalName == "tournament_team_templates_one_participant")
@@ -2640,7 +2640,7 @@ public class ModFilesManager : Editor
         // AssetDatabase.SaveAssets();
     }
 
-    private static void WriteNPCTemplate( XmlNode relNode,ref string[] string_array, string templatesID )
+    private static void WriteNPCTemplate(XmlNode relNode, ref string[] string_array, string templatesID)
     {
         if (relNode.LocalName == templatesID)
         {
@@ -3459,7 +3459,7 @@ public class ModFilesManager : Editor
 
             foreach (XmlNode node in Root.ChildNodes)
             {
-                 //Debug.Log(node.Name);
+                //Debug.Log(node.Name);
                 if (node.Name == "Kingdom" && imp_kgd)
                 {
                     CreateKingdomAssets(node, modFilesAsset, file);
@@ -3483,7 +3483,7 @@ public class ModFilesManager : Editor
                 }
                 if (node.Name == "Culture" && imp_cult)
                 {
-                     //Debug.Log(node.Name);
+                    //Debug.Log(node.Name);
                     CreateCultureAsset(node, modFilesAsset, file);
                 }
                 if (node.Name == "MBPartyTemplate" && imp_pt)
@@ -3501,35 +3501,77 @@ public class ModFilesManager : Editor
                     // Debug.Log("Settlement");
                     CreateEquipments(node, modFilesAsset, file);
                 }
+                if (node.Name == "Item" || node.Name == "CraftedItem" && imp_eqp)
+                {
+                    CreateItemAsset(node, modFilesAsset, file);
+                }
             }
         }
 
-        if (imp_item)
+        // search in folders
+        string[] directories = Directory.GetDirectories(modFilesAsset.BNResourcesPath);
+
+        foreach (var dir in directories)
         {
-            // Search Items
-            string[] directories = Directory.GetDirectories(modFilesAsset.BNResourcesPath);
-
-            foreach (var dir in directories)
+            XMLfiles = Directory.GetFiles(dir, "*.XML");
+            // Read module
+            foreach (string file in XMLfiles)
             {
-                XMLfiles = Directory.GetFiles(dir, "*.XML");
-                // Read module
-                foreach (string file in XMLfiles)
-                {
-                    // Debug.Log(file);
-                    XmlDocument Doc = new XmlDocument();
-                    // UTF 8 - 16
-                    StreamReader reader = new StreamReader(file);
-                    Doc.Load(reader);
-                    reader.Close();
+                // Debug.Log(file);
+                XmlDocument Doc = new XmlDocument();
+                // UTF 8 - 16
+                StreamReader reader = new StreamReader(file);
+                Doc.Load(reader);
+                reader.Close();
 
-                    XmlElement Root = Doc.DocumentElement;
-                    XmlNodeList XNL = Root.ChildNodes;
-                    foreach (XmlNode node in Root.ChildNodes)
+                XmlElement Root = Doc.DocumentElement;
+                XmlNodeList XNL = Root.ChildNodes;
+                foreach (XmlNode node in Root.ChildNodes)
+                {
+                    if (node.Name == "Kingdom" && imp_kgd)
                     {
-                        if (node.Name != "#comment" && Root.Name != "base")
-                        {
-                            CreateItemAsset(node, modFilesAsset, file);
-                        }
+                        CreateKingdomAssets(node, modFilesAsset, file);
+                    }
+
+                    if (node.Name == "Faction" && imp_fac)
+                    {
+                        CreateFactionAssets(node, modFilesAsset, file);
+                    }
+
+                    if (node.Name == "Settlement" && imp_settl)
+                    {
+                        // Debug.Log("Settlement");
+                        CreateSettlementAssets(node, modFilesAsset, file);
+                    }
+
+                    if (node.Name == "NPCCharacter" && imp_npc)
+                    {
+                        // Debug.Log("Settlement");
+                        CreateNPCAsset(node, modFilesAsset, file);
+                    }
+                    if (node.Name == "Culture" && imp_cult)
+                    {
+                        //Debug.Log(node.Name);
+                        CreateCultureAsset(node, modFilesAsset, file);
+                    }
+                    if (node.Name == "MBPartyTemplate" && imp_pt)
+                    {
+                        // Debug.Log("Settlement");
+                        CreatePTAsset(node, modFilesAsset, file);
+                    }
+                    if (node.Name == "Hero" && imp_hero)
+                    {
+                        // Debug.Log("Settlement");
+                        CreateHeroAsset(node, modFilesAsset, file);
+                    }
+                    if (node.Name == "EquipmentRoster" && imp_eqp)
+                    {
+                        // Debug.Log("Settlement");
+                        CreateEquipments(node, modFilesAsset, file);
+                    }
+                    if (node.Name == "Item" || node.Name == "CraftedItem" && imp_eqp)
+                    {
+                        CreateItemAsset(node, modFilesAsset, file);
                     }
                 }
             }
@@ -3557,7 +3599,7 @@ public class ModFilesManager : Editor
 
         // CREATE TRANSLATION DATA for deafault language (eng)
         // CreateLanguagesData(modFilesAsset);
-       
+
         //#
         //CopyLanguages(modFilesAsset);
 
