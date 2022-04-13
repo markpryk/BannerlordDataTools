@@ -2914,6 +2914,11 @@ public class BNDataExporter : EditorWindow
 
             CheckAndWriteAttribute(BNXmlWriter, "text", settl.text);
 
+            if (settl.isHideout)
+            {
+                CheckAndWriteAttribute(BNXmlWriter, "type", "Hideout");
+            }
+
             // BNXmlWriter.WriteFullEndElement();
 
             WriteSettlementComponents(BNXmlWriter, settl);
@@ -3047,9 +3052,6 @@ public class BNDataExporter : EditorWindow
             CheckAndWriteAttribute(BNXmlWriter, "map_icon", settlement.CMP_map_icon);
             CheckAndWriteAttribute(BNXmlWriter, "scene_name", settlement.CMP_scene_name);
             CheckAndWriteAttribute(BNXmlWriter, "gate_rotation", settlement.CMP_gate_rotation);
-
-            CheckAndWriteAttribute(BNXmlWriter, "type", "Hideout");
-
 
             BNXmlWriter.WriteEndElement();
         }
