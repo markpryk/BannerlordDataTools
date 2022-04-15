@@ -1750,7 +1750,7 @@ public class BNDataExporter : EditorWindow
                 int i = 0;
                 foreach (var val in npc.skills)
                 {
-                    if (val != "")
+                    if (val!= null && val != "")
                     {
                         BNXmlWriter.WriteStartElement("skill");
 
