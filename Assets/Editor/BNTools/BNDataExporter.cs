@@ -1942,7 +1942,7 @@ public class BNDataExporter : EditorWindow
 
                 foreach (var set in equip.eqpSetID)
                 {
-                    if (set != "")
+                    if (set != null && set != "")
                     {
                         BNXmlWriter.WriteStartElement("EquipmentSet");
 
