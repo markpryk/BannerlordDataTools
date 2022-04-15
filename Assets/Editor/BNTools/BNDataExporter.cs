@@ -149,7 +149,7 @@ public class BNDataExporter : EditorWindow
         }
         else
         {
-            EditorGUILayout.HelpBox(exported_Mod.world_map_xscene_id+ "/scene.xscene not exist in " + exported_Mod.id + " Folder. \n You need main map scene to activate .xscene export settings.", MessageType.Warning);
+            EditorGUILayout.HelpBox(exported_Mod.world_map_xscene_id + "/scene.xscene not exist in " + exported_Mod.id + " Folder. \n You need main map scene to activate .xscene export settings.", MessageType.Warning);
         }
 
         DrawUILine(colUILine, 3, 12);
@@ -2433,274 +2433,279 @@ public class BNDataExporter : EditorWindow
     }
     void WriteMainEquipmentNPC(XmlWriter BNXmlWriter, EquipmentSet equip)
     {
-        if (equip.eqp_Item0 != "")
+        if (equip != null)
         {
-            BNXmlWriter.WriteStartElement("equipment");
+            if (equip.eqp_Item0 != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item0");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item0);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item0");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item0);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Item1 != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Item1 != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item1");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item1);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item1");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item1);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Item2 != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Item2 != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item2");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item2);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item2");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item2);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Item3 != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Item3 != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item3");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item3);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item3");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Item3);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Head != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Head != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Head");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Head);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Head");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Head);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Body != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Body != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Body");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Body);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Body");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Body);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Cape != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Cape != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Cape");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Cape);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Cape");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Cape);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Gloves != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Gloves != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Gloves");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Gloves);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Gloves");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Gloves);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Leg != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Leg != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Leg");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Leg);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Leg");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Leg);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Horse != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_Horse != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Horse");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Horse);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Horse");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_Horse);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_HorseHarness != "")
-        {
-            BNXmlWriter.WriteStartElement("equipment");
+            }
+            if (equip.eqp_HorseHarness != "")
+            {
+                BNXmlWriter.WriteStartElement("equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "HorseHarness");
-            CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_HorseHarness);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "HorseHarness");
+                CheckAndWriteAttribute(BNXmlWriter, "id", equip.eqp_HorseHarness);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
+            }
         }
     }
     void WriteMainEquipment(XmlWriter BNXmlWriter, EquipmentSet equip)
     {
 
-
-        if (equip.eqp_Item0 != "")
+        if (equip != null)
         {
-            var item_id = equip.eqp_Item0;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            if (equip.eqp_Item0 != "")
+            {
+                var item_id = equip.eqp_Item0;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item0");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item0");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Item1 != "")
-        {
-            var item_id = equip.eqp_Item1;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Item1 != "")
+            {
+                var item_id = equip.eqp_Item1;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item1");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item1");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Item2 != "")
-        {
-            var item_id = equip.eqp_Item2;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Item2 != "")
+            {
+                var item_id = equip.eqp_Item2;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item2");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item2");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Item3 != "")
-        {
-            var item_id = equip.eqp_Item3;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Item3 != "")
+            {
+                var item_id = equip.eqp_Item3;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Item3");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Item3");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Head != "")
-        {
-            var item_id = equip.eqp_Head;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Head != "")
+            {
+                var item_id = equip.eqp_Head;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Head");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Head");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Body != "")
-        {
-            var item_id = equip.eqp_Body;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Body != "")
+            {
+                var item_id = equip.eqp_Body;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Body");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Body");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Cape != "")
-        {
-            var item_id = equip.eqp_Cape;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Cape != "")
+            {
+                var item_id = equip.eqp_Cape;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Cape");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Cape");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Gloves != "")
-        {
-            var item_id = equip.eqp_Gloves;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Gloves != "")
+            {
+                var item_id = equip.eqp_Gloves;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Gloves");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Gloves");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Leg != "")
-        {
-            var item_id = equip.eqp_Leg;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Leg != "")
+            {
+                var item_id = equip.eqp_Leg;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Leg");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Leg");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_Horse != "")
-        {
-            var item_id = equip.eqp_Horse;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_Horse != "")
+            {
+                var item_id = equip.eqp_Horse;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "Horse");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "Horse");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
-        }
-        if (equip.eqp_HorseHarness != "")
-        {
-            var item_id = equip.eqp_HorseHarness;
-            if (!item_id.Contains("Item."))
-                item_id = "Item." + item_id;
+            }
+            if (equip.eqp_HorseHarness != "")
+            {
+                var item_id = equip.eqp_HorseHarness;
+                if (!item_id.Contains("Item."))
+                    item_id = "Item." + item_id;
 
-            BNXmlWriter.WriteStartElement("Equipment");
+                BNXmlWriter.WriteStartElement("Equipment");
 
-            CheckAndWriteAttribute(BNXmlWriter, "slot", "HorseHarness");
-            CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
+                CheckAndWriteAttribute(BNXmlWriter, "slot", "HorseHarness");
+                CheckAndWriteAttribute(BNXmlWriter, "id", item_id);
 
-            BNXmlWriter.WriteFullEndElement();
+                BNXmlWriter.WriteFullEndElement();
 
+            }
         }
     }
 
