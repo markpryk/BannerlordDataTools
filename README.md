@@ -18,13 +18,13 @@ The main goal is speedup the development procces and make it more comfortable an
 ---------------------------------------------
 
 #### Releases
-##### latest version: 0.0.55.10b -- 15 April 2022 
+##### latest version: 0.0.56b -- 30 April 2022 
 ##### - [Changelog (Discord server)](https://discord.gg/Fz7GQA6C9K)
 ---------------------------------------------
 
 #### Links
 ##### - [BDT Official Discord](https://discord.gg/Fz7GQA6C9K)
-##### - [Taleworlds Modding Discord](https://discord.gg/ZKtkdmxY)
+##### - [Taleworlds Modding Discord](https://discord.gg/ykFVJGQ)
 ##### - [BDT TW forums thread](https://forums.taleworlds.com/index.php?threads/bannerlorddatatools-0-0-55-5b-update.451014/)
 ##### - [Taleworlds Modding forums](https://forums.taleworlds.com/index.php?pages/modding/)
 

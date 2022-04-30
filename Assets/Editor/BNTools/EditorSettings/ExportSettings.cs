@@ -20,6 +20,7 @@ public class ExportSettings : ScriptableObject
 
     public bool exportDataToScene;
     public bool createEntities;
+    public bool centerIconCapsules;
     public bool createHigtMapData;
     public bool settlToZero;
 }

@@ -119,7 +119,7 @@ public class BNDataExporter : EditorWindow
             expSettings.createEntities = EditorGUILayout.Toggle("Create entities for inexistent settlements", expSettings.createEntities, GUILayout.Width(256));
             // expSettings.createEntities = EditorGUILayout.Toggle("Remove entities if not exist data", expSettings.createEntities, GUILayout.Width(256));
             expSettings.exportDataToScene = EditorGUILayout.Toggle("Update Settlements positions", expSettings.exportDataToScene, GUILayout.Width(256));
-
+            expSettings.centerIconCapsules = EditorGUILayout.Toggle("Find centroid for Icon Capsules", expSettings.centerIconCapsules, GUILayout.Width(256));
 
             if (exported_Mod.W_HeightMap_Texture != "")
             {
@@ -204,12 +204,11 @@ public class BNDataExporter : EditorWindow
                         WriteTranslationStrings();
 
 
+                    if (expSettings.centerIconCapsules)
+                        WriteIconCapsulesPositions();
+
                     if (expSettings.exportDataToScene)
                         WriteSettlementsPositions();
-
-                    if (expSettings.settlToZero)
-                        ResetSettlementsZ();
-
 
                     //write version data to submodule.xml
                     var sub_modules_path = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SubModule.xml";
@@ -244,14 +243,51 @@ public class BNDataExporter : EditorWindow
         }
     }
 
-    private void ResetSettlementsZ()
+    //private void ResetSettlementsZ()
+    //{
+    //    string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene";
+
+
+    //    XmlDocument Doc = new XmlDocument();
+    //    // UTF 8 - 16
+
+    //    Doc.Load(pathScene);
+
+    //    XmlElement Root = Doc.DocumentElement;
+    //    XmlNodeList XNL = Root.ChildNodes;
+
+    //    List<string> eqpSlots = new List<string>();
+
+    //    foreach (XmlNode node in Root.ChildNodes)
+    //    {
+    //        if (node.LocalName == "entities")
+    //        {
+    //            foreach (XmlNode nodeChild in node.ChildNodes)
+    //            {
+    //                if (nodeChild.LocalName == "game_entity" && nodeChild.ChildNodes[0].Attributes["position"] != null)
+    //                {
+    //                    var vec3 = StringToVector3(nodeChild.ChildNodes[0].Attributes["position"].Value);
+    //                    vec3 = new Vector3(vec3.x, vec3.y, 0.0f);
+
+    //                    var val = vec3.ToString().Replace("(", "");
+    //                    val = val.Replace(")", "");
+    //                    nodeChild.ChildNodes[0].Attributes["position"].Value = val;
+
+    //                }
+    //            }
+
+    //        }
+    //    }
+
+    //    Doc.Save(pathScene);
+    //}
+
+    private void WriteIconCapsulesPositions()
     {
+
         string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene";
-
-
         XmlDocument Doc = new XmlDocument();
         // UTF 8 - 16
-
         Doc.Load(pathScene);
 
         XmlElement Root = Doc.DocumentElement;
@@ -265,22 +301,98 @@ public class BNDataExporter : EditorWindow
             {
                 foreach (XmlNode nodeChild in node.ChildNodes)
                 {
-                    if (nodeChild.LocalName == "game_entity" && nodeChild.ChildNodes[0].Attributes["position"] != null)
-                    {
-                        var vec3 = StringToVector3(nodeChild.ChildNodes[0].Attributes["position"].Value);
-                        vec3 = new Vector3(vec3.x, vec3.y, 0.0f);
-
-                        var val = vec3.ToString().Replace("(", "");
-                        val = val.Replace(")", "");
-                        nodeChild.ChildNodes[0].Attributes["position"].Value = val;
-
-                    }
+                    ReadCapsuleEntitesNodeTree(nodeChild);
                 }
 
             }
         }
 
         Doc.Save(pathScene);
+    }
+    void ReadCapsuleEntitesNodeTree(XmlNode input_node)
+    {
+        if (input_node.LocalName == "game_entity")
+        {
+            if (input_node.Attributes["name"] != null && input_node.Attributes["name"].Value.Contains("campaign_icon_capsule"))
+            {
+                List<Vector3> vectors = new List<Vector3>();
+                float capsule_z = 0;
+                foreach (XmlNode capsule_nodes in input_node.ChildNodes)
+                {
+                    if (capsule_nodes.LocalName == "transform")
+                        capsule_z = StringToVector3(capsule_nodes.Attributes["position"].Value).z;
+                }
+
+                foreach (XmlNode capsule_nodes in input_node.ChildNodes)
+                {
+                    if (capsule_nodes.LocalName == "children")
+                        foreach (XmlNode chld_entity in capsule_nodes.ChildNodes)
+                        {
+                            if (input_node.Attributes["name"] != null)
+                            {
+                                var settlName = input_node.Attributes["name"].Value;
+
+                                foreach (var settl in exported_Mod.modFilesData.settlementsData.settlements)
+                                {
+                                    if (settl.id == settlName)
+                                    {
+                                        Vector3 vec3 = new Vector3(float.Parse(settl.posX), float.Parse(settl.posY), capsule_z);
+                                        vectors.Add(vec3);
+                                    }
+                                }
+                            }
+                        }
+                }
+
+                if (vectors.Count > 0)
+                {
+
+                    Vector3 centroid = FindCentroid(vectors);
+
+                    foreach (XmlNode capsule_nodes in input_node.ChildNodes)
+                    {
+                        if (capsule_nodes.LocalName == "transform")
+                        {
+                            var val = centroid.ToString().Replace("(", "");
+                            val = val.Replace(")", "");
+                            capsule_nodes.Attributes["position"].Value = val;
+                        }
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    private Vector3 FindCentroid(List<Vector3> targets)
+    {
+
+        Vector3 centroid;
+        Vector3 Point = targets[0];
+        Vector3 maxPoint = targets[0];
+
+        for (int i = 1; i < targets.Count; i++)
+        {
+            Vector3 pos = targets[i];
+            if (pos.x < Point.x)
+                Point.x = pos.x;
+            if (pos.x > maxPoint.x)
+                maxPoint.x = pos.x;
+            if (pos.y < Point.y)
+                Point.y = pos.y;
+            if (pos.y > maxPoint.y)
+                maxPoint.y = pos.y;
+            if (pos.z < Point.z)
+                Point.z = pos.z;
+            if (pos.z > maxPoint.z)
+                maxPoint.z = pos.z;
+        }
+
+        centroid = Point + 0.5f * (maxPoint - Point);
+
+        return centroid;
+
     }
 
     private void WriteSettlementsPositions()
@@ -298,7 +410,6 @@ public class BNDataExporter : EditorWindow
 
         for (int i = 0; i < exported_Mod.modFilesData.settlementsData.settlements.Count; i++)
         {
-
             var SList = exported_Mod.modFilesData.settlementsData.settlements;
             foreach (XmlNode node in Root.ChildNodes)
             {
@@ -306,30 +417,7 @@ public class BNDataExporter : EditorWindow
                 {
                     foreach (XmlNode nodeChild in node.ChildNodes)
                     {
-                        if (nodeChild.Attributes["name"] != null)
-                        {
-
-                            if (nodeChild.LocalName == "game_entity" && nodeChild.Attributes["name"].Value == SList[i].id && nodeChild.ChildNodes[0].Attributes["position"] != null)
-                            {
-                                var vec3 = StringToVector3(nodeChild.ChildNodes[0].Attributes["position"].Value);
-
-                                if (exported_Mod.modFilesData.exportSettings.createHigtMapData)
-                                {
-                                    float Z = GetHightMapData(vec3).z;
-                                    vec3 = new Vector3(float.Parse(SList[i].posX), float.Parse(SList[i].posY), Z);
-                                }
-                                else
-                                    vec3 = new Vector3(float.Parse(SList[i].posX), float.Parse(SList[i].posY), vec3.z);
-
-
-                                var val = vec3.ToString().Replace("(", "");
-                                val = val.Replace(")", "");
-                                nodeChild.ChildNodes[0].Attributes["position"].Value = val;
-
-                                // Debug.Log(nodeChild.Attributes["name"].Value);
-
-                            }
-                        }
+                        ReadSettlementEntitesNodeTree(nodeChild, SList[i]);
                     }
 
                 }
@@ -341,6 +429,62 @@ public class BNDataExporter : EditorWindow
     }
 
 
+    void ReadSettlementEntitesNodeTree(XmlNode input_node, Settlement sttl)
+    {
+        if (input_node.LocalName == "game_entity")
+        {
+            if (input_node.Attributes["name"] != null && input_node.Attributes["name"].Value == sttl.id)
+            {
+                var capsule_vec3 = Vector3.zero;
+
+                foreach (XmlNode capsuleTRSNode in input_node.ParentNode.ParentNode.ChildNodes)
+                {
+                    if (capsuleTRSNode.LocalName == "transform")
+                    {
+                        capsule_vec3 = StringToVector3(capsuleTRSNode.Attributes["position"].Value);
+                    }
+                }
+
+                foreach (XmlNode trs_node in input_node.ChildNodes)
+                {
+                    if (trs_node.LocalName == "transform")
+                    {
+                        var vec3 = StringToVector3(trs_node.Attributes["position"].Value);
+
+                        if (exported_Mod.modFilesData.exportSettings.createHigtMapData)
+                        {
+                            float Z = GetHightMapData(vec3).z;
+                            vec3 = new Vector3(float.Parse(sttl.posX), float.Parse(sttl.posY), Z);
+                        }
+                        else if (exported_Mod.modFilesData.exportSettings.settlToZero)
+                        {
+                            vec3 = new Vector3(float.Parse(sttl.posX), float.Parse(sttl.posY), 0.0f);
+                        }
+                        else
+                            vec3 = new Vector3(float.Parse(sttl.posX), float.Parse(sttl.posY), vec3.z);
+
+                        vec3 = new Vector3(vec3.x - capsule_vec3.x, vec3.y - capsule_vec3.y, vec3.z - capsule_vec3.z);
+
+                        var val = vec3.ToString().Replace("(", "");
+                        val = val.Replace(")", "");
+                        trs_node.Attributes["position"].Value = val;
+                        return;
+                    }
+                }
+            }
+            else if (input_node.ChildNodes.Count > 0)
+            {
+                foreach (XmlNode chldNode in input_node.ChildNodes)
+                {
+                    if (chldNode.LocalName == "children")
+                        foreach (XmlNode chld_entity in chldNode.ChildNodes)
+                            ReadSettlementEntitesNodeTree(chld_entity, sttl);
+                }
+
+            }
+        }
+
+    }
 
     public Vector3 GetHightMapData(Vector3 inputPos)
     {
@@ -1594,40 +1738,47 @@ public class BNDataExporter : EditorWindow
 
             BNXmlWriter.WriteStartElement("relationships");
 
-            int i = 0;
-            foreach (var rel in kingd.relationships)
+            if (kingd.relationships != null && kingd.relationships.Length > 0)
             {
-                if (rel != "")
+                int i = 0;
+                foreach (var rel in kingd.relationships)
                 {
-                    BNXmlWriter.WriteStartElement("relationship");
+                    if (rel != "")
+                    {
+                        BNXmlWriter.WriteStartElement("relationship");
 
-                    CheckAndWriteAttribute(BNXmlWriter, "kingdom", kingd.relationships[i]);
-                    CheckAndWriteAttribute(BNXmlWriter, "value", kingd.relationValues[i]);
-                    CheckAndWriteAttribute(BNXmlWriter, "isAtWar", kingd.relationsAtWar[i]);
+                        CheckAndWriteAttribute(BNXmlWriter, "kingdom", kingd.relationships[i]);
+                        CheckAndWriteAttribute(BNXmlWriter, "value", kingd.relationValues[i]);
+                        CheckAndWriteAttribute(BNXmlWriter, "isAtWar", kingd.relationsAtWar[i]);
 
-                    BNXmlWriter.WriteFullEndElement();
+                        BNXmlWriter.WriteFullEndElement();
 
+                    }
+                    i++;
                 }
-                i++;
             }
 
 
             BNXmlWriter.WriteFullEndElement();
             BNXmlWriter.WriteStartElement("policies");
 
-            i = 0;
-            foreach (var pol in kingd.policies)
+            if (kingd.policies != null && kingd.policies.Length > 0)
             {
-                if (pol != "")
+
+                int i = 0;
+                foreach (var pol in kingd.policies)
                 {
-                    BNXmlWriter.WriteStartElement("policy");
+                    if (pol != "")
+                    {
+                        BNXmlWriter.WriteStartElement("policy");
 
-                    CheckAndWriteAttribute(BNXmlWriter, "id", kingd.policies[i]);
+                        CheckAndWriteAttribute(BNXmlWriter, "id", kingd.policies[i]);
 
-                    BNXmlWriter.WriteFullEndElement();
+                        BNXmlWriter.WriteFullEndElement();
 
+                    }
+                    i++;
                 }
-                i++;
             }
 
 
@@ -1750,7 +1901,7 @@ public class BNDataExporter : EditorWindow
                 int i = 0;
                 foreach (var val in npc.skills)
                 {
-                    if (val!= null && val != "")
+                    if (val != null && val != "")
                     {
                         BNXmlWriter.WriteStartElement("skill");
 
@@ -1767,7 +1918,7 @@ public class BNDataExporter : EditorWindow
 
                 BNXmlWriter.WriteStartElement("Traits");
                 // Check 18+
-                if (int.Parse(npc.age) > 17)
+                if (npc.age != "" && int.Parse(npc.age) > 17)
                 {
                     i = 0;
                     foreach (var val in npc.traits)
