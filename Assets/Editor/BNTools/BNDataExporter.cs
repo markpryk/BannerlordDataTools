@@ -76,23 +76,68 @@ public class BNDataExporter : EditorWindow
         EditorUtility.SetDirty(expSettings);
 
         if (exported_Mod.modFilesData.culturesData.cultures.Count != 0)
-            expSettings.Culture_xml_name = EditorGUILayout.TextField("Cultures", expSettings.Culture_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.Culture_xml_name = EditorGUILayout.TextField("Cultures", expSettings.Culture_xml_name, GUILayout.Width(320));
+            expSettings.export_cult = EditorGUILayout.Toggle(expSettings.export_cult);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.factionsData.factions.Count != 0)
-            expSettings.Faction_xml_name = EditorGUILayout.TextField("Factions", expSettings.Faction_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.Faction_xml_name = EditorGUILayout.TextField("Factions", expSettings.Faction_xml_name, GUILayout.Width(320));
+            expSettings.export_fac = EditorGUILayout.Toggle( expSettings.export_fac);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.kingdomsData.kingdoms.Count != 0)
-            expSettings.Kingdom_xml_name = EditorGUILayout.TextField("Kingdoms", expSettings.Kingdom_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.Kingdom_xml_name = EditorGUILayout.TextField("Kingdoms", expSettings.Kingdom_xml_name, GUILayout.Width(320));
+            expSettings.export_kingd = EditorGUILayout.Toggle(expSettings.export_kingd);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.heroesData.heroes.Count != 0)
-            expSettings.Hero_xml_name = EditorGUILayout.TextField("Heroes", expSettings.Hero_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.Hero_xml_name = EditorGUILayout.TextField("Heroes", expSettings.Hero_xml_name, GUILayout.Width(320));
+            expSettings.export_hero = EditorGUILayout.Toggle(expSettings.export_hero);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0)
-            expSettings.NPCCharacter_xml_name = EditorGUILayout.TextField("NPCCharacters", expSettings.NPCCharacter_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.NPCCharacter_xml_name = EditorGUILayout.TextField("NPC Characters", expSettings.NPCCharacter_xml_name, GUILayout.Width(320));
+            expSettings.export_npc = EditorGUILayout.Toggle(expSettings.export_npc);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.itemsData.items.Count != 0)
-            expSettings.Item_xml_name = EditorGUILayout.TextField("Items", expSettings.Item_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.Item_xml_name = EditorGUILayout.TextField("Items", expSettings.Item_xml_name, GUILayout.Width(320));
+            expSettings.export_item = EditorGUILayout.Toggle(expSettings.export_item);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0)
-            expSettings.PartyTemplate_xml_name = EditorGUILayout.TextField("Party Templates", expSettings.PartyTemplate_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.PartyTemplate_xml_name = EditorGUILayout.TextField("Party Templates", expSettings.PartyTemplate_xml_name, GUILayout.Width(320));
+            expSettings.export_pt = EditorGUILayout.Toggle(expSettings.export_pt);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0)
-            expSettings.Settlement_xml_name = EditorGUILayout.TextField("Settlements", expSettings.Settlement_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.Settlement_xml_name = EditorGUILayout.TextField("Settlements", expSettings.Settlement_xml_name, GUILayout.Width(320));
+            expSettings.export_settl = EditorGUILayout.Toggle(expSettings.export_settl);
+            GUILayout.EndHorizontal();
+        }
         if (exported_Mod.modFilesData.equipmentsData.equipmentSets.Count != 0)
-            expSettings.EquipmentSet_xml_name = EditorGUILayout.TextField("EquipmentSets", expSettings.EquipmentSet_xml_name);
+        {
+            GUILayout.BeginHorizontal();
+            expSettings.EquipmentSet_xml_name = EditorGUILayout.TextField("Equipment Sets", expSettings.EquipmentSet_xml_name, GUILayout.Width(320));
+            expSettings.export_equip = EditorGUILayout.Toggle(expSettings.export_equip);
+            GUILayout.EndHorizontal();
+        }
 
         DrawUILine(colUILine, 3, 12);
 
@@ -182,23 +227,23 @@ public class BNDataExporter : EditorWindow
                     //     Directory.CreateDirectory(export_path + exported_Mod.id);
                     // }
 
-                    if (exported_Mod.modFilesData.factionsData.factions.Count != 0)
+                    if (exported_Mod.modFilesData.factionsData.factions.Count != 0 && expSettings.export_fac)
                         WriteFactionAssets();
-                    if (exported_Mod.modFilesData.culturesData.cultures.Count != 0)
+                    if (exported_Mod.modFilesData.culturesData.cultures.Count != 0 && expSettings.export_cult)
                         WriteCulturesAssets();
-                    if (exported_Mod.modFilesData.heroesData.heroes.Count != 0)
+                    if (exported_Mod.modFilesData.heroesData.heroes.Count != 0 && expSettings.export_hero)
                         WriteHeroAsset();
-                    if (exported_Mod.modFilesData.itemsData.items.Count != 0)
+                    if (exported_Mod.modFilesData.itemsData.items.Count != 0 && expSettings.export_item)
                         WriteItemAsset();
-                    if (exported_Mod.modFilesData.kingdomsData.kingdoms.Count != 0)
+                    if (exported_Mod.modFilesData.kingdomsData.kingdoms.Count != 0 && expSettings.export_kingd)
                         WriteKingdomAsset();
-                    if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0)
+                    if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0 && expSettings.export_npc)
                         WriteNPCAsset();
-                    if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0)
+                    if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0 && expSettings.export_pt)
                         WritePartyTemplateAsset();
-                    if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0)
+                    if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0 && expSettings.export_settl)
                         WriteSettlementAsset();
-                    if (exported_Mod.modFilesData.equipmentsData.equipmentSets.Count != 0)
+                    if (exported_Mod.modFilesData.equipmentsData.equipmentSets.Count != 0 && expSettings.export_equip)
                         WriteEquipmentAsset();
                     if (exported_Mod.modFilesData.translationData.translationStrings.Count != 0)
                         WriteTranslationStrings();
@@ -3065,8 +3110,12 @@ public class BNDataExporter : EditorWindow
             CheckAndWriteAttribute(BNXmlWriter, "prosperity", settl.prosperity);
             CheckAndWriteAttribute(BNXmlWriter, "posX", settl.posX);
             CheckAndWriteAttribute(BNXmlWriter, "posY", settl.posY);
-            CheckAndWriteAttribute(BNXmlWriter, "gate_posX", settl.gate_posX);
-            CheckAndWriteAttribute(BNXmlWriter, "gate_posY", settl.gate_posY);
+
+            if (settl.gate_posX != "0" && settl.gate_posY != "0")
+            {
+                CheckAndWriteAttribute(BNXmlWriter, "gate_posX", settl.gate_posX);
+                CheckAndWriteAttribute(BNXmlWriter, "gate_posY", settl.gate_posY);
+            }
 
             CheckAndWriteAttribute(BNXmlWriter, "text", settl.text);
 
@@ -3074,12 +3123,13 @@ public class BNDataExporter : EditorWindow
             {
                 CheckAndWriteAttribute(BNXmlWriter, "type", "Hideout");
             }
+            
 
             // BNXmlWriter.WriteFullEndElement();
 
             WriteSettlementComponents(BNXmlWriter, settl);
 
-            if (settl.AREA_name.Length != 0)
+            if (settl.AREA_name != null && settl.AREA_name.Length != 0)
             {
                 BNXmlWriter.WriteStartElement("CommonAreas");
 

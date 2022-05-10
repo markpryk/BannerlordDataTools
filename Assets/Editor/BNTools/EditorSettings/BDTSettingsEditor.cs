@@ -11,7 +11,7 @@ using XNode;
 using System.Data;
 using System.Windows;
 using System.Threading.Tasks;
- using System.Reflection;
+using System.Reflection;
 
 public class BDTSettingsEditor : EditorWindow
 {
@@ -19,7 +19,7 @@ public class BDTSettingsEditor : EditorWindow
     //bool write_debug_data_log = false;
     //bool assign_definitions = true;
 
-    public string BDT_Version = "0.0.56b";
+    public string BDT_Version = "0.0.57b";
     public string BN_Version_compatibility = "e1.7.2";
 
     /// <summary>
@@ -126,6 +126,13 @@ public class BDTSettingsEditor : EditorWindow
                 EditorGUILayout.HelpBox(" Native Data Loaded ✔ ", MessageType.None);
                 DrawUILine(colUILine, 1, 4);
 
+                //if (GUILayout.Button("Reimport Native Definitions Data"))
+                //{
+                //    ImportBannerlordNativeDefinitions(false);
+                //}
+
+                //DrawUILine(colUILine, 1, 4);
+
                 if (GUILayout.Button("Load BDT Layout"))
                 {
                     UnityEditor.EditorUtility.LoadWindowLayout("Assets/Settings/BDT_UnityLayout.wlt");
@@ -170,6 +177,9 @@ public class BDTSettingsEditor : EditorWindow
         }
         // write complex - area  / location
         WriteSettlementsComplexData();
+
+        // World Map Production Icons
+        WorldMapIcons();
 
         // Lenguage
         // EN - ES
@@ -236,6 +246,10 @@ public class BDTSettingsEditor : EditorWindow
         //AssetDatabase.Refresh();
     }
 
+    public void WorldMapIcons()
+    {
+        settingsAsset.AssignWorldMapProductionIcons();
+    }
     public void WriteSettlementsComplexData()
     {
         EditorUtility.SetDirty(settingsAsset.LocationComplexTemplateDefinitions[0]);

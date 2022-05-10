@@ -15,6 +15,16 @@ public class ExportSettings : ScriptableObject
     public string Item_xml_name = "items.xml";
     public string EquipmentSet_xml_name = "equipment_sets.xml";
 
+    public bool export_cult = true;
+    public bool export_fac = true;
+    public bool export_hero = true;
+    public bool export_kingd = true;
+    public bool export_npc = true;
+    public bool export_pt = true;
+    public bool export_settl = true;
+    public bool export_item = true;
+    public bool export_equip = true;
+
     public bool checkOverrides;
     public bool createBackUp;
 

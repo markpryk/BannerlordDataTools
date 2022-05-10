@@ -36,6 +36,14 @@ class WorldMapPositionsManager : EditorWindow
     public Color colorBoundCurve = Color.black;
     public bool drawCurves = false;
 
+    //Production
+    bool show_production = true;
+
+    //Names
+    bool show_labels = true;
+    public Color colorNaming = Color.black;
+    public bool customNamesColor = false;
+
     // public int W_cell_res = 256;
     public Vector2 WorldDimension;
 
@@ -99,7 +107,6 @@ class WorldMapPositionsManager : EditorWindow
 
     void OnGUI()
     {
-
         if (loadSettings == false)
         {
             if (settingsAsset == null)
@@ -119,6 +126,9 @@ class WorldMapPositionsManager : EditorWindow
                 currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
 
             }
+
+            if (settingsAsset.VillageTypesSprites == null || settingsAsset.VillageTypesSprites.Length == 0)
+                settingsAsset.AssignWorldMapProductionIcons();
         }
 
         // W_res = EditorGUILayout.IntField("World Resolution", W_res);
@@ -132,7 +142,6 @@ class WorldMapPositionsManager : EditorWindow
                 if (Event.current.button == 2 && Event.current.type == EventType.MouseDrag)
                 {
                     // EditorGUIUtility.AddCursorRect(scrollViewRect, MouseCursor.Orbit);
-
                     scrollPosMap += -Event.current.delta;
                     Event.current.Use();
                 }
@@ -172,7 +181,6 @@ class WorldMapPositionsManager : EditorWindow
         if (EditorGUI.EndChangeCheck())
         {
             W_res = 1024 * (resValue * 5);
-            // scrollPosition = new Vector2(1440 / 2, 904 / 2);
         }
 
         EditorGUILayout.Space(4);
@@ -182,12 +190,18 @@ class WorldMapPositionsManager : EditorWindow
         EditorGUILayout.LabelField("Icon Sizes", EditorStyles.boldLabel);
         ico_sizes = EditorGUILayout.Slider(ico_sizes, 0, 1, GUILayout.Width(300));
 
-        var textDimensions = GUI.skin.label.CalcSize(new GUIContent("Bounds Curves "));
+        var textDimensions = GUI.skin.label.CalcSize(new GUIContent("Use Names Color: "));
         EditorGUIUtility.labelWidth = textDimensions.x;
 
         EditorGUILayout.LabelField("Bounds Curves", EditorStyles.boldLabel);
-        drawCurves = EditorGUILayout.Toggle("Visualize", drawCurves);
-        colorBoundCurve = EditorGUILayout.ColorField("Curves Color", colorBoundCurve, GUILayout.Width(160));
+        drawCurves = EditorGUILayout.Toggle("Visualize:", drawCurves);
+        colorBoundCurve = EditorGUILayout.ColorField("Curves Color:", colorBoundCurve, GUILayout.Width(160));
+        EditorGUILayout.LabelField("Draw Data", EditorStyles.boldLabel);
+        show_production = EditorGUILayout.Toggle("Show Production:", show_production);
+        show_labels = EditorGUILayout.Toggle("Show Names:", show_labels);
+        customNamesColor = EditorGUILayout.Toggle("Use Names Color:", customNamesColor);
+        colorNaming = EditorGUILayout.ColorField("Names Color:", colorNaming, GUILayout.Width(160));
+
 
         // EditorGUILayout.Space(32);
         DrawUILine(colUILine, 3, 12);
@@ -357,7 +371,7 @@ class WorldMapPositionsManager : EditorWindow
 
         EditorGUILayout.EndHorizontal();
 
-        var factionsRect = new Rect(16, 256, 288, 512);
+        var factionsRect = new Rect(16, 360, 288, 512);
 
         ColorUtility.TryParseHtmlString("#282828", out colMenu);
 
@@ -798,7 +812,10 @@ class WorldMapPositionsManager : EditorWindow
 
     private void DrawSettlement(int i)
     {
+        var soloName = SList[i].settlementName;
+        RemoveTSString(ref soloName);
 
+        colorNaming = colorNaming * 3;
         var guiBGTextureOrg = GUI.skin.button.normal.background;
 
         float X = 512;
@@ -835,7 +852,7 @@ class WorldMapPositionsManager : EditorWindow
             }
 
             //EditorGUIUtility.PingObject(SList[i]);
-            
+
         }
         if (buttonPressed && Event.current.type == EventType.MouseDrag)
         {
@@ -867,9 +884,23 @@ class WorldMapPositionsManager : EditorWindow
                 buttonRectStroke = new Rect(buttonRect.x - (i_size / 2), buttonRect.y - (i_size / 2), buttonRect.width + 4, buttonRect.height + 4);
                 GUI.Button(buttonRectStroke, new GUIContent(""));
 
+                //GUI.skin.button.normal.background = ico_castle;
+
+                if (show_labels)
+                {
+                    if (customNamesColor)
+                        GUI.color = colorNaming;
+                    else
+                        GUI.color = SColorB[i] * 4;
+
+                    var style = new GUIStyle(EditorStyles.boldLabel);
+                    style.fontSize = (int)(20 * ico_sizes);
+                    var labelRect = new Rect(X + (i_size * 0.8f), (Y - 30) + W_res, 200, 64);
+                    GUI.Label(labelRect, soloName, style);
+                }
+
                 GUI.color = SColorB[i] * 4;
 
-                GUI.skin.button.normal.background = ico_castle;
             }
             if (show_castle && SList[i].isCastle)
             {
@@ -880,8 +911,22 @@ class WorldMapPositionsManager : EditorWindow
                 buttonRectStroke = new Rect(buttonRect.x - (i_size / 2), buttonRect.y - (i_size / 2), buttonRect.width + 4, buttonRect.height + 4);
                 GUI.Button(buttonRectStroke, new GUIContent(""));
 
+                if (show_labels)
+                {
+                    if (customNamesColor)
+                        GUI.color = colorNaming;
+                    else
+                        GUI.color = SColorB[i] * 3;
+
+
+                    var style = new GUIStyle(EditorStyles.miniBoldLabel);
+                    style.fontSize = (int)(18 * ico_sizes);
+                    var labelRect = new Rect(X + i_size, (Y - 9) + W_res, 200, 64);
+                    GUI.Label(labelRect, soloName, style);
+                }
 
                 GUI.color = SColorB[i] * 3;
+
 
             }
             if (show_village && SList[i].isVillage)
@@ -893,29 +938,97 @@ class WorldMapPositionsManager : EditorWindow
                 buttonRectStroke = new Rect(buttonRect.x - (i_size / 2), buttonRect.y - (i_size / 2), buttonRect.width + 4, buttonRect.height + 4);
                 GUI.Button(buttonRectStroke, new GUIContent(""));
 
+                if (show_production)
+                {
+                    DrawProduction(SList[i], X, Y);
+                }
+
+
+                if (show_labels)
+                {
+                    if (customNamesColor)
+                        GUI.color = colorNaming;
+                    else
+                        GUI.color = SColorB[i] * 2;
+
+                    var style = new GUIStyle(EditorStyles.miniBoldLabel);
+                    style.fontSize = (int)(14 * ico_sizes);
+                    var labelRect = new Rect(X + i_size, (Y - 7) + W_res, 200, 64);
+                    GUI.Label(labelRect, soloName, style);
+                }
+
                 GUI.color = SColorB[i] * 2;
+
             }
             if (show_hideout && SList[i].isHideout)
             {
                 i_size = 16 * ico_sizes;
                 buttonRect = new Rect(X, Y + W_res, i_size, i_size);
+
+                if (show_labels)
+                {
+                    if (customNamesColor)
+                        GUI.color = colorNaming;
+                    else
+                        GUI.color = Color.red * 3;
+
+                    var style = new GUIStyle(EditorStyles.miniBoldLabel);
+                    style.fontSize = (int)(16 * ico_sizes);
+                    var labelRect = new Rect(X + i_size, (Y - 8) + W_res, 200, 64);
+                    GUI.Label(labelRect, soloName, style);
+                }
+
                 GUI.color = Color.red * 3;
+
             }
         }
-        else if(show_other)
+        else if (show_other)
         {
             i_size = 32 * ico_sizes;
             buttonRect = new Rect(X, Y + W_res, i_size, i_size);
+
+            if (show_labels)
+            {
+                if (customNamesColor)
+                    GUI.color = colorNaming;
+                else
+                    GUI.color = Color.gray * 3;
+
+                var style = new GUIStyle(EditorStyles.boldLabel);
+                style.fontSize = (int)(20 * ico_sizes);
+                var labelRect = new Rect(X + i_size, (Y - 16) + W_res, 200, 64);
+                GUI.Label(labelRect, soloName, style);
+            }
+
             GUI.color = Color.gray * 3;
+
         }
 
-        var soloName = SList[i].settlementName;
-        RemoveTSString(ref soloName);
         GUI.Button(new Rect(buttonRect.x - (i_size / 2) - (buttonRect.x - buttonRect.x - 2), buttonRect.y - (i_size / 2) - (buttonRect.y - buttonRect.y - 2), buttonRect.width, buttonRect.height), new GUIContent("", soloName));
 
         GUI.skin.button.normal.background = guiBGTextureOrg;
 
+    }
 
+    private void DrawProduction(Settlement settl, float X, float Y)
+    {
+        GUI.color = Color.white;
+
+        var prd_size = 30 * ico_sizes;
+        var prd_rect = new Rect(X, (Y - prd_size) + W_res, prd_size, prd_size);
+        //GUI.Button(prd_rect, new GUIContent(settingsAsset.VillageTypesSprites[0].texture));
+
+        int spriteIndex = 0;
+        for (spriteIndex = 0; spriteIndex < settingsAsset.VillagesTypeDefinitions.Length; spriteIndex++)
+        {
+            if (settingsAsset.VillagesTypeDefinitions[spriteIndex] == settl.CMP_villageType.Replace("VillageType.", ""))
+                break;
+        }
+
+        if (settingsAsset.VillageTypesSprites[spriteIndex] != null)
+            GUI.DrawTexture(prd_rect, settingsAsset.VillageTypesSprites[spriteIndex].texture);
+        else
+            GUI.DrawTexture(prd_rect, settingsAsset.VillageTypesSprites[0].texture);
     }
 
     private static void RemoveTSString(ref string inputString)
@@ -1115,7 +1228,7 @@ class WorldMapPositionsManager : EditorWindow
 
             if (settlement.owner == "" || !current_fac_ids.Contains(settlement.owner.Replace("Faction.", "")))
             {
-                if(settlement.isVillage)
+                if (settlement.isVillage)
                 {
                     var bound = settlement.CMP_bound.Replace("Settlement.", "");
                     //Debug.Log(bound);
