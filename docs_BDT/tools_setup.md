@@ -6,6 +6,7 @@ First at all you need to install anyone Unity3D version 2018+ (I am using now 20
 #### - Best practice is using [UnityHub](https://unity3d.com/get-unity/download)
 
 Download or clone repository.
+
 ![ScreenShot](Images/setup/download_version.png)
 
 ### Step 2

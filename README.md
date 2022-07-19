@@ -1,5 +1,5 @@
 
-![ScreenShot](Images/BDT_Header.png)
+![ScreenShot](docs_BDT/Images/BDT_Header.png)
 
 #### What Is BDT?
 
