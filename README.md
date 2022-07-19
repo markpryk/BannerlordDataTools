@@ -1,4 +1,4 @@
-# BannerlordDataTools
+![ScreenShot](Images/BDT_Header.png)
 
 #### What Is BDT?
 
@@ -12,13 +12,14 @@ Load .XML data by one click and modify it, including they links and dependencies
 
 #### What is the goal of this project? 
 
-Originally made it for my personal mod as student project, but after some revisions i'm decide make it public in new release branch, for all modding community. 
 The main goal is speedup the development procces and make it more comfortable and easy, for each modder.
+This tool give a possibility to have a project with the moddable data, this facilite the managing of modding procces, and intersection and sharing of data resources happens in one place.
 
 ---------------------------------------------
 
 #### Releases
-##### latest version: 0.0.57b -- 10 May 2022 
+##### latest version: 0.0.58b -- 10 May 2022 
+##### Bannerlord version compatibility: e1.8.0 
 ##### - [Changelog (Discord server)](https://discord.gg/Fz7GQA6C9K)
 ---------------------------------------------
 

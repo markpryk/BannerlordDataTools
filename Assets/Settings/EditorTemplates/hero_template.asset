@@ -16,10 +16,22 @@ MonoBehaviour:
   XmlFileName: 
   id: hero_template_0
   alive: false
-  is_noble: false
   faction: 
   banner_key: 
   father: 
   mother: 
   spouse: 
   text: HERO Description Placeholder
+  preferred_upgrade_formation: 
+  isMixedClans: 0
+  mixedFather: 
+  mixedFather_fac: 
+  mixedFather_redactable: 0
+  mixedMother: 
+  mixedMother_fac: 
+  mixedMother_redactable: 0
+  mixedSpouse: 
+  mixedSpouse_fac: 
+  mixedSpouse_redactable: 0
+  node_X: 0
+  node_Y: 0

@@ -40,6 +40,7 @@ public class NPCAssetEditor : Editor
     bool showUpgradeTargetsEditor;
     bool show_equip;
     //
+
     Item slot_Item0;
     Item slot_Item1;
     Item slot_Item2;
@@ -51,7 +52,6 @@ public class NPCAssetEditor : Editor
     Item slot_Cape;
     Item slot_Horse;
     Item slot_HorseHarness;
-
     //
     Color colUILine = new Color(0.5f, 0.5f, 0.5f, 0.05f);
     string soloName;
@@ -92,6 +92,14 @@ public class NPCAssetEditor : Editor
     public string[] beard_tag_options;
     public int beard_tag_index;
 
+    bool showTattooTags;
+    public string[] tattoo_tag_options;
+    public int tattoo_tag_index;
+
+    // Update 1.8.0
+    public string[] race_options;
+    public int race_index;
+
     bool isDependency = false;
     string configPath = "Assets/Settings/BDT_settings.asset";
     string modsSettingsPath = "Assets/Resources/SubModulesData/";
@@ -120,7 +128,7 @@ public class NPCAssetEditor : Editor
         CreateSkillsOptions(ref skills_options, ref skills_index, settingsAsset.SkillsDefinitions);
         CreateTraisOptions(ref traits_options, ref traits_index, settingsAsset.TraitsDefinitions);
 
-        mainEquipment = new EquipmentSet();
+        mainEquipment = (EquipmentSet)CreateInstance("EquipmentSet");
 
         if (npc.equipment_Roster != null && npc.equipment_Roster.Length > 0)
             rosterEquipment = new EquipmentSet[npc.equipment_Roster.Length];
@@ -193,6 +201,19 @@ public class NPCAssetEditor : Editor
             i++;
         }
 
+        race_options = new string[settingsAsset.RaceDefinitions.Length];
+
+        i = 0;
+        foreach (var category in settingsAsset.RaceDefinitions)
+        {
+            race_options[i] = category;
+            if ((race_options[i]) == npc.race)
+            {
+                race_index = i;
+            }
+            i++;
+        }
+
         equip_editor_options = new string[3];
         equip_editor_options[0] = "Main Equipment";
         equip_editor_options[1] = "Main Equipment Roster";
@@ -202,6 +223,7 @@ public class NPCAssetEditor : Editor
 
         CreateHairsOptions(ref hair_tag_options, ref hair_tag_index, settingsAsset.HairTagDefinitions);
         CreateBeardTagOptions(ref beard_tag_options, ref beard_tag_index, settingsAsset.BeardTagDefinitions);
+        CreateTattooTagOptions(ref tattoo_tag_options, ref tattoo_tag_index, settingsAsset.TattooTagDefinitions);
 
 
         if (npc.equipment_Set != null && npc.equipment_Set.Length > 0)
@@ -240,7 +262,7 @@ public class NPCAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == npc.moduleID)
                     {
@@ -721,7 +743,7 @@ public class NPCAssetEditor : Editor
                     string modSett = modsSettingsPath + npc.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -751,7 +773,7 @@ public class NPCAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == npc.moduleID)
                                 {
@@ -845,11 +867,21 @@ public class NPCAssetEditor : Editor
 
         DrawUILine(colUILine, 3, 12);
 
+        EditorGUILayout.LabelField("Race:", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+        // EditorGUILayout.Space(2);
+        race_index = EditorGUILayout.Popup(race_index, race_options, GUILayout.Width(128));
+        npc.race = race_options[race_index];
+
+        DrawUILine(colUILine, 3, 12);
+
         // banner mesh
         npc.banner_symbol_mesh_name = EditorGUILayout.TextField("Banner symbol mesh name:", npc.banner_symbol_mesh_name);
 
         // Banner Colors
         // color banner primary
+
+        GUILayout.Space(4);
+
         var labelStyle = new GUIStyle(EditorStyles.boldLabel);
 
         if (npc.banner_symbol_color != null && npc.banner_symbol_color != "")
@@ -900,6 +932,45 @@ public class NPCAssetEditor : Editor
                 bannerSymbolColor = EditorGUILayout.ColorField(bannerSymbolColor);
                 GUILayout.EndHorizontal();
                 npc.banner_symbol_color = ColorUtility.ToHtmlStringRGBA(bannerSymbolColor);
+            }
+        }
+
+        GUILayout.Space(4);
+        CreateFloatAttribute(ref npc.offset, "Offset:");
+        DrawUILine(colUILine, 3, 12);
+
+        originLabelWidth = EditorGUIUtility.labelWidth;
+
+        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Banner Key:    "));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+
+        npc.banner_key = EditorGUILayout.TextField("Banner Key:", npc.banner_key);
+
+        EditorGUIUtility.labelWidth = originLabelWidth;
+
+        GUILayout.Space(4);
+
+        if (GUILayout.Button("Edit Banner", GUILayout.Width(80)))
+        {
+            if (BANNER_EDITOR_Instance == null)
+            {
+                BannerEditor assetMng = (BannerEditor)ScriptableObject.CreateInstance(typeof(BannerEditor));
+                assetMng.bannerKey = npc.banner_key;
+                //assetMng.ReadBannerKey();
+                assetMng.inputNPC = npc;
+                assetMng.inputKingdom = null;
+                assetMng.inputFaction = null;
+                assetMng.inputCulture = null;
+            }
+            else
+            {
+                BannerEditor assetMng = BANNER_EDITOR_Instance;
+                assetMng.bannerKey = npc.banner_key;
+                //assetMng.ReadBannerKey();
+                assetMng.inputNPC = npc;
+                assetMng.inputKingdom = null;
+                assetMng.inputFaction = null;
+                assetMng.inputCulture = null;
             }
         }
 
@@ -1021,6 +1092,9 @@ public class NPCAssetEditor : Editor
         DrawBeardTagsEditor();
         DrawUILine(colUILine, 3, 12);
 
+        DrawTattooTagsEditor();
+        DrawUILine(colUILine, 3, 12);
+
         DrawUpgradeTargetsEditor();
 
         DrawUILine(colUILine, 3, 12);
@@ -1071,14 +1145,19 @@ public class NPCAssetEditor : Editor
             {
                 case 0:
 
-                    if (npc.equipment_Main != "")
+                    if (npc.equipment_Main != null && npc.equipment_Main != "")
                     {
                         ResetItemSlots();
-
                         GetEquipmentSetAsset(ref npc.equipment_Main, ref mainEquipment, 0);
 
-                        if (mainEquipment != null)
-                            EditorUtility.SetDirty(mainEquipment);
+                        // Reset npc main equipment link if is not not founded in resources
+                        if (mainEquipment == null)
+                            npc.equipment_Main = "";
+                    }
+
+                    if (mainEquipment != null)
+                    {
+                        EditorUtility.SetDirty(mainEquipment);
 
                         Color savedColorObj = EditorStyles.objectField.normal.textColor;
 
@@ -1112,7 +1191,7 @@ public class NPCAssetEditor : Editor
                             npc.equipment_Main = "";
 
                             AssetDatabase.DeleteAsset(del_path);
-                           // AssetDatabase.Refresh();
+                            // AssetDatabase.Refresh();
 
                             return;
                         }
@@ -1260,6 +1339,9 @@ public class NPCAssetEditor : Editor
 
                     var objects = new List<string>();
 
+                    if (npc.hair_tag == null)
+                        npc.hair_tag = new string[0];
+
                     int i2 = 0;
                     foreach (string tag in npc.hair_tag)
                     {
@@ -1297,7 +1379,7 @@ public class NPCAssetEditor : Editor
             buttonStyle.hover.textColor = Color.red;
 
             int i = 0;
-            if (npc.hair_tag.Length != 0)
+            if (npc.hair_tag != null && npc.hair_tag.Length != 0)
             {
                 foreach (var tag in npc.hair_tag)
                 {
@@ -1459,6 +1541,9 @@ public class NPCAssetEditor : Editor
 
                     var objects = new List<string>();
 
+                    if (npc.beard_tag == null)
+                        npc.beard_tag = new string[0];
+
                     int i2 = 0;
                     foreach (string feat in npc.beard_tag)
                     {
@@ -1496,7 +1581,7 @@ public class NPCAssetEditor : Editor
             buttonStyle.hover.textColor = Color.red;
 
             int i = 0;
-            if (npc.beard_tag.Length != 0)
+            if (npc.beard_tag != null && npc.beard_tag.Length != 0)
             {
                 foreach (var feat in npc.beard_tag)
                 {
@@ -1602,10 +1687,212 @@ public class NPCAssetEditor : Editor
         //     i++;
         // }
     }
+
+    void DrawTattooTagsEditor()
+    {
+        Vector2 textDimensions;
+        GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButtonLeft);
+        buttonStyle.fontStyle = FontStyle.Bold;
+        buttonStyle.hover.textColor = Color.green;
+
+        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
+        titleStyle.fontSize = 16;
+
+        Color newCol;
+        ColorUtility.TryParseHtmlString("#49a942", out newCol);
+        Color newCol2;
+        ColorUtility.TryParseHtmlString("#49a942", out newCol2);
+        titleStyle.normal.textColor = newCol;
+
+        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        hiderStyle.fontSize = 10;
+        hiderStyle.normal.textColor = newCol;
+
+        var originDimensions = EditorGUIUtility.labelWidth;
+
+        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Tattoo Tags Editor: "));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+
+        var showEditorLabel = "Hide";
+        if (!showTattooTags)
+        {
+            hiderStyle.fontSize = 16;
+            showEditorLabel = "Tattoo Tags Editor";
+        }
+
+        showTattooTags = EditorGUILayout.Foldout(showTattooTags, showEditorLabel, hiderStyle);
+
+        if (showTattooTags)
+        {
+
+            EditorGUILayout.LabelField("Tattoo Tags Editor", titleStyle, GUILayout.ExpandWidth(true));
+            DrawUILine(colUILine, 3, 12);
+
+
+            if (npc.tattoo_tag == null || npc.tattoo_tag.Length < settingsAsset.TattooTagDefinitions.Length)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                tattoo_tag_index = EditorGUILayout.Popup("Tattoo Tags:", tattoo_tag_index, tattoo_tag_options, GUILayout.Width(320));
+                // kingd.policies[i] = skills_options[skills_index];
+
+
+                // DrawUILine(colUILine, 3, 12);
+                if (GUILayout.Button((new GUIContent("Add Tattoo Tag", "Add selected Tattoo Tag to this Character")), buttonStyle, GUILayout.Width(128)))
+                {
+
+                    var objects = new List<string>();
+
+                    if (npc.tattoo_tag == null)
+                        npc.tattoo_tag = new string[0];
+
+                    int i2 = 0;
+                    foreach (string feat in npc.tattoo_tag)
+                    {
+                        objects.Add(feat);
+                        i2++;
+                    }
+
+                    int indexVal = objects.Count + 1;
+
+                    npc.tattoo_tag = new string[indexVal];
+
+                    i2 = 0;
+                    foreach (var element in objects)
+                    {
+                        npc.tattoo_tag[i2] = element;
+                        i2++;
+                    }
+
+                    npc.tattoo_tag[npc.tattoo_tag.Length - 1] = tattoo_tag_options[tattoo_tag_index];
+
+                    CreateTattooTagOptions(ref tattoo_tag_options, ref tattoo_tag_index, settingsAsset.TattooTagDefinitions);
+                }
+
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.Space(4);
+                // DrawUILine(colUILine, 3, 12);
+            }
+
+            DrawUILine(colUILine, 1, 4);
+            EditorGUILayout.Space(4);
+
+
+            buttonStyle.fontStyle = FontStyle.Bold;
+            buttonStyle.hover.textColor = Color.red;
+
+            int i = 0;
+            if (npc.tattoo_tag != null && npc.tattoo_tag.Length != 0)
+            {
+                foreach (var feat in npc.tattoo_tag)
+                {
+                    titleStyle.fontSize = 13;
+                    titleStyle.normal.textColor = newCol2;
+
+                    //string soloPolicyName = cult.cultural_feat_id[i].Replace("policy_", "");
+                    EditorGUILayout.LabelField("Tag - " + npc.tattoo_tag[i], titleStyle, GUILayout.ExpandWidth(true));
+
+                    EditorGUILayout.Space(4);
+                    EditorGUILayout.BeginHorizontal();
+
+                    if (GUILayout.Button((new GUIContent("X", "Remove Tag")), buttonStyle, GUILayout.Width(32)))
+                    {
+                        var objects = new List<string>();
+                        npc.tattoo_tag[i] = "remove";
+
+                        int i2 = 0;
+                        foreach (string skillAsset in npc.tattoo_tag)
+                        {
+                            if (skillAsset != "remove")
+                            {
+                                objects.Add(skillAsset);
+                            }
+                            i2++;
+                        }
+
+                        npc.tattoo_tag = new string[objects.Count];
+
+                        i2 = 0;
+                        foreach (var obj in objects)
+                        {
+                            npc.tattoo_tag[i2] = obj;
+                            i2++;
+                        }
+                        CreateTattooTagOptions(ref tattoo_tag_options, ref tattoo_tag_index, settingsAsset.TattooTagDefinitions);
+
+                        return;
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+
+                    DrawUILine(colUILine, 3, 12);
+                    i++;
+                }
+            }
+        }
+    }
+    private void CreateTattooTagOptions(ref string[] options, ref int index, string[] definitions)
+    {
+        //WPN CLASS
+
+
+        var listOptionsAll = new List<string>();
+        var listOptionsLoaded = new List<string>();
+
+        foreach (var data in definitions)
+        {
+            //string soloPolicyName = data.Replace("policy_", "");
+            listOptionsAll.Add(data);
+
+        }
+
+        if (npc.tattoo_tag != null && npc.tattoo_tag.Length > 0)
+        {
+            foreach (var dataTrait in npc.tattoo_tag)
+            {
+                //string soloPolicyName = dataPolice.Replace("policy_", "");
+                listOptionsLoaded.Add(dataTrait);
+            }
+        }
+
+
+        foreach (var option in listOptionsLoaded)
+        {
+            if (listOptionsAll.Contains(option))
+            {
+                listOptionsAll.Remove(option);
+            }
+        }
+
+        // listOptionsAll.Add(typeString);
+
+        options = new string[listOptionsAll.Count];
+
+        int i = 0;
+        foreach (var element in listOptionsAll)
+        {
+            options[i] = element;
+            i++;
+            // Debug.Log(element);
+        }
+
+        index = 0;
+        // i = 0;
+        // foreach (var type in options)
+        // {
+        //     if (type == typeString)
+        //     {
+        //         // Debug.Log("");
+        //         index = i;
+        //     }
+        //     i++;
+        // }
+    }
     void DrawEquipmentRosters(ref GUIStyle titleStyle, ref Color newCol)
     {
 
-        if (npc.equipment_Roster.Length != 0)
+        if (npc.equipment_Roster != null && npc.equipment_Roster.Length != 0)
         {
             int eqp_rost_i = 0;
             GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
@@ -1738,7 +2025,7 @@ public class NPCAssetEditor : Editor
 
                         }
 
-                       // AssetDatabase.Refresh();
+                        // AssetDatabase.Refresh();
 
                         return;
                     }
@@ -1874,32 +2161,11 @@ public class NPCAssetEditor : Editor
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button((new GUIContent("Add Equipment", "Add new equipment set")), buttonStyle, GUILayout.Width(128)))
         {
-            //var templist = new List<string>();
-            //var templistBool = new List<bool>();
+            if (npc.equipment_Set == null)
+                npc.equipment_Set = new string[0];
 
-            //int i = 0;
-
-            //foreach (var str in npc.equipment_Set)
-            //{
-            //    templist.Add(str);
-            //    templistBool.Add(npc.equipment_Set_civilian_flag[i]);
-            //    i++;
-            //}
-
-            //npc.equipment_Set = new string[templist.Count + 1];
-            //npc.equipment_Set_civilian_flag = new bool[templist.Count + 1];
-
-            //i = 0;
-            //foreach (var str in templist)
-            //{
-            //    npc.equipment_Set[i] = str;
-            //    npc.equipment_Set_civilian_flag[i] = templistBool[i];
-            //    i++;
-            //}
-
-            //npc.equipment_Set[npc.equipment_Set.Length - 1] = "";
-            //npc.equipment_Set_civilian_flag[npc.equipment_Set_civilian_flag.Length - 1] = false;
-
+            if (npc.equipment_Set_civilian_flag == null)
+                npc.equipment_Set_civilian_flag = new bool[0];
 
             var temp = new string[npc.equipment_Set.Length + 1];
             npc.equipment_Set.CopyTo(temp, 0);
@@ -1921,7 +2187,7 @@ public class NPCAssetEditor : Editor
 
         DrawUILine(colUILine, 3, 12);
 
-        if (npc.equipment_Set.Length != 0)
+        if (npc.equipment_Set != null && npc.equipment_Set.Length != 0)
         {
             int eqp_i = 0;
 
@@ -2129,7 +2395,7 @@ public class NPCAssetEditor : Editor
             textDimensions = GUI.skin.label.CalcSize(new GUIContent("Body Key: "));
             EditorGUIUtility.labelWidth = textDimensions.x;
 
-            npc.Max_BP_key = EditorGUILayout.TextField("Body Key: ", npc.BP_key);
+            npc.Max_BP_key = EditorGUILayout.TextField("Body Key: ", npc.Max_BP_key);
 
             EditorGUILayout.Space(2);
         }
@@ -2172,7 +2438,7 @@ public class NPCAssetEditor : Editor
                     string modSett = modsSettingsPath + npc.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2202,7 +2468,7 @@ public class NPCAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == npc.moduleID)
                                 {
@@ -2278,7 +2544,7 @@ public class NPCAssetEditor : Editor
                 string modSett = modsSettingsPath + npc.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2308,7 +2574,7 @@ public class NPCAssetEditor : Editor
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == npc.moduleID)
                             {
@@ -2360,7 +2626,7 @@ public class NPCAssetEditor : Editor
                 string modSett = modsSettingsPath + npc.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2390,7 +2656,7 @@ public class NPCAssetEditor : Editor
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == npc.moduleID)
                             {
@@ -2817,7 +3083,7 @@ public class NPCAssetEditor : Editor
 
                 if (item == null)
                 {
-                    foreach (var dependency in module.modDependencies)
+                    foreach (var dependency in module.modDependenciesInternal)
                     {
                         modSettings = modsSettingsPath + dependency + ".asset";
 
@@ -2850,7 +3116,7 @@ public class NPCAssetEditor : Editor
 
                         if (module.id != npc.moduleID)
                         {
-                            foreach (var modDPD in module.modDependencies)
+                            foreach (var modDPD in module.modDependenciesInternal)
                             {
                                 if (modDPD == npc.moduleID)
                                 {
@@ -2924,7 +3190,7 @@ public class NPCAssetEditor : Editor
             EditorGUILayout.Space(4);
 
 
-            EditorGUILayout.LabelField("Requiered item for Update:", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+            EditorGUILayout.LabelField("Requiered item for Upgrade:", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
             // EditorGUILayout.Space(2);
 
             upgdateRequieres_index = EditorGUILayout.Popup(upgdateRequieres_index, upgdateRequieres_options, GUILayout.Width(128));
@@ -2958,6 +3224,9 @@ public class NPCAssetEditor : Editor
                 //    npc.upgrade_targets[i2] = element.Key;
                 //    i2++;
                 //}
+
+                if (npc.upgrade_targets == null)
+                    npc.upgrade_targets = new string[0];
 
                 var temp = new string[npc.upgrade_targets.Length + 1];
                 npc.upgrade_targets.CopyTo(temp, 0);
@@ -3131,6 +3400,9 @@ public class NPCAssetEditor : Editor
 
                     var objects = new Dictionary<string, string>();
 
+                    if (npc.skills == null)
+                        npc.skills = new string[0];
+
                     int i2 = 0;
                     foreach (string skillAsset in npc.skills)
                     {
@@ -3254,7 +3526,7 @@ public class NPCAssetEditor : Editor
 
         if (showTraitsEditor)
         {
-            
+
             EditorGUILayout.LabelField("Traits Editor", titleStyle, GUILayout.ExpandWidth(true));
             DrawUILine(colUILine, 3, 12);
 
@@ -3278,6 +3550,9 @@ public class NPCAssetEditor : Editor
                 {
 
                     var objects = new Dictionary<string, string>();
+
+                    if (npc.traits == null)
+                        npc.traits = new string[0];
 
                     int i2 = 0;
                     foreach (string traitAsset in npc.traits)
@@ -3558,7 +3833,7 @@ public class NPCAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -3590,7 +3865,7 @@ public class NPCAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == npc.moduleID)
                                 {
@@ -3695,6 +3970,10 @@ public class NPCAssetEditor : Editor
     /// Check Assets
     /// 
 
+    public static BannerEditor BANNER_EDITOR_Instance
+    {
+        get { return EditorWindow.GetWindow<BannerEditor>(); }
+    }
     public static AssetsDataManager ADM_Instance
     {
         get { return EditorWindow.GetWindow<AssetsDataManager>(); }

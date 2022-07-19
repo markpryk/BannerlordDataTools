@@ -9,10 +9,22 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Linq;
 using UnityEngine.EventSystems;
+using System.Threading;
 
 [System.Serializable]
 public class ModFilesManager : Editor
 {
+
+    public ModFilesManager(ModuleReceiver mod, bool import, ref bool imp_cult, ref bool imp_kgd, ref bool imp_fac, ref bool imp_hero, ref bool imp_npc, ref bool imp_item, ref bool imp_eqp, ref bool imp_pt, ref bool imp_settl)
+    {
+        this.module = mod;
+        this.CreateLoadDictionaries();
+        if (!import)
+            this.CreateModSettings(import, ref import, ref import, ref import, ref import, ref import, ref import, ref import, ref import, ref import);
+        else
+            this.CreateModSettings(import, ref imp_cult, ref imp_kgd, ref imp_fac, ref imp_hero, ref imp_npc, ref imp_item, ref imp_eqp, ref imp_pt, ref imp_settl);
+    }
+
 
     public string modsSettingsPath = "Assets/Resources/SubModulesData/";
     public string modsResourcesPath = "Assets/Resources/Data/";
@@ -40,6 +52,7 @@ public class ModFilesManager : Editor
     Dictionary<EquipmentSet, string> equipmentSets;
     Dictionary<Equipment, string> equipments;
 
+    AssetDatabase.RefreshImportMode _defaultRefreshMode;
     public void CreateLoadDictionaries()
     {
         fac_Assets = new Dictionary<Faction, string>();
@@ -60,13 +73,18 @@ public class ModFilesManager : Editor
 
     }
 
-    public void CreateModSettings(ref bool imp_cult, ref bool imp_kgd, ref bool imp_fac, ref bool imp_hero, ref bool imp_npc, ref bool imp_item, ref bool imp_eqp, ref bool imp_pt, ref bool imp_settl)
+    public void CreateModSettings(bool importData, ref bool imp_cult, ref bool imp_kgd, ref bool imp_fac, ref bool imp_hero, ref bool imp_npc, ref bool imp_item, ref bool imp_eqp, ref bool imp_pt, ref bool imp_settl)
     {
         if (module != null)
         {
 
+            EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({0}/{3}) - ", $"Define mod Data.", 1);
+
+            _defaultRefreshMode = AssetDatabase.ActiveRefreshImportMode;
+            AssetDatabase.ActiveRefreshImportMode = AssetDatabase.RefreshImportMode.OutOfProcessPerQueue;
+
             configs = new Dictionary<string, string>();
-            asset = ScriptableObject.CreateInstance<ModFiles>();
+            asset = CreateInstance<ModFiles>();
             asset.mod = module;
             asset.BNResourcesPath = module.path + "/ModuleData";
 
@@ -76,6 +94,8 @@ public class ModFilesManager : Editor
             module.modFilesData = asset;
 
             CreateDirectories(asset);
+            EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({0}/{3}) - ", $"Create Directories.", 1);
+
 
             AssetDatabase.CreateAsset(asset, asset.modSettingsPath + "/" + module.id + "_Config.asset");
             //AssetDatabase.SaveAssets();
@@ -269,8 +289,10 @@ public class ModFilesManager : Editor
             asset.exportSettings = exportConfigs;
             configs.Add("export", ModDataConfigsPath);
 
+            EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({0}/{3}) - ", $"Create Mod Configs.", 1);
 
-            ReadModuleXml(asset, ref imp_cult, ref imp_kgd, ref imp_fac, ref imp_hero, ref imp_npc, ref imp_item, ref imp_eqp, ref imp_pt, ref imp_settl);
+            if (importData)
+                ReadModuleXml(asset, ref imp_cult, ref imp_kgd, ref imp_fac, ref imp_hero, ref imp_npc, ref imp_item, ref imp_eqp, ref imp_pt, ref imp_settl);
 
 
         }
@@ -455,28 +477,7 @@ public class ModFilesManager : Editor
         {
             if (relNode.LocalName == "relationships")
             {
-                int i = 0;
-                kingdomAsset.relationships = new string[relNode.ChildNodes.Count];
-                kingdomAsset.relationValues = new string[relNode.ChildNodes.Count];
-                kingdomAsset.relationsAtWar = new string[relNode.ChildNodes.Count];
-
-                foreach (XmlNode childRelation in relNode.ChildNodes)
-                {
-                    if (childRelation.Attributes["kingdom"] != null)
-                    {
-                        kingdomAsset.relationships[i] = childRelation.Attributes["kingdom"].Value;
-                    }
-                    if (childRelation.Attributes["value"] != null)
-                    {
-                        kingdomAsset.relationValues[i] = childRelation.Attributes["value"].Value;
-                    }
-                    if (childRelation.Attributes["isAtWar"] != null)
-                    {
-                        kingdomAsset.relationsAtWar[i] = childRelation.Attributes["isAtWar"].Value;
-                    }
-
-                    i++;
-                }
+                ImportKingdomRelationships(ref kingdomAsset, relNode);
             }
 
             // POLICIES
@@ -515,6 +516,99 @@ public class ModFilesManager : Editor
         // AssetDatabase.SaveAssets();
     }
 
+    private static void ImportKingdomRelationships(ref Kingdom kingdomAsset, XmlNode relNode)
+    {
+        //kingdomAsset.relationships = new string[relNode.ChildNodes.Count];
+        //kingdomAsset.relationValues = new string[relNode.ChildNodes.Count];
+        //kingdomAsset.relationsAtWar = new string[relNode.ChildNodes.Count];
+
+        var relationships = new List<string>();
+        var relationValues = new List<string>();
+        var relationsAtWar = new List<string>();
+
+        var clan_relationships = new List<string>();
+        var clan_relationValues = new List<string>();
+
+        foreach (XmlNode childRelation in relNode.ChildNodes)
+        {
+            if (childRelation.Attributes["kingdom"] != null)
+            {
+                relationships.Add(childRelation.Attributes["kingdom"].Value);
+
+                if (childRelation.Attributes["value"] != null)
+                {
+                    relationValues.Add(childRelation.Attributes["value"].Value);
+                }
+                if (childRelation.Attributes["isAtWar"] != null)
+                {
+                    relationsAtWar.Add(childRelation.Attributes["isAtWar"].Value);
+                }
+            }
+
+            if (childRelation.Attributes["clan"] != null)
+            {
+                clan_relationships.Add(childRelation.Attributes["kingdom"].Value);
+
+                if (childRelation.Attributes["value"] != null)
+                {
+                    clan_relationValues.Add(childRelation.Attributes["value"].Value);
+                }
+            }
+        }
+
+        kingdomAsset.relationships = relationships.ToArray();
+        kingdomAsset.relationValues = relationValues.ToArray();
+        kingdomAsset.relationsAtWar = relationsAtWar.ToArray();
+
+        kingdomAsset.fac_relationships = clan_relationships.ToArray();
+        kingdomAsset.fac_relationValues = clan_relationValues.ToArray();
+    }
+
+    private static void ImportFactionsRelationships(ref Faction facAsset, XmlNode relNode)
+    {
+        //kingdomAsset.relationships = new string[relNode.ChildNodes.Count];
+        //kingdomAsset.relationValues = new string[relNode.ChildNodes.Count];
+        //kingdomAsset.relationsAtWar = new string[relNode.ChildNodes.Count];
+
+        var relationships = new List<string>();
+        var relationValues = new List<string>();
+
+        var clan_relationships = new List<string>();
+        var clan_relationValues = new List<string>();
+
+        foreach (XmlNode childRelation in relNode.ChildNodes)
+        {
+            if (childRelation.LocalName == "clan_relationship" || childRelation.LocalName == "relationship")
+            {
+                if (childRelation.Attributes["kingdom"] != null)
+                {
+                    relationships.Add(childRelation.Attributes["kingdom"].Value);
+
+                    if (childRelation.Attributes["value"] != null)
+                    {
+                        relationValues.Add(childRelation.Attributes["value"].Value);
+                    }
+                }
+
+                if (childRelation.Attributes["clan"] != null)
+                {
+                    clan_relationships.Add(childRelation.Attributes["kingdom"].Value);
+
+                    if (childRelation.Attributes["value"] != null)
+                    {
+                        clan_relationValues.Add(childRelation.Attributes["value"].Value);
+                    }
+                }
+            }
+        }
+
+        facAsset.relationships = relationships.ToArray();
+        facAsset.relationValues = relationValues.ToArray();
+
+        facAsset.fac_relationships = clan_relationships.ToArray();
+        facAsset.fac_relationValues = clan_relationValues.ToArray();
+    }
+
     public void CreateFactionAssets(XmlNode node, ModFiles modFilesAsset, string xmlFile)
     {
         string path;
@@ -535,6 +629,7 @@ public class ModFilesManager : Editor
             factionAsset.factionName = node.Attributes["name"].Value;
         }
 
+        ImportFactionsRelationships(ref factionAsset, node);
 
         if (node.Attributes["super_faction"] != null)
         {
@@ -700,6 +795,16 @@ public class ModFilesManager : Editor
         if (node.Attributes["is_nomad"] != null)
         {
             factionAsset.is_nomad = node.Attributes["is_nomad"].Value;
+        }
+
+        // Update 1.8.0
+        if (node.Attributes["is_noble"] != null)
+        {
+            factionAsset.is_noble = node.Attributes["is_noble"].Value;
+        }
+        if (node.Attributes["flag_mesh"] != null)
+        {
+            factionAsset.flag_mesh = node.Attributes["flag_mesh"].Value;
         }
 
         foreach (XmlNode relNode in node.ChildNodes)
@@ -1276,6 +1381,20 @@ public class ModFilesManager : Editor
             npcAsset.is_obsolete = node.Attributes["is_obsolete"].Value;
         }
 
+        // Updates 1.8.0
+        if (node.Attributes["race"] != null)
+        {
+            npcAsset.race = node.Attributes["race"].Value;
+        }
+        if (node.Attributes["banner_key"] != null)
+        {
+            npcAsset.banner_key = node.Attributes["banner_key"].Value;
+        }
+        if (node.Attributes["offset"] != null)
+        {
+            npcAsset.offset = node.Attributes["offset"].Value;
+        }
+
         //SUBNODES
         //EQUIPS
         foreach (XmlNode chld in node.ChildNodes)
@@ -1402,6 +1521,34 @@ public class ModFilesManager : Editor
                                 if (rel.Attributes["name"] != null)
                                 {
                                     npcAsset.hair_tag[i] = rel.Attributes["name"].Value;
+                                }
+                                i++;
+                            }
+                        }
+                    }
+
+                    if (childRelation.LocalName == "tattoo_tags")
+                    {
+
+                        int countArray = 0;
+                        foreach (XmlNode rel in relNode.ChildNodes)
+                        {
+                            if (rel.LocalName != "#comment")
+                            {
+                                countArray++;
+                            }
+                        }
+
+                        int i = 0;
+                        npcAsset.tattoo_tag = new string[countArray];
+
+                        foreach (XmlNode rel in relNode.ChildNodes)
+                        {
+                            if (rel.LocalName == "tattoo_tag" && rel.Attributes["name"] != null)
+                            {
+                                if (rel.Attributes["name"] != null)
+                                {
+                                    npcAsset.tattoo_tag[i] = rel.Attributes["name"].Value;
                                 }
                                 i++;
                             }
@@ -2444,7 +2591,7 @@ public class ModFilesManager : Editor
                 }
             }
 
-            WriteNPCTemplate(relNode, ref cultAsset.child_character_templates, "child_character_templates");
+            //WriteNPCTemplate(relNode, ref cultAsset.child_character_templates, "child_character_templates");
             WriteNPCTemplate(relNode, ref cultAsset.notable_and_wanderer_templates, "notable_and_wanderer_templates");
             WriteNPCTemplate(relNode, ref cultAsset.lord_templates, "lord_templates");
             WriteNPCTemplate(relNode, ref cultAsset.rebellion_hero_templates, "rebellion_hero_templates");
@@ -2791,6 +2938,11 @@ public class ModFilesManager : Editor
             CheckAssignAtribute(node, ref itemAsset.holster_mesh_with_weapon, "holster_mesh_with_weapon");
             CheckAssignAtribute(node, ref itemAsset.flying_mesh, "flying_mesh");
 
+            // Update 1.8.0
+            CheckAssignAtribute(node, ref itemAsset.prerequisite_item, "prerequisite_item");
+            CheckAssignAtribute(node, ref itemAsset.using_arm_band, "using_arm_band");
+
+
             foreach (XmlNode relNode in node.ChildNodes)
             {
 
@@ -2840,6 +2992,12 @@ public class ModFilesManager : Editor
                                         CheckAssignAtribute(wpn_Node, ref itemAsset.WPN_FLG_AmmoCanBreakOnBounceBack, "AmmoCanBreakOnBounceBack");
                                         CheckAssignAtribute(wpn_Node, ref itemAsset.WPN_FLG_AffectsArea, "AffectsArea");
                                         CheckAssignAtribute(wpn_Node, ref itemAsset.WPN_FLG_AffectsAreaBig, "AffectsAreaBig");
+
+                                        // Update 1.8.0
+                                        CheckAssignAtribute(wpn_Node, ref itemAsset.WPN_FLG_FirearmAmmo, "FirearmAmmo");
+                                        CheckAssignAtribute(wpn_Node, ref itemAsset.WPN_FLG_NotUsableWithTwoHand, "NotUsableWithTwoHand");
+                                        CheckAssignAtribute(wpn_Node, ref itemAsset.WPN_FLG_BonusAgainstShield, "BonusAgainstShield");
+                                        CheckAssignAtribute(wpn_Node, ref itemAsset.WPN_FLG_CanDismount, "CanDismount");
 
                                     }
                                 }
@@ -2896,6 +3054,9 @@ public class ModFilesManager : Editor
                             CheckAssignAtribute(childRelation, ref itemAsset.WPN_trail_particle_name, "trail_particle_name");
                             CheckAssignAtribute(childRelation, ref itemAsset.WPN_stack_amount, "stack_amount");
 
+                            // Update 1.8.0
+                            CheckAssignAtribute(childRelation, ref itemAsset.WPN_shield_width, "shield_width");
+                            CheckAssignAtribute(childRelation, ref itemAsset.WPN_shield_down_length, "shield_down_length");
 
                             CheckAssignAtribute(childRelation, ref itemAsset.HRS_monster, "monster");
                             CheckAssignAtribute(childRelation, ref itemAsset.HRS_maneuver, "maneuver");
@@ -3043,6 +3204,10 @@ public class ModFilesManager : Editor
                     CheckAssignAtribute(relNode, ref itemAsset.FLG_UseTeamColor, "UseTeamColor");
                     CheckAssignAtribute(relNode, ref itemAsset.FLG_ForceAttachOffHandSecondaryItemBone, "ForceAttachOffHandSecondaryItemBone");
                     CheckAssignAtribute(relNode, ref itemAsset.FLG_DoesNotHideChest, "DoesNotHideChest");
+
+                    // Update 1.8.0
+                    CheckAssignAtribute(relNode, ref itemAsset.FLG_CanBePickedUpFromCorpse, "CanBePickedUpFromCorpse");
+                    CheckAssignAtribute(relNode, ref itemAsset.FLG_WoodenAttack, "WoodenAttack");
                 }
 
             }
@@ -3158,10 +3323,11 @@ public class ModFilesManager : Editor
         {
             heroAsset.alive = node.Attributes["alive"].Value;
         }
-        if (node.Attributes["is_noble"] != null)
-        {
-            heroAsset.is_noble = node.Attributes["is_noble"].Value;
-        }
+        // Removed in 1.8.0
+        //if (node.Attributes["is_noble"] != null)
+        //{
+        //    heroAsset.is_noble = node.Attributes["is_noble"].Value;
+        //}
         if (node.Attributes["faction"] != null)
         {
             heroAsset.faction = node.Attributes["faction"].Value;
@@ -3181,6 +3347,10 @@ public class ModFilesManager : Editor
         if (node.Attributes["spouse"] != null)
         {
             heroAsset.spouse = node.Attributes["spouse"].Value;
+        }
+        if (node.Attributes["preferred_upgrade_formation"] != null)
+        {
+            heroAsset.spouse = node.Attributes["preferred_upgrade_formation"].Value;
         }
         // text description
 
@@ -3254,8 +3424,13 @@ public class ModFilesManager : Editor
                     CheckAssignAtributeBool(equipSetNode, ref equipAsset.IsNoncombatantTemplate, "IsNoncombatantTemplate");
 
                     // Update 1.7.2
-                    CheckAssignAtributeBool(equipSetNode, ref equipAsset.IsChildTemplate, "IsChildTemplate");
+                    CheckAssignAtributeBool(equipSetNode, ref equipAsset.IsChildEquipmentTemplate, "IsChildEquipmentTemplate");
                     CheckAssignAtributeBool(equipSetNode, ref equipAsset.IsWandererEquipment, "IsWandererEquipment");
+
+                    // Update 1.8.0
+                    CheckAssignAtributeBool(equipSetNode, ref equipAsset.IsGentryEquipment, "IsGentryEquipment");
+                    CheckAssignAtributeBool(equipSetNode, ref equipAsset.IsRebelHeroEquipment, "IsRebelHeroEquipment");
+                    CheckAssignAtributeBool(equipSetNode, ref equipAsset.IsTeenagerEquipmentTemplate, "IsTeenagerEquipmentTemplate");
 
                 }
             }
@@ -3438,8 +3613,139 @@ public class ModFilesManager : Editor
         return set;
     }
 
+    private void ReadSubModuleXML(ModuleReceiver currentMod, string subModFile)
+    {
+            XmlDocument Doc = new XmlDocument();
+            // UTF 8 - 16
+            StreamReader reader = new StreamReader(subModFile);
+            Doc.Load(reader);
+
+            XmlElement Root = Doc.DocumentElement;
+            XmlNodeList XNL = Root.ChildNodes;
+
+            var nameNode = Doc.GetElementsByTagName("Name");
+            //var idNode = Doc.GetElementsByTagName("Id");
+            var versionNode = Doc.GetElementsByTagName("Version");
+            var defaultModNode = Doc.GetElementsByTagName("DefaultModule");
+            var moduleCategoryNode = Doc.GetElementsByTagName("ModuleCategory");
+            var officialNode = Doc.GetElementsByTagName("Official");
+
+            var dependedNode = Doc.GetElementsByTagName("DependedModules");
+            var subModNode = Doc.GetElementsByTagName("SubModules");
+            //var xmlsNode = Doc.GetElementsByTagName("Xmls");
+
+            if (currentMod.moduleName == "")
+                currentMod.moduleName = FindXMLNodeValue(nameNode[0], "value");
+
+            //FindXMLNodeValue(idNode[0], "value");
+
+            currentMod.version = FindXMLNodeValue(versionNode[0], "value");
+            currentMod.defaultModule = FindXMLNodeValueBool(defaultModNode[0], "value");
+            currentMod.moduleCategory = FindXMLNodeValue(moduleCategoryNode[0], "value");
+            currentMod.official = FindXMLNodeValueBool(officialNode[0], "value");
+
+            if (dependedNode[0] != null)
+            {
+                //if (currentMod.Dependencies == null)
+                currentMod.Dependencies = new List<ModuleReceiver.Dependency>();
+
+                foreach (XmlNode dpd in dependedNode[0])
+                    if (dpd.LocalName == "DependedModule")
+                    {
+                        var _id = FindXMLNodeValue(dpd, "Id");
+
+                        //if (_id == "Sandbox")
+                        //    _id = "SandBox";
+
+                        currentMod.Dependencies.Add(new ModuleReceiver.Dependency(
+                          _id,
+                          FindXMLNodeValue(dpd, "DependentVersion"),
+                          FindXMLNodeValueBool(dpd, "Optional")));
+                    }
+
+            }
+
+            if (subModNode[0] != null)
+            {
+                //if (currentMod.SubModules == null)
+                currentMod.SubModules = new List<ModuleReceiver.SubModule>();
+
+                foreach (XmlNode subMod in subModNode[0])
+                    if (subMod.LocalName == "SubModule")
+                    {
+                        var _nm = "";
+                        var _dll = "";
+                        var _class = "";
+                        var _tags = new List<ModuleReceiver.SubModuleTag>();
+
+                        foreach (XmlNode sub in subMod)
+                        {
+                            switch (sub.LocalName)
+                            {
+                                case "Name":
+                                    _nm = FindXMLNodeValue(sub, "value");
+                                    break;
+                                case "DLLName":
+                                    _dll = FindXMLNodeValue(sub, "value");
+                                    break;
+                                case "SubModuleClassType":
+                                    _class = FindXMLNodeValue(sub, "value");
+                                    break;
+                                case "Tags":
+                                    foreach (XmlNode tag in sub)
+                                    {
+                                        if (tag.LocalName == "Tag")
+                                            _tags.Add(new ModuleReceiver.SubModuleTag(FindXMLNodeValue(tag, "key"), FindXMLNodeValue(tag, "value")));
+                                    }
+                                    break;
+                            }
+                        }
+
+                        currentMod.SubModules.Add(new ModuleReceiver.SubModule(_nm, _dll, _class, _tags, false));
+                    }
+
+            }
+
+            reader.Close();
+    }
+
+    private string FindXMLNodeValue(XmlNode node, string value)
+    {
+        var _out = "";
+        if (node != null)
+        {
+            if (node.Attributes[value] != null)
+            {
+                _out = node.Attributes[value].Value;
+            }
+        }
+
+        return _out;
+    }
+
+    private bool FindXMLNodeValueBool(XmlNode node, string value)
+    {
+        var _out = false;
+        if (node != null)
+        {
+            if (node.Attributes[value] != null)
+            {
+                if (node.Attributes[value].Value == "true")
+                    _out = true;
+            }
+        }
+
+        return _out;
+    }
+
     public void ReadModuleXml(ModFiles modFilesAsset, ref bool imp_cult, ref bool imp_kgd, ref bool imp_fac, ref bool imp_hero, ref bool imp_npc, ref bool imp_item, ref bool imp_eqp, ref bool imp_pt, ref bool imp_settl)
     {
+
+        // Read SubModule.xml
+        var subModFile = modFilesAsset.mod.path + "/SubModule.xml";
+        if (File.Exists(subModFile))
+            ReadSubModuleXML(modFilesAsset.mod, subModFile);
+
         string[] XMLfiles = Directory.GetFiles(modFilesAsset.BNResourcesPath, "*.XML");
 
         // Read module
@@ -3453,7 +3759,6 @@ public class ModFilesManager : Editor
 
             XmlElement Root = Doc.DocumentElement;
             XmlNodeList XNL = Root.ChildNodes;
-
 
             // Debug.Log(Root.ChildNodes.Count);
 
@@ -3507,6 +3812,8 @@ public class ModFilesManager : Editor
                 }
             }
         }
+
+        EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({1}/{3}) - ", $"Reading XML Files.", 0.5f);
 
         // search in folders
         string[] directories = Directory.GetDirectories(modFilesAsset.BNResourcesPath);
@@ -3577,6 +3884,8 @@ public class ModFilesManager : Editor
             }
         }
 
+        EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({1}/{3}) - ", $"Reading XML Files.", 1);
+
         // Debug.Log("Kingdom " + kingd_Assets.Count);
         // Debug.Log("Faction " + fac_Assets.Count);
         // Debug.Log("Settlement " + settl_Assets.Count);
@@ -3591,6 +3900,13 @@ public class ModFilesManager : Editor
         //CheckSettingsLanguages(modFilesAsset);
 
         CreateAssetsFile(modFilesAsset);
+        AssetDatabase.ActiveRefreshImportMode = _defaultRefreshMode;
+
+        EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({3}/{3}) - ", $"Finishing Importing...", 1);
+        EditorUtility.ClearProgressBar();
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
 
         // CreateLanguagesData(modFilesAsset);
 
@@ -3635,61 +3951,99 @@ public class ModFilesManager : Editor
     // CREATE FILE ASSETS
     public void CreateAssetsFile(ModFiles modFilesAsset)
     {
+        float progress = 1;
+
         foreach (Kingdom kingd in kingd_Assets.Keys)
         {
+
             AssetDatabase.CreateAsset(kingd, kingd_Assets[kingd]);
             modFilesAsset.kingdomsData.kingdoms.Add(kingd);
+            BDTEditorDrawAssetsCretionProgress(ref progress, kingd_Assets.Count, "Kingdom");
         }
+        progress = 1;
+
         foreach (Faction fac in fac_Assets.Keys)
         {
             AssetDatabase.CreateAsset(fac, fac_Assets[fac]);
             modFilesAsset.factionsData.factions.Add(fac);
+            BDTEditorDrawAssetsCretionProgress(ref progress, fac_Assets.Count, "Faction");
         }
+        progress = 1;
+
         foreach (Settlement settl in settl_Assets.Keys)
         {
             AssetDatabase.CreateAsset(settl, settl_Assets[settl]);
             modFilesAsset.settlementsData.settlements.Add(settl);
+            BDTEditorDrawAssetsCretionProgress(ref progress, settl_Assets.Count, "Settlement");
         }
+
+        progress = 1;
+
         foreach (NPCCharacter npc in npc_Assets.Keys)
         {
+
             AssetDatabase.CreateAsset(npc, npc_Assets[npc]);
             modFilesAsset.npcChrData.NPCCharacters.Add(npc);
+            BDTEditorDrawAssetsCretionProgress(ref progress, npc_Assets.Count, "NPCCharacter");
         }
+        progress = 1;
+
         foreach (Culture cult in cult_Assets.Keys)
         {
             AssetDatabase.CreateAsset(cult, cult_Assets[cult]);
             modFilesAsset.culturesData.cultures.Add(cult);
+            BDTEditorDrawAssetsCretionProgress(ref progress, cult_Assets.Count, "Culture");
         }
+        progress = 1;
+
         foreach (PartyTemplate PT in PT_Assets.Keys)
         {
             AssetDatabase.CreateAsset(PT, PT_Assets[PT]);
             modFilesAsset.PTdata.partyTemplates.Add(PT);
+            BDTEditorDrawAssetsCretionProgress(ref progress, PT_Assets.Count, "PartyTemplate");
         }
+        progress = 1;
+
         foreach (Hero hero in hero_Assets.Keys)
         {
             AssetDatabase.CreateAsset(hero, hero_Assets[hero]);
             modFilesAsset.heroesData.heroes.Add(hero);
+            BDTEditorDrawAssetsCretionProgress(ref progress, hero_Assets.Count, "Hero");
         }
+        progress = 1;
+
         foreach (EquipmentSet equip_roster in eqp_Roster_Assets.Keys)
         {
             AssetDatabase.CreateAsset(equip_roster, eqp_Roster_Assets[equip_roster]);
             modFilesAsset.equipmentSetData.equipmentSets.Add(equip_roster);
+            BDTEditorDrawAssetsCretionProgress(ref progress, eqp_Roster_Assets.Count, "EquipmentSetRoster");
         }
+        progress = 1;
+
         foreach (EquipmentSet equip_main in eqp_Main_Assets.Keys)
         {
             AssetDatabase.CreateAsset(equip_main, eqp_Main_Assets[equip_main]);
             modFilesAsset.equipmentSetData.equipmentSets.Add(equip_main);
+            BDTEditorDrawAssetsCretionProgress(ref progress, eqp_Main_Assets.Count, "MainEquipmentSet");
         }
+        progress = 1;
+
         foreach (EquipmentSet equipSet in equipmentSets.Keys)
         {
             AssetDatabase.CreateAsset(equipSet, equipmentSets[equipSet]);
             modFilesAsset.equipmentSetData.equipmentSets.Add(equipSet);
+            BDTEditorDrawAssetsCretionProgress(ref progress, equipmentSets.Count, "EquipmentSet");
         }
+        progress = 1;
+
         foreach (Equipment equip in equipments.Keys)
         {
             AssetDatabase.CreateAsset(equip, equipments[equip]);
             modFilesAsset.equipmentsData.equipmentSets.Add(equip);
+            BDTEditorDrawAssetsCretionProgress(ref progress, equipments.Count, "Equipment");
         }
+
+        progress = 1;
 
         for (int i = 0; i < TS_Assets.Count; i++)
         {
@@ -3711,20 +4065,37 @@ public class ModFilesManager : Editor
                 AssetDatabase.CreateAsset(TS, TS_Assets[TS]);
                 modFilesAsset.translationData.translationStrings.Add(TS);
             }
+
+            BDTEditorDrawAssetsCretionProgress(ref progress, TS_Assets.Count, "Translation String");
         }
+
+        progress = 1;
 
         foreach (Item item in item_Assets.Keys)
         {
             AssetDatabase.CreateAsset(item, item_Assets[item]);
             modFilesAsset.itemsData.items.Add(item);
+            BDTEditorDrawAssetsCretionProgress(ref progress, item_Assets.Count, "Item");
         }
+        progress = 1;
+
         foreach (ModLanguage language in lang_Assets.Keys)
         {
             AssetDatabase.CreateAsset(language, lang_Assets[language]);
             modFilesAsset.languagesData.languages.Add(language);
+            BDTEditorDrawAssetsCretionProgress(ref progress, lang_Assets.Count, "Mod Language");
         }
-        AssetDatabase.SaveAssets();
+
+
     }
+
+    private void BDTEditorDrawAssetsCretionProgress(ref float progress, int maxCount, string typeID)
+    {
+        float percent = (float)(progress / maxCount) * 1;
+        EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({2}/{3}) - ", $"Creating {typeID} Assets ({progress}/{maxCount})", percent);
+        progress++;
+    }
+
     // public void CreateLangAssetsFile(ModFiles modFilesAsset)
     // {
     //     foreach (TranslationString TS in TS_lang_Assets.Keys)
@@ -3754,6 +4125,7 @@ public class ModFilesManager : Editor
                 FileUtil.CopyFileOrDirectory(dirFrom, dirTo);
             }
         }
+
     }
 
 

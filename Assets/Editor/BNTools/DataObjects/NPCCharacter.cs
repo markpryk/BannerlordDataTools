@@ -20,6 +20,11 @@ public class NPCCharacter : ScriptableObject
     public string culture;
     public string default_group;
 
+    //Update 1.8.0
+    public string race;
+    public string banner_key;
+    public string offset;
+
     public string level;
     public string occupation;
 
@@ -29,7 +34,7 @@ public class NPCCharacter : ScriptableObject
     public string skill_template;
     public string battleTemplate;
     public string civilianTemplate;
-
+    //public string face_key;
 
     //BodyProperties
 
@@ -89,5 +94,6 @@ public class NPCCharacter : ScriptableObject
     // beard_tag ---> name
     public string[] hair_tag;
     public string[] beard_tag;
+    public string[] tattoo_tag;
 
 }

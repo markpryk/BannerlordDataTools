@@ -36,9 +36,11 @@ public class BNDataEditorWindow : EditorWindow
 
     BDTSettings settingsAsset;
 
+    public bool refresh;
+
+    Texture2D header_texture;
+
     [MenuItem("BNDataTools/BNDataEditor")]
-
-
     public static void ShowWindow()
     {
         //Show existing window instance. If one doesn't exist, make one.
@@ -61,7 +63,7 @@ public class BNDataEditorWindow : EditorWindow
                 //    //LoadModProjectData(loadMod);
                 //}
 
-          
+
 
                 EditorUtility.SetDirty(settingsAsset);
             }
@@ -77,10 +79,30 @@ public class BNDataEditorWindow : EditorWindow
 
         if (currentMod != null)
             EditorUtility.SetDirty(currentMod);
+
+        refresh = true;
+    }
+
+    private void CheckModData()
+    {
+        if (currentMod != null && currentMod.modFilesData == null)
+        {
+            string path = "Assets/Resources/SubModulesData/" + currentMod.id + "/" + currentMod.id + "_Config.asset";
+            if (File.Exists(path))
+            {
+                ModFiles data = (ModFiles)AssetDatabase.LoadAssetAtPath(path, typeof(ModFiles));
+                currentMod.modFilesData = data;
+                EditorUtility.SetDirty(data);
+                SaveChanges();
+                AssetDatabase.SaveAssets();
+            }
+        }
     }
 
     void OnGUI()
     {
+        CheckModData();
+
         if (settingsAsset == null)
         {
             if (System.IO.File.Exists(configPath))
@@ -94,7 +116,7 @@ public class BNDataEditorWindow : EditorWindow
                 //    ModuleReceiver loadMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
                 //    LoadModProjectData(loadMod);
                 //}
-               
+
                 EditorUtility.SetDirty(settingsAsset);
             }
 
@@ -134,15 +156,47 @@ public class BNDataEditorWindow : EditorWindow
 
             // GUILayout.Label("BN Data Tools", EditorStyles.helpBox, GUILayout.Width(132), GUILayout.Height(28));
 
-            EditorGUILayout.HelpBox("Data Tools", MessageType.Info);
+            if (header_texture)
+            {
+                GUI.DrawTexture(new Rect(10, 10, 720 * 0.8f, 248 * 0.8f), header_texture, ScaleMode.StretchToFill, true, 1);
+                GUILayout.BeginArea(new Rect(590*0.8f, 16, 140, 32));
+
+                GUILayout.BeginHorizontal();
+
+                GUILayout.FlexibleSpace();
+                style.fontSize = 12;
+                GUILayout.Label($"v{settingsAsset.BDTVersion}", EditorStyles.helpBox, GUILayout.Width(64), GUILayout.Height(20));
+
+                GUILayout.FlexibleSpace();
+
+                GUILayout.EndHorizontal();
+
+                GUILayout.EndArea();
+                GUILayout.Space(256 * 0.8f);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Data Tools", MessageType.Info);
+                header_texture = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Settings/EditorResources/BDT_GUI/Interface/BDT_Header.png", typeof(Texture2D));
+            }
+
 
             // GUILayout.Space(10);
             Color col = new Color(0.5f, 0.5f, 0.5f, 0.05f);
             DrawUILine(col, 1, 12);
 
-            EditorGUILayout.LabelField("Import:", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Modules Editor:", EditorStyles.boldLabel);
             // button Bar
+
             GUILayout.Space(8);
+
+            if (GUILayout.Button("Create New Module"))
+            {
+                new ModuleCreatorEditor(this);
+            }
+
+            //GUILayout.Space(8);
+            DrawUILine(col, 1, 4);
 
             if (GUILayout.Button("Import Module"))
             {
@@ -153,7 +207,9 @@ public class BNDataEditorWindow : EditorWindow
             DrawUILine(col, 3, 12);
             GUILayout.Space(10);
 
+
             CheckCurrentModuleReciver(style);
+
 
             if (currentMod != null)
             {
@@ -178,11 +234,11 @@ public class BNDataEditorWindow : EditorWindow
 
     }
 
-    public void LoadModProjectData(ModuleReceiver modToLoad)
+    public void LoadModProjectData(ref ModuleReceiver modToLoad)
     {
 
         string path = "Assets/Resources/SubModulesData/" + modToLoad.id + "/" + modToLoad.id + "_Config.asset";
-        if (System.IO.File.Exists(path))
+        if (File.Exists(path))
         {
             ModFiles data = (ModFiles)AssetDatabase.LoadAssetAtPath(path, typeof(ModFiles));
             modToLoad.modFilesData = data;
@@ -752,12 +808,25 @@ public class BNDataEditorWindow : EditorWindow
             // EditorGUILayout.LabelField("Save & Export:", EditorStyles.boldLabel);
             // button Bar
             // GUILayout.Space(8);
+            var oldColor = GUI.backgroundColor;
+            GUI.backgroundColor = Color.cyan;
+
             if (GUILayout.Button("Module Settings"))
             {
-                ModuleSettingsEditor mse = (ModuleSettingsEditor)EditorWindow.GetWindow(typeof(ModuleSettingsEditor), true, "Module Settings");
+                Selection.activeObject = currentMod;
             }
 
-            GUILayout.Space(8);
+            if (GUILayout.Button("World Map Settings"))
+            {
+                WorldMapSettingsEditor mse = (WorldMapSettingsEditor)EditorWindow.GetWindow(typeof(WorldMapSettingsEditor), true, "World Map Settings");
+            }
+
+            GUI.backgroundColor = oldColor;
+
+            GUILayout.Space(4);
+
+            GUI.backgroundColor = Color.green;
+
             if (GUILayout.Button("Export Data to Bannerlord Xml"))
             {
                 BNDataExporter exporter = (BNDataExporter)EditorWindow.GetWindow(typeof(BNDataExporter), true, "Export Data");
@@ -765,7 +834,9 @@ public class BNDataEditorWindow : EditorWindow
                 exporter.exported_Mod = currentMod;
             }
 
-            GUILayout.Space(-12);
+            GUI.backgroundColor = oldColor;
+
+            //GUILayout.Space(-6);
             DrawUILine(col, 6, 24);
 
             //Debug refresh data base
@@ -775,8 +846,34 @@ public class BNDataEditorWindow : EditorWindow
 
             //    Debug.Log("BDT - REFRESH DATA BASE");
             //}
+            //
+            //if (GUILayout.Button("Generate Temp Path"))
+            //{
 
+            //}
+
+            if (currentMod.name == "CrusadesCoreCleaner")
+            {
+                if (GUILayout.Button("Debug(Rename)"))
+                {
+                    foreach (var s in currentMod.modFilesData.settlementsData.settlements)
+                    {
+                        //s.settlementName = "#Sbx# " + s.settlementName;
+                        if (s.CMP_villageType == "VillageType.trapper")
+                            Debug.Log(s.settlementName);
+                    }
+
+                }
+
+                if (GUILayout.Button("Debug(CreateVillageTypeSprites)"))
+                {
+                    settingsAsset.AssignWorldMapProductionIcons();
+                }
+
+            }
             //DrawUILine(col, 3, 6);
+
+            GUI.backgroundColor = Color.red;
 
             if (GUILayout.Button("Delete Module"))
             {
@@ -784,27 +881,76 @@ public class BNDataEditorWindow : EditorWindow
                "Are you sure you want to delete " + currentMod.id
                + " mod and all data in BDT tools?", "Yes remove", "Do Not Remove"))
                 {
-                    string dataPath = $"Assets/Resources/Data/{currentMod.id}/";
-                    string sub_dataPath = $"Assets/Resources/SubModulesData/{currentMod.id}/";
-                    string mod_asset = $"Assets/Resources/SubModulesData/{currentMod.id}.asset";
-
-                    FileUtil.DeleteFileOrDirectory(dataPath);
-                    //Directory.Delete(dataPath);
-                    FileUtil.DeleteFileOrDirectory(sub_dataPath);
-                    //Directory.Delete(sub_dataPath);
-                    File.Delete(mod_asset);
-
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
+                    if (settingsAsset.ableToDeleteModOrigins)
+                    {
+                        var folder = settingsAsset.BNModulesPath + currentMod.id;
+                        if (Directory.Exists(folder))
+                            if (EditorUtility.DisplayDialog($"Deleting {currentMod.id} mod Resources?", "Delete also a mod directory in Bannerlord Modules folder?",
+                                "Yes, also remove the Module folder", "Do Not Remove"))
+                            {
+                                if (EditorUtility.DisplayDialog($"Deleting {currentMod.id} mod Resources?", "SECURE!? \n" +
+                                "Warning!!! This action cannot be undone, you will delete the entire module folder, with all XML, Scenes, Prefabs, 3D Sources and other resources.",
+                                "Yes, Just remove all", "Do Not Remove"))
+                                {
+                                    Directory.Delete(folder, true);
+                                    DeleteCurrentMod();
+                                }
+                                else
+                                    DeleteCurrentMod();
+                            }
+                            else
+                            {
+                                DeleteCurrentMod();
+                            }
+                        else
+                            DeleteCurrentMod();
+                    }
+                    else
+                        DeleteCurrentMod();
                 }
 
+                return;
             }
             DrawUILine(col, 2, 4);
 
+            GUI.backgroundColor = oldColor;
             /// DEBUG
             //DrawDebugOptions();
 
         }
+    }
+
+
+    private void DeleteCurrentMod()
+    {
+
+        Selection.activeGameObject = null;
+
+        string dataPath = $"Assets/Resources/Data/{currentMod.id}";
+        string sub_dataPath = $"Assets/Resources/SubModulesData/{currentMod.id}";
+        string sub_dataPathConfigMeta = $"Assets/Resources/SubModulesData/{currentMod.id}.asset.meta";
+        string mod_asset = $"Assets/Resources/SubModulesData/{currentMod.id}.asset";
+
+        currentMod = null;
+        settingsAsset.currentModule = "";
+
+        if (File.Exists(mod_asset))
+            File.Delete(mod_asset);
+
+        if (Directory.Exists(dataPath))
+            Directory.Delete(dataPath, true);
+        if (Directory.Exists(sub_dataPath))
+            Directory.Delete(sub_dataPath, true);
+
+        if (File.Exists(dataPath + ".meta"))
+            File.Delete(dataPath + ".meta");
+        if (File.Exists(sub_dataPath + ".meta"))
+            File.Delete(sub_dataPath + ".meta");
+        if (File.Exists(sub_dataPathConfigMeta))
+            File.Delete(sub_dataPathConfigMeta);
+
+        //AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
     private void FullDataBaseRefresh()
@@ -822,7 +968,7 @@ public class BNDataEditorWindow : EditorWindow
                 {
                     //Debug.Log(currentMod.id);
                     EditorUtility.SetDirty(mod);
-                    LoadModProjectData(mod);
+                    LoadModProjectData(ref mod);
                     //  AssetDatabase.Refresh();
                 }
             }
@@ -1108,7 +1254,7 @@ public class BNDataEditorWindow : EditorWindow
                     path = "Assets/Settings/Definitions/CraftingPieces/" + pieceData.ID + ".asset";
                     EditorUtility.SetDirty(pieceData);
                     AssetDatabase.CreateAsset(pieceData, path);
-                    AssetDatabase.SaveAssets();
+                    //AssetDatabase.SaveAssets();
                 }
             }
             if (GUILayout.Button("Load Pieces Settings"))
@@ -1296,7 +1442,7 @@ public class BNDataEditorWindow : EditorWindow
 
                 //Debug.Log(currentMod.id);
                 EditorUtility.SetDirty(currentMod);
-                LoadModProjectData(currentMod);
+                LoadModProjectData(ref currentMod);
                 //  AssetDatabase.Refresh();
 
                 Debug.Log("BDT - REFRESH DATA BASE");
@@ -1454,7 +1600,7 @@ public class BNDataEditorWindow : EditorWindow
 
             }
         }
-      
+
     }
 
 
@@ -1490,8 +1636,6 @@ public class BNDataEditorWindow : EditorWindow
 
     void CheckCurrentModuleReciver(GUIStyle styleModInfo)
     {
-
-
         if (currentMod == null)
         {
             styleModInfo.fontSize = 12;
@@ -1534,15 +1678,22 @@ public class BNDataEditorWindow : EditorWindow
                 //    }
                 //}
 
-                FullDataBaseRefresh();
+                if (refresh)
+                {
+                    FullDataBaseRefresh();
+                    refresh = false;
+                }
 
                 currentMod = (ModuleReceiver)source;
                 settingsAsset.currentModule = currentMod.id;
 
                 if (currentMod.modFilesData == null)
                 {
-                    //LoadModProjectData(currentMod);
-                    FullDataBaseRefresh();
+                    if (refresh)
+                    {
+                        FullDataBaseRefresh();
+                        refresh = false;
+                    }
                 }
             }
 
@@ -1664,12 +1815,12 @@ public class BNDataEditorWindow : EditorWindow
 
         modsList.Add(mod);
 
-        mod.modDependencies = new string[depend.Count];
+        mod.modDependenciesInternal = new string[depend.Count];
 
         int i = 0;
         foreach (var dependMod in depend)
         {
-            mod.modDependencies[i] = dependMod;
+            mod.modDependenciesInternal[i] = dependMod;
             i++;
 
         }

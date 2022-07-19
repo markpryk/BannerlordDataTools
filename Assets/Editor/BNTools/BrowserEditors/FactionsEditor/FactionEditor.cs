@@ -788,7 +788,7 @@ public class FactionEditor : EditorWindow
             }
         }
 
-        foreach (var mod in loadedMod.modDependencies)
+        foreach (var mod in loadedMod.modDependenciesInternal)
         {
             ModuleReceiver dpd_mod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + mod + ".asset", typeof(ModuleReceiver));
 
@@ -809,7 +809,7 @@ public class FactionEditor : EditorWindow
             hero_list.Add(h);
         }
 
-        foreach (var mod in loadedMod.modDependencies)
+        foreach (var mod in loadedMod.modDependenciesInternal)
         {
             ModuleReceiver dpd_mod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + mod + ".asset", typeof(ModuleReceiver));
 
@@ -827,7 +827,7 @@ public class FactionEditor : EditorWindow
             faction_list.Add(f);
         }
 
-        foreach (var mod in loadedMod.modDependencies)
+        foreach (var mod in loadedMod.modDependenciesInternal)
         {
             ModuleReceiver dpd_mod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + mod + ".asset", typeof(ModuleReceiver));
 
@@ -1818,7 +1818,7 @@ public class FactionEditor : EditorWindow
                     string modSett = modsSettingsPath + modName + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1848,7 +1848,7 @@ public class FactionEditor : EditorWindow
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == modName)
                                 {

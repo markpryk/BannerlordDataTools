@@ -57,14 +57,21 @@ public class BNDataExporter : EditorWindow
 
     void OnGUI()
     {
-
-
         export_path = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/ModuleData/";
-
+        ExportSettings expSettings = exported_Mod.modFilesData.exportSettings;
+        EditorUtility.SetDirty(expSettings);
+        var xmlAvailable = false;
 
         EditorGUILayout.LabelField("Export Settings", EditorStyles.boldLabel);
+        DrawUILine(colUILine, 1, 4);
 
-        exported_Mod.version = EditorGUILayout.TextField("Version", exported_Mod.version);
+        expSettings.exportSubModule_xml = EditorGUILayout.Toggle("Export SubModule.xml", expSettings.exportSubModule_xml);
+
+        if (expSettings.exportSubModule_xml)
+        {
+            DrawUILine(colUILine, 1, 2);
+            exported_Mod.version = EditorGUILayout.TextField("Version", exported_Mod.version);
+        }
 
         DrawUILine(colUILine, 3, 12);
 
@@ -72,22 +79,21 @@ public class BNDataExporter : EditorWindow
 
         EditorGUILayout.LabelField("Output XML File Names", EditorStyles.boldLabel);
 
-        ExportSettings expSettings = exported_Mod.modFilesData.exportSettings;
-        EditorUtility.SetDirty(expSettings);
-
         if (exported_Mod.modFilesData.culturesData.cultures.Count != 0)
         {
             GUILayout.BeginHorizontal();
             expSettings.Culture_xml_name = EditorGUILayout.TextField("Cultures", expSettings.Culture_xml_name, GUILayout.Width(320));
             expSettings.export_cult = EditorGUILayout.Toggle(expSettings.export_cult);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.factionsData.factions.Count != 0)
         {
             GUILayout.BeginHorizontal();
             expSettings.Faction_xml_name = EditorGUILayout.TextField("Factions", expSettings.Faction_xml_name, GUILayout.Width(320));
-            expSettings.export_fac = EditorGUILayout.Toggle( expSettings.export_fac);
+            expSettings.export_fac = EditorGUILayout.Toggle(expSettings.export_fac);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.kingdomsData.kingdoms.Count != 0)
         {
@@ -95,6 +101,7 @@ public class BNDataExporter : EditorWindow
             expSettings.Kingdom_xml_name = EditorGUILayout.TextField("Kingdoms", expSettings.Kingdom_xml_name, GUILayout.Width(320));
             expSettings.export_kingd = EditorGUILayout.Toggle(expSettings.export_kingd);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.heroesData.heroes.Count != 0)
         {
@@ -102,6 +109,7 @@ public class BNDataExporter : EditorWindow
             expSettings.Hero_xml_name = EditorGUILayout.TextField("Heroes", expSettings.Hero_xml_name, GUILayout.Width(320));
             expSettings.export_hero = EditorGUILayout.Toggle(expSettings.export_hero);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0)
         {
@@ -109,6 +117,7 @@ public class BNDataExporter : EditorWindow
             expSettings.NPCCharacter_xml_name = EditorGUILayout.TextField("NPC Characters", expSettings.NPCCharacter_xml_name, GUILayout.Width(320));
             expSettings.export_npc = EditorGUILayout.Toggle(expSettings.export_npc);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.itemsData.items.Count != 0)
         {
@@ -116,6 +125,7 @@ public class BNDataExporter : EditorWindow
             expSettings.Item_xml_name = EditorGUILayout.TextField("Items", expSettings.Item_xml_name, GUILayout.Width(320));
             expSettings.export_item = EditorGUILayout.Toggle(expSettings.export_item);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0)
         {
@@ -123,13 +133,16 @@ public class BNDataExporter : EditorWindow
             expSettings.PartyTemplate_xml_name = EditorGUILayout.TextField("Party Templates", expSettings.PartyTemplate_xml_name, GUILayout.Width(320));
             expSettings.export_pt = EditorGUILayout.Toggle(expSettings.export_pt);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0)
         {
+
             GUILayout.BeginHorizontal();
             expSettings.Settlement_xml_name = EditorGUILayout.TextField("Settlements", expSettings.Settlement_xml_name, GUILayout.Width(320));
             expSettings.export_settl = EditorGUILayout.Toggle(expSettings.export_settl);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
         if (exported_Mod.modFilesData.equipmentsData.equipmentSets.Count != 0)
         {
@@ -137,11 +150,32 @@ public class BNDataExporter : EditorWindow
             expSettings.EquipmentSet_xml_name = EditorGUILayout.TextField("Equipment Sets", expSettings.EquipmentSet_xml_name, GUILayout.Width(320));
             expSettings.export_equip = EditorGUILayout.Toggle(expSettings.export_equip);
             GUILayout.EndHorizontal();
+            xmlAvailable = true;
         }
 
+        Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent("....."));
+
+        if (!xmlAvailable)
+            EditorGUILayout.HelpBox($"The {exported_Mod.moduleName} Module - Not Containts any XML assets data to export.", MessageType.Warning);
+        else if (expSettings.exportSubModule_xml)
+        {
+            DrawUILine(colUILine, 1, 6);
+
+            EditorGUILayout.LabelField("XML GameTypes", EditorStyles.boldLabel);
+
+            textDimensions = GUI.skin.label.CalcSize(new GUIContent("CampaignStoryMode   "));
+            EditorGUIUtility.labelWidth = textDimensions.x;
+
+            expSettings.xmlGameType[0] = EditorGUILayout.Toggle("Campaign", expSettings.xmlGameType[0], GUILayout.Width(256));
+            expSettings.xmlGameType[1] = EditorGUILayout.Toggle("CampaignStoryMode", expSettings.xmlGameType[1], GUILayout.Width(256));
+            expSettings.xmlGameType[2] = EditorGUILayout.Toggle("CustomGame", expSettings.xmlGameType[2], GUILayout.Width(256));
+            expSettings.xmlGameType[3] = EditorGUILayout.Toggle("EditorGame", expSettings.xmlGameType[3], GUILayout.Width(256));
+
+            EditorGUIUtility.labelWidth = originLabelWidth;
+        }
         DrawUILine(colUILine, 3, 12);
 
-        var textDimensions = GUI.skin.label.CalcSize(new GUIContent("Remove duplicates if exist   "));
+        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Remove duplicates if exist   "));
         EditorGUIUtility.labelWidth = textDimensions.x;
 
         expSettings.checkOverrides = EditorGUILayout.Toggle("Remove Duplicates if Exist", expSettings.checkOverrides, GUILayout.Width(256));
@@ -255,31 +289,8 @@ public class BNDataExporter : EditorWindow
                     if (expSettings.exportDataToScene)
                         WriteSettlementsPositions();
 
-                    //write version data to submodule.xml
-                    var sub_modules_path = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SubModule.xml";
-
-                    if (File.Exists(sub_modules_path))
-                    {
-                        XmlDocument xmlDoc = new XmlDocument();
-
-                        xmlDoc.Load(sub_modules_path);
-
-                        foreach (XmlNode node in xmlDoc.ChildNodes[0])
-                        {
-                            if (node.LocalName == "Version")
-                            {
-                                node.Attributes["value"].Value = exported_Mod.version;
-                                break;
-                            }
-
-                        }
-
-                        xmlDoc.Save(sub_modules_path);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("SubModule.xml not exist for  " + exported_Mod.id);
-                    }
+                    if (expSettings.exportSubModule_xml)
+                        WriteSubModuleXMLData();
 
                     //AssetDatabase.Refresh();
                     this.Close();
@@ -288,6 +299,206 @@ public class BNDataExporter : EditorWindow
         }
     }
 
+    private void WriteSubModuleXMLData()
+    {
+        //write version data to submodule.xml
+        var sub_modules_path = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SubModule.xml";
+
+        if (File.Exists(sub_modules_path))
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            xmlDoc.Load(sub_modules_path);
+
+            FillModuleCoreValues(xmlDoc, "Name", "value", exported_Mod.moduleName);
+            FillModuleCoreValues(xmlDoc, "Id", "value", exported_Mod.id);
+            FillModuleCoreValues(xmlDoc, "Version", "value", exported_Mod.version);
+            FillModuleCoreValues(xmlDoc, "DefaultModule", "value", exported_Mod.defaultModule.ToString().ToLower());
+            FillModuleCoreValues(xmlDoc, "ModuleCategory", "value", exported_Mod.moduleCategory);
+            FillModuleCoreValues(xmlDoc, "Official", "value", exported_Mod.official.ToString().ToLower());
+
+            FillModuleDependenciesList(xmlDoc);
+            FillModuleSubModulesList(xmlDoc);
+            FillModuleXMLReferenceList(xmlDoc);
+
+            xmlDoc.Save(sub_modules_path);
+        }
+        else
+        {
+            Debug.LogWarning("SubModule.xml not exist for  " + exported_Mod.id);
+        }
+    }
+    private void FillModuleXMLReferenceList(XmlDocument doc)
+    {
+        var exportSettings = exported_Mod.modFilesData.exportSettings;
+
+        var id = "Xmls";
+        XmlNode parentNode = doc.SelectSingleNode(".//" + "Module");
+        //XmlNode removeNode = doc.SelectSingleNode(".//" + "Module/" + id);
+
+        var removeNode = doc.GetElementsByTagName(id);
+
+        if (removeNode[0] != null)
+            removeNode[0].ParentNode.RemoveChild(removeNode[0]);
+
+        XmlElement node = doc.CreateElement(string.Empty, id, string.Empty);
+        parentNode.AppendChild(node);
+
+        if (exported_Mod.modFilesData.factionsData.factions.Count != 0 && exportSettings.export_fac)
+            WriteXMLReferenceNode(node, doc, "Factions", exportSettings.Faction_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.culturesData.cultures.Count != 0 && exportSettings.export_cult)
+            WriteXMLReferenceNode(node, doc, "SPCultures", exportSettings.Culture_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.heroesData.heroes.Count != 0 && exportSettings.export_hero)
+            WriteXMLReferenceNode(node, doc, "Heroes", exportSettings.Hero_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.itemsData.items.Count != 0 && exportSettings.export_item)
+            WriteXMLReferenceNode(node, doc, "Items", exportSettings.Item_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.kingdomsData.kingdoms.Count != 0 && exportSettings.export_kingd)
+            WriteXMLReferenceNode(node, doc, "Kingdoms", exportSettings.Kingdom_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0 && exportSettings.export_npc)
+            WriteXMLReferenceNode(node, doc, "NPCCharacters", exportSettings.NPCCharacter_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0 && exportSettings.export_pt)
+            WriteXMLReferenceNode(node, doc, "partyTemplates", exportSettings.PartyTemplate_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0 && exportSettings.export_settl)
+            WriteXMLReferenceNode(node, doc, "Settlements", exportSettings.Settlement_xml_name.Replace(".xml", ""));
+        if (exported_Mod.modFilesData.equipmentsData.equipmentSets.Count != 0 && exportSettings.export_equip)
+            WriteXMLReferenceNode(node, doc, "EquipmentRosters", exportSettings.EquipmentSet_xml_name.Replace(".xml", ""));
+    }
+
+    private void WriteXMLReferenceNode(XmlElement node, XmlDocument doc, string id, string path)
+    {
+
+        XmlElement xml_node = doc.CreateElement(string.Empty, "XmlNode", string.Empty);
+        node.AppendChild(xml_node);
+
+        XmlElement name_node = doc.CreateElement(string.Empty, "XmlName", string.Empty);
+        name_node.SetAttribute("id", id);
+        name_node.SetAttribute("path", path);
+        xml_node.AppendChild(name_node);
+
+        var exportSettings = exported_Mod.modFilesData.exportSettings;
+
+        //"Campaign" - 0
+        //"CampaignStoryMode"- 1
+        //"CustomGame" - 2
+        //"EditorGame"- 3
+        if (exportSettings.xmlGameType[0] ||
+            exportSettings.xmlGameType[1] ||
+            exportSettings.xmlGameType[2] ||
+            exportSettings.xmlGameType[3])
+        {
+            string[] modes = new string[4] { "Campaign", "CampaignStoryMode", "CustomGame", "EditorGame" };
+
+            XmlElement includedGameTypes_node = doc.CreateElement(string.Empty, "IncludedGameTypes", string.Empty);
+            xml_node.AppendChild(includedGameTypes_node);
+
+            for (int i = 0; i < modes.Length; i++)
+            {
+                if (exportSettings.xmlGameType[0])
+                {
+                    XmlElement gameType_node = doc.CreateElement(string.Empty, "GameType", string.Empty);
+                    gameType_node.SetAttribute("value", modes[i]);
+                    includedGameTypes_node.AppendChild(gameType_node);
+                }
+            }
+        }
+
+    }
+    private void FillModuleSubModulesList(XmlDocument doc)
+    {
+
+        List<ModuleReceiver.SubModule> subModulesList = exported_Mod.SubModules;
+        var id = "SubModules";
+        XmlNode parentNode = doc.SelectSingleNode(".//" + "Module");
+        //XmlNode removeNode = doc.SelectSingleNode(".//" + "Module/" + id);
+
+        var removeNode = doc.GetElementsByTagName(id);
+
+        if (removeNode[0] != null)
+            removeNode[0].ParentNode.RemoveChild(removeNode[0]);
+
+        XmlElement node = doc.CreateElement(string.Empty, id, string.Empty);
+        parentNode.AppendChild(node);
+
+        foreach (var subModule in subModulesList)
+        {
+            XmlElement subMod_node = doc.CreateElement(string.Empty, "SubModule", string.Empty);
+            node.AppendChild(subMod_node);
+
+            XmlElement name_node = doc.CreateElement(string.Empty, "Name", string.Empty);
+            name_node.SetAttribute("value", subModule.Name);
+            subMod_node.AppendChild(name_node);
+
+            XmlElement dll_node = doc.CreateElement(string.Empty, "DLLName", string.Empty);
+            dll_node.SetAttribute("value", subModule.DLLName);
+            subMod_node.AppendChild(dll_node);
+
+            XmlElement class_node = doc.CreateElement(string.Empty, "SubModuleClassType", string.Empty);
+            class_node.SetAttribute("value", subModule.SubModuleClassType);
+            subMod_node.AppendChild(class_node);
+
+            if (subModule.Tags != null && subModule.Tags.Count > 0)
+            {
+                XmlElement tagsNode = doc.CreateElement(string.Empty, "Tags", string.Empty);
+                subMod_node.AppendChild(tagsNode);
+
+                foreach (var tag in subModule.Tags)
+                {
+                    XmlElement tag_node = doc.CreateElement(string.Empty, "Tag", string.Empty);
+                    tag_node.SetAttribute("key", tag.Key);
+                    tag_node.SetAttribute("value", tag.Value);
+                    tagsNode.AppendChild(tag_node);
+                }
+            }
+        }
+    }
+    private void FillModuleDependenciesList(XmlDocument doc)
+    {
+        List<ModuleReceiver.Dependency> dpd = exported_Mod.Dependencies;
+        var id = "DependedModules";
+        XmlNode parentNode = doc.SelectSingleNode(".//" + "Module");
+        //XmlNode removeNode = doc.SelectSingleNode(".//" + "Module/" + id);
+        var removeNode = doc.GetElementsByTagName(id);
+
+        if (removeNode[0] != null)
+            removeNode[0].ParentNode.RemoveChild(removeNode[0]);
+
+        XmlElement node = doc.CreateElement(string.Empty, id, string.Empty);
+        parentNode.AppendChild(node);
+
+        foreach (var dependency in dpd)
+        {
+            XmlElement dpd_node = doc.CreateElement(string.Empty, "DependedModule", string.Empty);
+
+            if (dependency.DependedModule == "SandBox")
+            {
+                dpd_node.SetAttribute("Id", "Sandbox");
+            }
+            else
+                dpd_node.SetAttribute("Id", dependency.DependedModule);
+
+            dpd_node.SetAttribute("DependentVersion", dependency.DependentVersion);
+            dpd_node.SetAttribute("Optional", dependency.Optional.ToString().ToLower());
+            node.AppendChild(dpd_node);
+        }
+    }
+    private void FillModuleCoreValues(XmlDocument doc, string id, string attribute, string value)
+    {
+        XmlNode parentNode = doc.SelectSingleNode(".//" + "Module");
+        //XmlNode removeNode = doc.SelectSingleNode(".//" + "Module/" + id);
+
+        var removeNode = doc.GetElementsByTagName(id);
+
+        if (removeNode[0] != null)
+            removeNode[0].ParentNode.RemoveChild(removeNode[0]);
+
+        XmlElement node = doc.CreateElement(string.Empty, id, string.Empty);
+        node.SetAttribute(attribute, value);
+
+        //Debug.Log(parentNode.LocalName);
+        parentNode.AppendChild(node);
+
+
+    }
     //private void ResetSettlementsZ()
     //{
     //    string pathScene = $"{settingsAsset.BNModulesPath}{exported_Mod.id}/SceneObj/{exported_Mod.world_map_xscene_id}/scene.xscene";
@@ -1185,6 +1396,54 @@ public class BNDataExporter : EditorWindow
             CheckAndWriteAttribute(BNXmlWriter, "is_sect", fac.is_sect);
             CheckAndWriteAttribute(BNXmlWriter, "is_nomad", fac.is_nomad);
 
+            // update 1.8.0
+            CheckAndWriteAttribute(BNXmlWriter, "is_noble", fac.is_noble);
+            CheckAndWriteAttribute(BNXmlWriter, "flag_mesh", fac.flag_mesh);
+
+            //BNXmlWriter.WriteStartElement("relationships");
+
+            if (fac.relationships != null && fac.relationships.Length > 0)
+            {
+                int i = 0;
+                foreach (var rel in fac.relationships)
+                {
+                    if (rel != "")
+                    {
+                        BNXmlWriter.WriteStartElement("relationship");
+
+                        CheckAndWriteAttribute(BNXmlWriter, "kingdom", fac.relationships[i]);
+                        CheckAndWriteAttribute(BNXmlWriter, "value", fac.relationValues[i]);
+                        //CheckAndWriteAttribute(BNXmlWriter, "isAtWar", kingd.relationsAtWar[i]);
+
+                        BNXmlWriter.WriteFullEndElement();
+
+                    }
+                    i++;
+                }
+            }
+
+            if (fac.fac_relationships != null && fac.fac_relationships.Length > 0)
+            {
+                int i = 0;
+                foreach (var rel in fac.fac_relationships)
+                {
+                    if (rel != "")
+                    {
+                        BNXmlWriter.WriteStartElement("clan_relationship");
+
+                        CheckAndWriteAttribute(BNXmlWriter, "clan", fac.fac_relationships[i]);
+                        CheckAndWriteAttribute(BNXmlWriter, "value", fac.fac_relationValues[i]);
+                        //CheckAndWriteAttribute(BNXmlWriter, "isAtWar", kingd.relationsAtWar[i]);
+
+                        BNXmlWriter.WriteFullEndElement();
+
+                    }
+                    i++;
+                }
+            }
+
+            //BNXmlWriter.WriteFullEndElement();
+
             WriteMinorFactiontemplates(BNXmlWriter, "minor_faction_character_templates", fac.minor_faction_character_templates);
 
             BNXmlWriter.WriteFullEndElement();
@@ -1338,7 +1597,7 @@ public class BNDataExporter : EditorWindow
                 WritePossibleClanIcons(BNXmlWriter, "possible_clan_banner_icon_ids", cult.banner_icon_id);
 
                 // 1.72 update 
-                WriteNPCTemplatesNodes(BNXmlWriter, "child_character_templates", cult.child_character_templates);
+                //WriteNPCTemplatesNodes(BNXmlWriter, "child_character_templates", cult.child_character_templates);
                 WriteNPCTemplatesNodes(BNXmlWriter, "notable_and_wanderer_templates", cult.notable_and_wanderer_templates);
                 WriteNPCTemplatesNodes(BNXmlWriter, "lord_templates", cult.lord_templates);
                 WriteNPCTemplatesNodes(BNXmlWriter, "rebellion_hero_templates", cult.rebellion_hero_templates);
@@ -1397,12 +1656,13 @@ public class BNDataExporter : EditorWindow
 
                 CheckAndWriteAttribute(BNXmlWriter, "id", hero.id);
                 CheckAndWriteAttribute(BNXmlWriter, "alive", hero.alive);
-                CheckAndWriteAttribute(BNXmlWriter, "is_noble", hero.is_noble);
+                //CheckAndWriteAttribute(BNXmlWriter, "is_noble", hero.is_noble);
                 CheckAndWriteAttribute(BNXmlWriter, "faction", hero.faction);
                 CheckAndWriteAttribute(BNXmlWriter, "banner_key", hero.banner_key);
                 CheckAndWriteAttribute(BNXmlWriter, "father", hero.father);
                 CheckAndWriteAttribute(BNXmlWriter, "mother", hero.mother);
                 CheckAndWriteAttribute(BNXmlWriter, "spouse", hero.spouse);
+                CheckAndWriteAttribute(BNXmlWriter, "preferred_upgrade_formation", hero.preferred_upgrade_formation);
                 CheckAndWriteAttribute(BNXmlWriter, "text", hero.text);
 
                 BNXmlWriter.WriteFullEndElement();
@@ -1500,6 +1760,10 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "has_lower_holster_priority", item.has_lower_holster_priority);
                 CheckAndWriteAttribute(BNXmlWriter, "holster_position_shift", item.holster_position_shift);
 
+                //Update 1.8.0
+                CheckAndWriteAttribute(BNXmlWriter, "prerequisite_item", item.prerequisite_item);
+                CheckAndWriteAttribute(BNXmlWriter, "using_arm_band", item.using_arm_band);
+
                 BNXmlWriter.WriteStartElement("ItemComponent");
 
                 if (item.IsWeapon)
@@ -1538,9 +1802,13 @@ public class BNDataExporter : EditorWindow
 
                     CheckAndWriteAttribute(BNXmlWriter, "body_armor", item.ARMOR_body_armor);
 
-                    // update 1.7.2
+                    // Update 1.7.2
                     CheckAndWriteAttribute(BNXmlWriter, "reload_phase_count", item.WPN_reload_phase_count);
                     CheckAndWriteAttribute(BNXmlWriter, "item_modifier_group", item.WPN_item_modifier_group);
+
+                    //Update 1.8.0
+                    CheckAndWriteAttribute(BNXmlWriter, "shield_width", item.WPN_shield_width);
+                    CheckAndWriteAttribute(BNXmlWriter, "shield_down_length", item.WPN_shield_down_length);
 
                     BNXmlWriter.WriteStartElement("WeaponFlags");
 
@@ -1572,6 +1840,12 @@ public class BNDataExporter : EditorWindow
                     CheckAndWriteAttribute(BNXmlWriter, "AmmoCanBreakOnBounceBack", item.WPN_FLG_AmmoCanBreakOnBounceBack);
                     CheckAndWriteAttribute(BNXmlWriter, "AffectsArea", item.WPN_FLG_AffectsArea);
                     CheckAndWriteAttribute(BNXmlWriter, "AffectsAreaBig", item.WPN_FLG_AffectsAreaBig);
+
+                    //Update 1.8.0
+                    CheckAndWriteAttribute(BNXmlWriter, "FirearmAmmo", item.WPN_FLG_FirearmAmmo);
+                    CheckAndWriteAttribute(BNXmlWriter, "NotUsableWithTwoHand", item.WPN_FLG_NotUsableWithTwoHand);
+                    CheckAndWriteAttribute(BNXmlWriter, "BonusAgainstShield", item.WPN_FLG_BonusAgainstShield);
+                    CheckAndWriteAttribute(BNXmlWriter, "CanDismount", item.WPN_FLG_CanDismount);
 
                     BNXmlWriter.WriteFullEndElement();
 
@@ -1717,6 +1991,10 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "ForceAttachOffHandSecondaryItemBone", item.FLG_ForceAttachOffHandSecondaryItemBone);
                 CheckAndWriteAttribute(BNXmlWriter, "DoesNotHideChest", item.FLG_DoesNotHideChest);
 
+                //Update 1.8.0
+                CheckAndWriteAttribute(BNXmlWriter, "CanBePickedUpFromCorpse", item.FLG_CanBePickedUpFromCorpse);
+                CheckAndWriteAttribute(BNXmlWriter, "WoodenAttack", item.FLG_WoodenAttack);
+
                 BNXmlWriter.WriteFullEndElement();
 
                 BNXmlWriter.WriteFullEndElement();
@@ -1803,6 +2081,25 @@ public class BNDataExporter : EditorWindow
                 }
             }
 
+            if (kingd.fac_relationships != null && kingd.fac_relationships.Length > 0)
+            {
+                int i = 0;
+                foreach (var rel in kingd.fac_relationships)
+                {
+                    if (rel != "")
+                    {
+                        BNXmlWriter.WriteStartElement("clan_relationship");
+
+                        CheckAndWriteAttribute(BNXmlWriter, "clan", kingd.fac_relationships[i]);
+                        CheckAndWriteAttribute(BNXmlWriter, "value", kingd.fac_relationValues[i]);
+                        //CheckAndWriteAttribute(BNXmlWriter, "isAtWar", kingd.relationsAtWar[i]);
+
+                        BNXmlWriter.WriteFullEndElement();
+
+                    }
+                    i++;
+                }
+            }
 
             BNXmlWriter.WriteFullEndElement();
             BNXmlWriter.WriteStartElement("policies");
@@ -1900,6 +2197,14 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "is_hidden_encyclopedia", npc.is_hidden_encyclopedia);
                 CheckAndWriteAttribute(BNXmlWriter, "is_obsolete", npc.is_obsolete);
 
+                // update 1.8.0
+
+                CheckZeroWriteAttribute(BNXmlWriter, "offset", npc.offset);
+                CheckAndWriteAttribute(BNXmlWriter, "banner_key", npc.banner_key);
+
+                if (npc.race != "human")
+                    CheckAndWriteAttribute(BNXmlWriter, "race", npc.race);
+
                 BNXmlWriter.WriteStartElement("face");
                 if (npc.BP_version != "" && npc.BP_version != "0")
                 {
@@ -1927,11 +2232,11 @@ public class BNDataExporter : EditorWindow
 
                     BNXmlWriter.WriteFullEndElement();
                 }
-                if (npc.face_key_template != "")
+                if (npc.face_key_template != null && npc.face_key_template != "")
                 {
                     BNXmlWriter.WriteStartElement("face_key_template");
 
-                    CheckAndWriteAttribute(BNXmlWriter, "value", npc.face_key_template);
+                    CheckAndWriteAttribute(BNXmlWriter, "value", npc.face_key_template.Replace("NPCCharacter.", "BodyProperty."));
 
                     BNXmlWriter.WriteFullEndElement();
                 }
@@ -1939,6 +2244,7 @@ public class BNDataExporter : EditorWindow
                 // update 1.7.2
                 WriteHairBodyTags(BNXmlWriter, "hair_tags", npc.hair_tag);
                 WriteBeardBodyTags(BNXmlWriter, "beard_tags", npc.beard_tag);
+                WriteBeardBodyTags(BNXmlWriter, "tattoo_tags", npc.tattoo_tag);
 
                 BNXmlWriter.WriteFullEndElement();
 
@@ -2231,13 +2537,25 @@ public class BNDataExporter : EditorWindow
         {
             CheckAndWriteAttribute(BNXmlWriter, "IsNoncombatantTemplate", "true");
         }
-        if (equip.IsChildTemplate)
+        if (equip.IsChildEquipmentTemplate)
         {
-            CheckAndWriteAttribute(BNXmlWriter, "IsChildTemplate", "true");
+            CheckAndWriteAttribute(BNXmlWriter, "IsChildEquipmentTemplate", "true");
         }
         if (equip.IsWandererEquipment)
         {
             CheckAndWriteAttribute(BNXmlWriter, "IsWandererEquipment", "true");
+        }
+        if (equip.IsGentryEquipment)
+        {
+            CheckAndWriteAttribute(BNXmlWriter, "IsGentryEquipment", "true");
+        }
+        if (equip.IsRebelHeroEquipment)
+        {
+            CheckAndWriteAttribute(BNXmlWriter, "IsRebelHeroEquipment", "true");
+        }
+        if (equip.IsTeenagerEquipmentTemplate)
+        {
+            CheckAndWriteAttribute(BNXmlWriter, "IsTeenagerEquipmentTemplate", "true");
         }
     }
 
@@ -2286,7 +2604,7 @@ public class BNDataExporter : EditorWindow
                 string modSett = modsSettingsPath + npc.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2316,7 +2634,7 @@ public class BNDataExporter : EditorWindow
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == npc.moduleID)
                             {
@@ -2358,7 +2676,7 @@ public class BNDataExporter : EditorWindow
         if (dataName != null && dataName != "")
         {
 
-            Equipment equipment = new Equipment();
+            Equipment equipment = (Equipment)CreateInstance("Equipment");
             string assetPath = dataPath + npc.moduleID + "/Sets/Equipments/" + dataName + ".asset";
             string assetPathShort = "/Sets/Equipments/" + dataName + ".asset";
 
@@ -2373,7 +2691,7 @@ public class BNDataExporter : EditorWindow
                 string modSett = modsSettingsPath + npc.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2403,7 +2721,7 @@ public class BNDataExporter : EditorWindow
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == npc.moduleID)
                             {
@@ -2444,7 +2762,7 @@ public class BNDataExporter : EditorWindow
         if (dataName != null && dataName != "")
         {
 
-            var equipmentSet = new EquipmentSet();
+            var equipmentSet = CreateInstance<EquipmentSet>();
             string assetPath = "";
             string assetPathShort = "";
 
@@ -2478,7 +2796,7 @@ public class BNDataExporter : EditorWindow
                 string modSett = modsSettingsPath + eqp.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2508,7 +2826,7 @@ public class BNDataExporter : EditorWindow
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == eqp.moduleID)
                             {
@@ -2564,7 +2882,7 @@ public class BNDataExporter : EditorWindow
                 string modSett = modsSettingsPath + eqp.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2594,7 +2912,7 @@ public class BNDataExporter : EditorWindow
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == eqp.moduleID)
                             {
@@ -3123,7 +3441,7 @@ public class BNDataExporter : EditorWindow
             {
                 CheckAndWriteAttribute(BNXmlWriter, "type", "Hideout");
             }
-            
+
 
             // BNXmlWriter.WriteFullEndElement();
 
@@ -3309,7 +3627,7 @@ public class BNDataExporter : EditorWindow
 
     private static void CheckAndWriteAttribute(XmlWriter BNXmlWriter, string attributeName, string attributeValue)
     {
-        if (attributeValue != "" && attributeValue != "none")
+        if (attributeValue != "" && attributeValue != "none" && attributeValue != "ItemCategory.none")
         {
             BNXmlWriter.WriteAttributeString(attributeName, attributeValue);
         }

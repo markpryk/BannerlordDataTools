@@ -29,6 +29,10 @@ public class HeroAssetEditor : Editor
     string textTranslationString;
     TranslationString translationStringDescription;
 
+    // Update 1.8.0
+    public string[] preferredUpgradeFormation_options;
+    public int preferredUpgradeFormation_index;
+
     Vector2 textScrollPos;
 
     Color colUILine = new Color(0.5f, 0.5f, 0.5f, 0.05f);
@@ -68,7 +72,7 @@ public class HeroAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == hero.moduleID)
                     {
@@ -145,6 +149,19 @@ public class HeroAssetEditor : Editor
         else
         {
             isDependency = false;
+        }
+
+        preferredUpgradeFormation_options = new string[settingsAsset.PreferredUpgradeFormationDefinitions.Length];
+
+        int i = 0;
+        foreach (var category in settingsAsset.PreferredUpgradeFormationDefinitions)
+        {
+            preferredUpgradeFormation_options[i] = category;
+            if ((preferredUpgradeFormation_options[i]) == hero.preferred_upgrade_formation)
+            {
+                preferredUpgradeFormation_index = i;
+            }
+            i++;
         }
 
         EditorGUI.BeginDisabledGroup(isDependency);
@@ -225,34 +242,34 @@ public class HeroAssetEditor : Editor
             hero.alive = "false";
         }
 
-        // IS Alive
-        if (hero.is_noble != null)
-        {
-            if (hero.is_noble == "true")
-            {
-                isNobleBtn = true;
-            }
-            else
-            {
-                isNobleBtn = false;
-            }
-        }
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Noble:"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
+        // IS NOBLE (removed in 1.8.0)
+        //if (hero.is_noble != null)
+        //{
+        //    if (hero.is_noble == "true")
+        //    {
+        //        isNobleBtn = true;
+        //    }
+        //    else
+        //    {
+        //        isNobleBtn = false;
+        //    }
+        //}
+        //textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Noble:"));
+        //EditorGUIUtility.labelWidth = textDimensions.x;
 
-        isNobleBtn = EditorGUILayout.Toggle("Is Noble:", isNobleBtn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        // EditorGUILayout.Space(-5);
+        //isNobleBtn = EditorGUILayout.Toggle("Is Noble:", isNobleBtn);
+        //DrawUILineVertical(colUILine, 1, 1, 16);
+        //// EditorGUILayout.Space(-5);
 
 
-        if (isNobleBtn)
-        {
-            hero.is_noble = "true";
-        }
-        else
-        {
-            hero.is_noble = "false";
-        }
+        //if (isNobleBtn)
+        //{
+        //    hero.is_noble = "true";
+        //}
+        //else
+        //{
+        //    hero.is_noble = "false";
+        //}
 
 
         // Hero Faction
@@ -273,7 +290,7 @@ public class HeroAssetEditor : Editor
                     string modSett = modsSettingsPath + hero.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -303,7 +320,7 @@ public class HeroAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == hero.moduleID)
                                 {
@@ -385,7 +402,7 @@ public class HeroAssetEditor : Editor
                     string modSett = modsSettingsPath + hero.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -415,7 +432,7 @@ public class HeroAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == hero.moduleID)
                                 {
@@ -482,7 +499,7 @@ public class HeroAssetEditor : Editor
                     string modSett = modsSettingsPath + hero.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -512,7 +529,7 @@ public class HeroAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == hero.moduleID)
                                 {
@@ -577,7 +594,7 @@ public class HeroAssetEditor : Editor
                     string modSett = modsSettingsPath + hero.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -607,7 +624,7 @@ public class HeroAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == hero.moduleID)
                                 {
@@ -665,7 +682,13 @@ public class HeroAssetEditor : Editor
         GUILayout.EndHorizontal();
         DrawUILine(colUILine, 3, 12);
 
+        EditorGUILayout.LabelField("Preferred Upgrade Formation:", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+        // EditorGUILayout.Space(2);
 
+        preferredUpgradeFormation_index = EditorGUILayout.Popup(preferredUpgradeFormation_index, preferredUpgradeFormation_options, GUILayout.Width(128));
+        hero.preferred_upgrade_formation = preferredUpgradeFormation_options[preferredUpgradeFormation_index];
+
+        DrawUILine(colUILine, 1, 6);
 
         // 4 hero text
         SetTextFieldTS(ref hero.text, ref soloText, ref textTranslationString, folder, translationStringDescription, "Hero Description Text:", hero.moduleID, hero, 4, hero.id);
@@ -715,7 +738,7 @@ public class HeroAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -747,7 +770,7 @@ public class HeroAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == hero.moduleID)
                                 {

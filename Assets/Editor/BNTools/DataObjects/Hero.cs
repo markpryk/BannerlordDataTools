@@ -10,7 +10,7 @@ public class Hero : ScriptableObject
     [SerializeField]
     public string id;
     public string alive;
-    public string is_noble;
+    //public string is_noble;
     public string faction;
     public string banner_key;
     public string father;
@@ -18,6 +18,9 @@ public class Hero : ScriptableObject
     public string spouse;
     public string text;
 
+    public string preferred_upgrade_formation;
+
+    // internal
     public bool isMixedClans;
     public string mixedFather;
     public string mixedFather_fac;

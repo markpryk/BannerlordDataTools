@@ -1227,7 +1227,7 @@ public class SettlementsEditor : EditorWindow
                     string modSett = modsSettingsPath + loadedMod.id + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1257,7 +1257,7 @@ public class SettlementsEditor : EditorWindow
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == loadedMod.id)
                                 {
@@ -1415,7 +1415,7 @@ public class SettlementsEditor : EditorWindow
                     string modSett = modsSettingsPath + modName + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1445,7 +1445,7 @@ public class SettlementsEditor : EditorWindow
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == modName)
                                 {

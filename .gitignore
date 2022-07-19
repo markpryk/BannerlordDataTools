@@ -71,3 +71,5 @@ crashlytics-build.properties
 Assets/Settings/BDT_settings.asset.meta
 Assets/Settings/BDT_settings.asset
 UserSettings/Layouts/CurrentMaximizeLayout.dwlt
+
+[Aa]ssets/Editor/BNTools/Utils/PrefabsCreator*

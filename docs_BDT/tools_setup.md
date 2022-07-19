@@ -5,8 +5,8 @@
 First at all you need to install anyone Unity3D version 2018+ (I am using now 2021.2)
 #### - Best practice is using [UnityHub](https://unity3d.com/get-unity/download)
 
-Download last BDT version, or simple clone repository.
-#### - [ latest version: 0.0.84e -- 5 April 2022 ](myLib/README.md)
+Download or clone repository.
+![ScreenShot](Images/setup/download_version.png)
 
 ### Step 2
 

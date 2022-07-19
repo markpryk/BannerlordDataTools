@@ -164,6 +164,31 @@ public class ItemAssetEditor : Editor
     public string[] wpn_modifier_group_options;
     public int wpn_modifier_group_index = 0;
 
+    // Update 1.8.0
+    public bool FLG_CanBePickedUpFromCorpse_bool;
+    public bool FLG_WoodenAttack_bool;
+
+    public bool prerequisite_item_bool;
+    public bool using_arm_band_bool;
+
+    public float WPN_shield_width;
+    public float WPN_shield_down_length;
+
+    public bool WPN_FLG_FirearmAmmo_bool;
+    public bool WPN_FLG_NotUsableWithTwoHand_bool;
+    public bool WPN_FLG_BonusAgainstShield_bool;
+    public bool WPN_FLG_CanDismount_bool;
+
+    // TODO
+    //public float HRS_mane_mesh_multiplier;
+    //public string[] body_deform_type_options;
+    //public int body_deform_type_index = 0;
+    //public int WPN_banner_level_value;
+    //public string[] wpn_effect_options;
+    //public int wpn_effect_index = 0;
+    //public int WPN_effect_amount;
+
+
     // HORSE MATERIALS 
     List<HorseManeMaterial> horseMatsList;
     bool[] showMaterials = new bool[4];
@@ -397,6 +422,17 @@ public class ItemAssetEditor : Editor
 
         CheckFlagBool(item.has_lower_holster_priority, ref HolsterPriority_Bool);
 
+        // Update 1.8.0
+        CheckFlagBool(item.FLG_CanBePickedUpFromCorpse, ref FLG_CanBePickedUpFromCorpse_bool);
+        CheckFlagBool(item.FLG_WoodenAttack, ref FLG_WoodenAttack_bool);
+
+        CheckFlagBool(item.prerequisite_item, ref prerequisite_item_bool);
+        CheckFlagBool(item.using_arm_band, ref using_arm_band_bool);
+        CheckFlagBool(item.WPN_FLG_FirearmAmmo, ref WPN_FLG_FirearmAmmo_bool);
+        CheckFlagBool(item.WPN_FLG_NotUsableWithTwoHand, ref WPN_FLG_NotUsableWithTwoHand_bool);
+        CheckFlagBool(item.WPN_FLG_BonusAgainstShield, ref WPN_FLG_BonusAgainstShield_bool);
+        CheckFlagBool(item.WPN_FLG_CanDismount, ref WPN_FLG_CanDismount_bool);
+
         if (item.ADD_cover_Mesh_name != null && item.ADD_cover_Mesh_name != "" && item.ADD_mat_name.Length != 0)
         {
 
@@ -535,7 +571,7 @@ public class ItemAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == item.moduleID)
                     {
@@ -1166,11 +1202,19 @@ public class ItemAssetEditor : Editor
                     CreateAttributeToggle(ref IsMultiplayer_Bool, ref item.multiplayer_item, "Is Multiplayer Item");
                     EditorGUILayout.Space(1);
 
-                    if (type.itemTypeID == "weapon")
-                    {
-                        CreateAttributeToggle(ref UseTableau_Bool, ref item.using_tableau, "Using Tableau");
-                    }
+                    //if (type.itemTypeID == "weapon")
+                    //{
+
+                    //}
                 }
+
+                CreateAttributeToggle(ref UseTableau_Bool, ref item.using_tableau, "Using Tableau");
+                EditorGUILayout.Space(1);
+                CreateAttributeToggle(ref prerequisite_item_bool, ref item.prerequisite_item, "Prerequisite item");
+                EditorGUILayout.Space(1);
+                CreateAttributeToggle(ref using_arm_band_bool, ref item.using_arm_band, "Using Arm Band");
+                EditorGUILayout.Space(1);
+
                 // EditorGUILayout.Space(4);
                 // item.is_merchandise = EditorGUILayout.TextField("Is Merchandise", item.is_merchandise);
                 // item.value = EditorGUILayout.TextField("Value", item.value);
@@ -2074,6 +2118,20 @@ public class ItemAssetEditor : Editor
                     // FLG_DropOnAnyAction_Bool FLAGS
                     CreateAttributeToggle(ref FLG_DropOnAnyAction_Bool, ref item.FLG_DropOnAnyAction, "Drop On Any Action");
                     EditorGUILayout.Space(1);
+                    // FLG_WoodenParry_Bool FLAGS
+                    CreateAttributeToggle(ref FLG_CanBePickedUpFromCorpse_bool, ref item.FLG_CanBePickedUpFromCorpse, "Can Be Picked Up From Corpse");
+                    EditorGUILayout.Space(1);
+                    // FLG_WoodenParry_Bool FLAGS
+                    CreateAttributeToggle(ref FLG_WoodenAttack_bool, ref item.FLG_WoodenAttack, "Wooden Attack");
+                    EditorGUILayout.Space(1);
+                    CreateAttributeToggle(ref WPN_FLG_FirearmAmmo_bool, ref item.WPN_FLG_FirearmAmmo, "Firearm Ammo");
+                    EditorGUILayout.Space(1);
+                    CreateAttributeToggle(ref WPN_FLG_NotUsableWithTwoHand_bool, ref item.WPN_FLG_NotUsableWithTwoHand, "Not Usable With Two Hand");
+                    EditorGUILayout.Space(1);
+                    CreateAttributeToggle(ref WPN_FLG_BonusAgainstShield_bool, ref item.WPN_FLG_BonusAgainstShield, "Bonus Against Shield");
+                    EditorGUILayout.Space(1);
+                    CreateAttributeToggle(ref WPN_FLG_CanDismount_bool, ref item.WPN_FLG_CanDismount, "Can Dismount");
+                    EditorGUILayout.Space(1);
                     DrawUILine(colUILine, 3, 12);
 
                     // SHIELD EDITOR
@@ -2104,6 +2162,19 @@ public class ItemAssetEditor : Editor
 
                         // hit points flags
                         CreateAttributeToggle(ref WPN_FLG_HasHitPoints_Bool, ref item.WPN_FLG_HasHitPoints, "Hit Points");
+                        EditorGUILayout.Space(1);
+
+                        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Shield Down Length: "));
+                        EditorGUIUtility.labelWidth = textDimensions.x;
+                        var dwn = 0.0f;
+                        float.TryParse(item.WPN_shield_down_length, out dwn);
+                        item.WPN_shield_down_length = EditorGUILayout.FloatField("Shield Down Length", dwn, GUILayout.Width(180)).ToString();
+                        EditorGUILayout.Space(1);
+
+                        var wdt = 0.0f;
+                        float.TryParse(item.WPN_shield_width, out wdt);
+                        item.WPN_shield_width = EditorGUILayout.FloatField("Shield Width", wdt, GUILayout.Width(180)).ToString();
+                        EditorGUILayout.Space(1);
 
                         DrawUILine(colUILine, 3, 12);
 
@@ -2982,7 +3053,7 @@ public class ItemAssetEditor : Editor
                     string modSett = modsSettingsPath + item.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -3012,7 +3083,7 @@ public class ItemAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == item.moduleID)
                                 {
@@ -3256,7 +3327,7 @@ public class ItemAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -3288,7 +3359,7 @@ public class ItemAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == item.moduleID)
                                 {

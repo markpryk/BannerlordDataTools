@@ -2,23 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 [System.Serializable]
 [CreateAssetMenu(fileName = "BDT_settings.asset", menuName = "BDT/Settings Asset", order = 1)]
 public class BDTSettings : ScriptableObject
 {
+    const string BDT_Version = "0.0.58b";
+    const string BN_Version_compatibility = "e1.8.0";
+
+    public string BDTVersion
+    {
+        get { return BDT_Version; }
+    }
+    public string BannerlordVersionCompatibility
+    {
+        get { return BN_Version_compatibility; }
+    }
+
     public bool load_a;
     public bool load_b;
-    
+
     public string BNModulesPath;
     public string currentModule;
 
+    public bool ableToDeleteModOrigins;
     //Language
     [SerializeField]
     public ModLanguage[] LanguagesDefinitions;
     //Kingdoms
     public string[] PoliciesDefinitions;
-    
+
     //Settlements
     [SerializeField]
     public LocationComplexTemplate[] LocationComplexTemplateDefinitions;
@@ -64,6 +78,11 @@ public class BDTSettings : ScriptableObject
     public string[] ItemModifierGroupDefinitions;
     public string[] HairTagDefinitions;
     public string[] BeardTagDefinitions;
+    public string[] TattooTagDefinitions;
+
+    //Update 1.8.0
+    public string[] PreferredUpgradeFormationDefinitions;
+    public string[] RaceDefinitions;
 
     public void AssignWorldMapProductionIcons()
     {
@@ -125,5 +144,28 @@ public class BDTSettings : ScriptableObject
             VillageTypesSprites[i] = icon;
         }
 
+        //if (!VillagesTypeDefinitions.Contains("camel_ranch"))
+        //{
+        //    var path = "Assets/Settings/EditorResources/VillageTypesSprites/WMP_Editor/camel.png";
+        //    AddDefinitionAndIcon(path, "camel_ranch");
+        //}
+
+    }
+
+    private void AddDefinitionAndIcon(string spritePath, string definition)
+    {
+        var spr = (Sprite)AssetDatabase.LoadAssetAtPath(spritePath, typeof(Sprite));
+        if (spr == null)
+            return;
+
+        var tempSprite = new Sprite[VillageTypesSprites.Length + 1];
+        VillageTypesSprites.CopyTo(tempSprite, 0);
+        VillageTypesSprites = tempSprite;
+        VillageTypesSprites[VillageTypesSprites.Length - 1] = spr;
+
+        var tempDefinition = new string[VillagesTypeDefinitions.Length + 1];
+        VillagesTypeDefinitions.CopyTo(tempDefinition, 0);
+        VillagesTypeDefinitions = tempDefinition;
+        VillagesTypeDefinitions[VillagesTypeDefinitions.Length - 1] = definition;
     }
 }

@@ -84,6 +84,9 @@ public class Culture : ScriptableObject
     public string gear_dummy;
     public string board_game_type;
 
+    public string default_battle_equipment_roster;
+    public string default_civilian_equipment_roster;
+
     /// UPDATE 
     public string vassal_reward_party_template;
     public string faction_banner_key;
@@ -110,7 +113,7 @@ public class Culture : ScriptableObject
     public string[] TTT_two_participants;
     public string[] TTT_four_participants;
 
-    public string[] child_character_templates;
+    //public string[] child_character_templates;
     public string[] notable_and_wanderer_templates;
     public string[] lord_templates;
     public string[] rebellion_hero_templates;

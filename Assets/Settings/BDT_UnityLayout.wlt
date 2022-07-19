@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 997
   m_ShowMode: 4
-  m_Title: Console
+  m_Title: Bannerlord Data Tools
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -73,7 +73,7 @@ MonoBehaviour:
     height: 30
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
-  m_LastLoadedLayoutName: 
+  m_LastLoadedLayoutName: BDT_UnityLayout
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 11030
+  controlID: 11281
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -138,7 +138,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 582
+    width: 684
     height: 947
   m_MinSize: {x: 231, y: 271}
   m_MaxSize: {x: 10001, y: 10021}
@@ -162,9 +162,9 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 582
+    x: 684
     y: 0
-    width: 699
+    width: 597
     height: 947
   m_MinSize: {x: 102, y: 121}
   m_MaxSize: {x: 4002, y: 4021}
@@ -180,7 +180,7 @@ MonoBehaviour:
   - {fileID: 18}
   - {fileID: 9}
   m_Selected: 0
-  m_LastSelected: 8
+  m_LastSelected: 6
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -240,7 +240,7 @@ MonoBehaviour:
   - ID
   - Kingdom
   sortBy_index: 0
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   modifyList: []
 --- !u!114 &10
 MonoBehaviour:
@@ -264,7 +264,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 73
-    width: 581
+    width: 683
     height: 926
   m_ViewDataDictionary: {fileID: 0}
   m_OverlayCanvas:
@@ -283,22 +283,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Settings
+    - Assets
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Settings
+  - Assets
   m_LastFoldersGridSize: 16
-  m_LastProjectPath: E:\Work\_Unity\BN_DataTools
+  m_LastProjectPath: F:\PersonalProjects\UnityProjects\BannerlordDataTools
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 362}
-    m_SelectedIDs: 0a650000
-    m_LastClickedID: 25866
-    m_ExpandedIDs: 00000000dc640000de640000e0640000e2640000e4640000e6640000e8640000ea640000ec640000ee640000f0640000f2640000f4640000f6640000f8640000fa640000fc640000fe64000000650000026500000465000006650000086500000a6500000c6500000e6500001065000012650000146500001665000000ca9a3b
+    scrollPos: {x: 0, y: 79}
+    m_SelectedIDs: 4ef10000
+    m_LastClickedID: 61774
+    m_ExpandedIDs: 000000004ef1000052f100005af100005cf1000060f1000062f1000064f1000066f1000068f100006af100006cf100006ef1000070f1000072f1000074f1000076f100007af100007cf100007ef1000080f1000082f1000086f1000088f100008af100008cf100008ef1000090f1000092f1000094f1000096f1000098f100009af100009cf100009ef10000a0f10000a2f100005a12010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -326,7 +326,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000dc640000de640000e0640000e2640000e4640000e6640000e8640000ea640000ec640000ee640000f0640000f2640000f4640000f6640000f8640000fa640000fc640000fe64000000650000026500000465000006650000086500000a6500000c6500000e6500001065000012650000146500001665000000ca9a3b
+    m_ExpandedIDs: 000000004ef1000052f100005af100005cf1000060f1000062f1000064f1000066f1000068f100006af100006cf100006ef1000070f1000072f1000074f1000076f100007af100007cf100007ef1000080f1000082f1000086f1000088f100008af100008cf100008ef1000090f1000092f1000094f1000096f1000098f100009af100009cf100009ef10000a0f10000a2f100005a12010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -353,7 +353,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
+    m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c6230000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -402,17 +402,18 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 582
+    x: 684
     y: 73
-    width: 697
+    width: 595
     height: 926
   m_ViewDataDictionary: {fileID: 0}
   m_OverlayCanvas:
     m_LastAppliedPresetName: Default
     m_SaveData: []
   modsList: []
-  currentMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
-  source: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  currentMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
+  source: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
+  refresh: 0
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -446,7 +447,7 @@ MonoBehaviour:
   - ID
   - 
   sortBy_index: 0
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   modifyList: []
 --- !u!114 &13
 MonoBehaviour:
@@ -481,7 +482,7 @@ MonoBehaviour:
   - ID
   - 
   sortBy_index: 0
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   modifyList: []
 --- !u!114 &14
 MonoBehaviour:
@@ -516,7 +517,7 @@ MonoBehaviour:
   - ID
   - Kingdom
   sortBy_index: 0
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   modifyList: []
 --- !u!114 &15
 MonoBehaviour:
@@ -551,7 +552,7 @@ MonoBehaviour:
   - ID
   - Faction
   sortBy_index: 2
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   modifyList: []
 --- !u!114 &16
 MonoBehaviour:
@@ -586,7 +587,7 @@ MonoBehaviour:
   - ID
   - Occupation
   sortBy_index: 0
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   heroLinksList: []
 --- !u!114 &17
 MonoBehaviour:
@@ -608,9 +609,9 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 433
+    x: 684
     y: 73
-    width: 818
+    width: 595
     height: 926
   m_ViewDataDictionary: {fileID: 0}
   m_OverlayCanvas:
@@ -620,7 +621,7 @@ MonoBehaviour:
   - Name
   - ID
   - 
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   modifyList: []
   show_IsEquipmentTemplate: 1
   show_IsNobleTemplate: 1
@@ -668,7 +669,7 @@ MonoBehaviour:
   - ID
   - 
   sortBy_index: 0
-  loadedMod: {fileID: 11400000, guid: 1a737b588859e374ba214b28520189de, type: 2}
+  loadedMod: {fileID: 11400000, guid: f79ddfb6ca981394c97e1fd3bbd120dd, type: 2}
   modifyList: []
 --- !u!114 &19
 MonoBehaviour:

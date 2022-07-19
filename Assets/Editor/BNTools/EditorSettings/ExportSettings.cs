@@ -33,4 +33,13 @@ public class ExportSettings : ScriptableObject
     public bool centerIconCapsules;
     public bool createHigtMapData;
     public bool settlToZero;
+
+
+    public bool exportSubModule_xml = true;
+
+    //"Campaign" - 0
+    //"CampaignStoryMode"- 1
+    //"CustomGame" - 2
+    //"EditorGame"- 3
+    public bool[] xmlGameType = new bool[4] { true, true, true, true };
 }

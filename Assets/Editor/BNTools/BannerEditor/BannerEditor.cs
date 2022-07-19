@@ -22,6 +22,7 @@ public class BannerEditor : EditorWindow
     // string bannerKeyLayout_old = "10.148.148.2000.2000.764.764.1.0.0.510.0.116.1800.30.764.224.0.0.0.510.0.116.1800.20.764.1132.0.0.0.510.0.116.1800.20.764.396.0.0.0.510.0.116.1800.30.764.1312.0.0.0.510.0.116.1800.30.1463.764.0.0.90.510.0.116.1800.30.73.764.0.0.90.510.0.116.1800.20.1064.764.0.0.90.510.0.116.1800.20.464.764.0.0.90";
     string nullBanner = "11.148.0.2000.2000.764.764.1.0.0";
 
+    public NPCCharacter inputNPC;
     public Kingdom inputKingdom;
     public Faction inputFaction;
     public Culture inputCulture;
@@ -80,6 +81,8 @@ public class BannerEditor : EditorWindow
     {
         if (inputKingdom != null)
             EditorUtility.SetDirty(inputKingdom);
+        if (inputNPC != null)
+            EditorUtility.SetDirty(inputNPC);
         if (inputFaction != null)
             EditorUtility.SetDirty(inputFaction);
         if (inputCulture != null)
@@ -165,7 +168,7 @@ public class BannerEditor : EditorWindow
         }
     }
 
-   
+
     private void DrawLayerOptions()
     {
         var layerOptionsRect = new Rect(14, 32, 160, 768);
@@ -1000,6 +1003,10 @@ public class BannerEditor : EditorWindow
         else if (inputFaction != null)
         {
             inputFaction.banner_key = bannerKey;
+        }
+        else if (inputNPC != null)
+        {
+            inputNPC.banner_key = bannerKey;
         }
         else
         {

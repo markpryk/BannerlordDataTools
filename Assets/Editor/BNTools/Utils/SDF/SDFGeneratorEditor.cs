@@ -30,7 +30,7 @@ public class SDFGeneratorEditor : EditorWindow
 
     public Texture2D tex2D;
 
-    [MenuItem("BNDataTools/SDFTextureGenerator")]
+    [MenuItem("BNDataTools/Utils/SDFTextureGenerator")]
 
     static void Init()
     {

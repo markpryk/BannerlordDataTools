@@ -975,7 +975,7 @@ class WorldMapPositionsManager : EditorWindow
                     var style = new GUIStyle(EditorStyles.miniBoldLabel);
                     style.fontSize = (int)(16 * ico_sizes);
                     var labelRect = new Rect(X + i_size, (Y - 8) + W_res, 200, 64);
-                    GUI.Label(labelRect, soloName, style);
+                    GUI.Label(labelRect, SList[i].id, style);
                 }
 
                 GUI.color = Color.red * 3;

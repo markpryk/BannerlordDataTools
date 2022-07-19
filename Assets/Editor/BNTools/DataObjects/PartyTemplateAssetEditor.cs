@@ -65,7 +65,7 @@ public class PartyTemplateAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == PTemplate.moduleID)
                     {
@@ -282,6 +282,15 @@ public class PartyTemplateAssetEditor : Editor
                 //PTemplate.PTS_max_value[PTemplate.PTS_max_value.Length - 1] = "0";
 
                 //StackTroops = new NPCCharacter[PTemplate.PTS_troop.Length];
+
+                if (PTemplate.PTS_troop == null)
+                    PTemplate.PTS_troop = new string[0];
+
+                if (PTemplate.PTS_min_value == null)
+                    PTemplate.PTS_min_value = new string[0];
+
+                if (PTemplate.PTS_max_value == null)
+                    PTemplate.PTS_max_value = new string[0];
 
                 var temp = new string[PTemplate.PTS_troop.Length + 1];
                 PTemplate.PTS_troop.CopyTo(temp, 0);
@@ -513,7 +522,7 @@ public class PartyTemplateAssetEditor : Editor
                     string modSett = modsSettingsPath + PTemplate.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -543,7 +552,7 @@ public class PartyTemplateAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == PTemplate.moduleID)
                                 {

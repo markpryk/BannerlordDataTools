@@ -44,8 +44,30 @@ public class FactionAssetEditor : Editor
     public bool is_sect;
     public bool is_nomad;
 
+    // update 1.8.0
+    public bool is_noble;
+
     bool showMinorFacTemplates;
     public NPCCharacter[] minor_fac_char_templates;
+
+    // Relations
+    bool showRelationshipsEditor;
+
+    Kingdom[] KingdomRelation;
+    //bool[] IsAtWar_Bool;
+
+    string _changed_Kingdom;
+    Kingdom _changed_OLD_Kingdom;
+    bool _IS_changed_Kingdom;
+
+    Faction[] FactionRelation;
+    bool showFactionsRelationshipsEditor;
+
+    string _changed_Faction;
+    Faction _changed_OLD_Faction;
+    bool _IS_changed_Faction;
+
+    // Relations - End
 
     Color labelColor;
 
@@ -73,6 +95,14 @@ public class FactionAssetEditor : Editor
         else
             minor_fac_char_templates = new NPCCharacter[0];
 
+        if (fac.fac_relationships != null && fac.fac_relationships.Length > 0)
+            FactionRelation = new Faction[fac.fac_relationships.Length];
+
+        if (fac.relationships != null && fac.relationships.Length > 0)
+            KingdomRelation = new Kingdom[fac.relationships.Length];
+        //else
+        //    FactionRelation = new Faction[0];
+
     }
 
     public override void OnInspectorGUI()
@@ -98,7 +128,7 @@ public class FactionAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == fac.moduleID)
                     {
@@ -260,8 +290,13 @@ public class FactionAssetEditor : Editor
         DrawUILineVertical(colUILine, 1, 1, 16);
 
         CreateToggleFaction(ref fac.is_nomad, ref is_nomad, "Is Nomad: ");
+
+        DrawUILineVertical(colUILine, 1, 1, 16);
+
+        CreateToggleFaction(ref fac.is_noble, ref is_noble, "Is Noble: ");
+
         GUILayout.EndHorizontal();
-        
+
         EditorGUILayout.Space(4);
 
 
@@ -335,7 +370,7 @@ public class FactionAssetEditor : Editor
                     string modSett = modsSettingsPath + fac.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -365,7 +400,7 @@ public class FactionAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == fac.moduleID)
                                 {
@@ -429,7 +464,7 @@ public class FactionAssetEditor : Editor
                     string modSett = modsSettingsPath + fac.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -459,7 +494,7 @@ public class FactionAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == fac.moduleID)
                                 {
@@ -522,7 +557,7 @@ public class FactionAssetEditor : Editor
                     string modSett = modsSettingsPath + fac.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -552,7 +587,7 @@ public class FactionAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == fac.moduleID)
                                 {
@@ -613,7 +648,7 @@ public class FactionAssetEditor : Editor
                     string modSett = modsSettingsPath + fac.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -643,7 +678,7 @@ public class FactionAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == fac.moduleID)
                                 {
@@ -685,8 +720,14 @@ public class FactionAssetEditor : Editor
         }
         GUILayout.EndHorizontal();
 
+        DrawUILine(colUILine, 2, 12);
+
         // settlement banner mesh
         fac.settlement_banner_mesh = EditorGUILayout.TextField("Settlement Banner Mesh:", fac.settlement_banner_mesh);
+       
+        DrawUILine(colUILine, 2, 12);
+
+        fac.flag_mesh = EditorGUILayout.TextField("Flag Mesh:", fac.flag_mesh);
 
 
         DrawUILine(colUILine, 3, 12);
@@ -709,6 +750,7 @@ public class FactionAssetEditor : Editor
                 BannerEditor assetMng = (BannerEditor)ScriptableObject.CreateInstance(typeof(BannerEditor));
                 assetMng.bannerKey = fac.banner_key;
                 //assetMng.ReadBannerKey();
+                assetMng.inputNPC = null;
                 assetMng.inputKingdom = null;
                 assetMng.inputFaction = fac;
                 assetMng.inputCulture = null;
@@ -718,6 +760,7 @@ public class FactionAssetEditor : Editor
                 BannerEditor assetMng = BANNER_EDITOR_Instance;
                 assetMng.bannerKey = fac.banner_key;
                 //assetMng.ReadBannerKey();
+                assetMng.inputNPC = null;
                 assetMng.inputKingdom = null;
                 assetMng.inputFaction = fac;
                 assetMng.inputCulture = null;
@@ -952,12 +995,17 @@ public class FactionAssetEditor : Editor
 
         labelStyle = new GUIStyle(EditorStyles.label);
         /// COLORS END
+        /// 
 
-
+        // Relations
+        DrawUILine(colUILine, 3, 12);
+        DrawKingdomRelationshipsEditor();
+        DrawUILine(colUILine, 3, 12);
+        DrawFactionRelationshipsEditor();
 
         if (is_minor_faction)
             DrawMinorTemplatesEditor();
- 
+
         DrawUILine(colUILine, 3, 12);
 
         // 2 faction name
@@ -970,7 +1018,1085 @@ public class FactionAssetEditor : Editor
         // EditorGUILayout.EndToggleGroup();
         // EditorGUI.EndDisabledGroup();
     }
+    void DrawKingdomRelationshipsEditor()
+    {
+        Vector2 textDimensions;
+        GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
+        buttonStyle.fontStyle = FontStyle.Bold;
+        buttonStyle.hover.textColor = Color.green;
 
+        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
+        titleStyle.fontSize = 16;
+
+        Color newCol;
+        ColorUtility.TryParseHtmlString("#faae40", out newCol);
+        Color newCol2;
+        ColorUtility.TryParseHtmlString("#f38020", out newCol2);
+        titleStyle.normal.textColor = newCol;
+
+        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        hiderStyle.fontSize = 10;
+        hiderStyle.normal.textColor = newCol;
+
+        var originDimensions = EditorGUIUtility.labelWidth;
+
+        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Relationships: "));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+
+        var showEditorLabel = "Hide";
+        if (!showRelationshipsEditor)
+        {
+            hiderStyle.fontSize = 16;
+            showEditorLabel = "Kingdoms Relationships";
+        }
+
+        showRelationshipsEditor = EditorGUILayout.Foldout(showRelationshipsEditor, showEditorLabel, hiderStyle);
+
+        if (showRelationshipsEditor)
+        {
+
+            EditorGUILayout.LabelField("Kingdoms Relationships", titleStyle, GUILayout.ExpandWidth(true));
+            DrawUILine(colUILine, 3, 12);
+
+
+            // if (kingd.relationships == null)
+            // {
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button((new GUIContent("Add Relation", "Add relation between Kingdoms")), buttonStyle, GUILayout.Width(128)))
+            {
+                if (fac.relationships == null)
+                    fac.relationships = new string[0];
+
+                if (fac.relationValues == null)
+                    fac.relationValues = new string[0];
+
+                var temp = new string[fac.relationships.Length + 1];
+                fac.relationships.CopyTo(temp, 0);
+                fac.relationships = temp;
+
+                fac.relationships[fac.relationships.Length - 1] = "";
+
+                temp = new string[fac.relationValues.Length + 1];
+                fac.relationValues.CopyTo(temp, 0);
+                fac.relationValues = temp;
+
+                fac.relationValues[fac.relationValues.Length - 1] = "0";
+
+                //temp = new string[fac.relationsAtWar.Length + 1];
+                //fac.relationsAtWar.CopyTo(temp, 0);
+                //fac.relationsAtWar = temp;
+
+                //fac.relationsAtWar[fac.relationsAtWar.Length - 1] = "false";
+
+                KingdomRelation = new Kingdom[fac.relationships.Length];
+                //IsAtWar_Bool = new bool[fac.relationsAtWar.Length];
+
+                //if (fac.relationsAtWar != null && fac.relationsAtWar.Length != 0)
+                //{
+                //    int i2 = 0;
+                //    foreach (var rel in fac.relationsAtWar)
+                //    {
+                //        if (rel == "true")
+                //        {
+                //            IsAtWar_Bool[i2] = true;
+                //        }
+                //        else
+                //        {
+                //            IsAtWar_Bool[i2] = false;
+                //        }
+                //        i2++;
+                //    }
+                //}
+
+                return;
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(4);
+            // DrawUILine(colUILine, 3, 12);
+            // }
+
+            buttonStyle.fontStyle = FontStyle.Bold;
+            buttonStyle.hover.textColor = Color.red;
+
+            int i = 0;
+            if (fac.relationships != null && fac.relationships.Length != 0)
+            {
+                foreach (var relation in fac.relationships)
+                {
+                    GetKingdomAsset(ref fac.relationships[i], ref KingdomRelation[i]);
+                    i++;
+                }
+
+                CheckKingdomLinkedData();
+
+                i = 0;
+                foreach (var relation in fac.relationships)
+                {
+
+                    if (KingdomRelation[i] != null)
+                    {
+                        _changed_OLD_Kingdom = KingdomRelation[i];
+                    }
+                    else
+                    {
+                        _changed_OLD_Kingdom = null;
+                    }
+
+                    // GetKingdomAsset(ref kingd.relationships[i], ref KingdomRelation[i]);
+
+                    // ColorUtility.TryParseHtmlString("#F65314", out newCol2);
+                    titleStyle.fontSize = 13;
+                    titleStyle.normal.textColor = newCol2;
+
+                    // GetKingdomAsset(ref kingd.relationships[i], ref KingdomRelation[i]);
+
+
+                    if (KingdomRelation[i] != null)
+                    {
+                        ColorUtility.TryParseHtmlString("#" + KingdomRelation[i].color, out newCol2);
+                        titleStyle.normal.textColor = new Color(newCol2.r, newCol2.g, newCol2.b, 1);
+
+                        string kingdom_soloName = KingdomRelation[i].kingdomName;
+                        RemoveTSString(ref kingdom_soloName);
+                        EditorGUILayout.LabelField(kingdom_soloName, titleStyle, GUILayout.ExpandWidth(true));
+                    }
+                    else
+                    {
+                        ColorUtility.TryParseHtmlString("#6a737b", out newCol2);
+                        titleStyle.normal.textColor = newCol2;
+
+                        EditorGUILayout.LabelField("None", titleStyle, GUILayout.ExpandWidth(true));
+                    }
+
+                    EditorGUILayout.Space(2);
+
+                    EditorGUI.BeginChangeCheck();
+
+                    //CreateAttributeToggle(ref IsAtWar_Bool[i], ref fac.relationsAtWar[i], " Is At War");
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        if (KingdomRelation[i] != null)
+                        {
+                            _changed_Kingdom = KingdomRelation[i].id;
+                            _IS_changed_Kingdom = true;
+                        }
+
+                    }
+                    EditorGUILayout.Space(3);
+
+
+                    textDimensions = GUI.skin.label.CalcSize(new GUIContent("Kingdom: "));
+                    EditorGUIUtility.labelWidth = textDimensions.x;
+
+                    // EditorGUILayout.LabelField("Kingdom:", EditorStyles.label, GUILayout.ExpandWidth(false));
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUI.BeginChangeCheck();
+
+                    object kingdRelField = EditorGUILayout.ObjectField(KingdomRelation[i], typeof(Kingdom), true, GUILayout.MaxWidth(192));
+                    KingdomRelation[i] = (Kingdom)kingdRelField;
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        if (KingdomRelation[i] != null)
+                        {
+                            _changed_Kingdom = KingdomRelation[i].id;
+                            _IS_changed_Kingdom = true;
+                        }
+
+                    }
+
+                    if (KingdomRelation[i] != null)
+                    {
+                        fac.relationships[i] = "Kingdom." + KingdomRelation[i].id;
+                    }
+                    else
+                    {
+                        fac.relationships[i] = "";
+                    }
+
+                    EditorGUI.BeginChangeCheck();
+
+                    CreateIntAttribute(ref fac.relationValues[i], "Relation Value:");
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        if (KingdomRelation[i] != null)
+                        {
+                            _changed_Kingdom = KingdomRelation[i].id;
+                            _IS_changed_Kingdom = true;
+                        }
+
+                    }
+
+                    // EditorGUILayout.Space();
+
+                    if (GUILayout.Button((new GUIContent("X", "Remove Relation")), buttonStyle, GUILayout.Width(32)))
+                    {
+                        if (KingdomRelation[i] != null)
+                        {
+                            foreach (var rel in KingdomRelation[i].fac_relationships)
+                            {
+                                if (rel != null && rel == "Faction." + fac.id)
+                                {
+                                    var dpd_count = 0;
+
+                                    if (KingdomRelation[i].fac_relationships.Length != 0)
+                                        dpd_count = KingdomRelation[i].fac_relationships.Length - 1;
+
+                                    var dpd_temp_rel = new string[dpd_count];
+                                    var dpd_temp_val = new string[dpd_count];
+
+                                    int dpd_i2 = 0;
+                                    var dpd_i3 = 0;
+                                    foreach (string trg in KingdomRelation[i].fac_relationships)
+                                    {
+                                        if (trg != "Faction." + fac.id)
+                                        {
+                                            dpd_temp_rel[dpd_i2] = KingdomRelation[i].fac_relationships[dpd_i3];
+                                            dpd_temp_val[dpd_i2] = KingdomRelation[i].fac_relationValues[dpd_i3];
+                                            dpd_i2++;
+                                        }
+                                        dpd_i3++;
+                                    }
+
+                                    KingdomRelation[i].fac_relationships = dpd_temp_rel;
+                                    KingdomRelation[i].fac_relationValues = dpd_temp_val;
+                                }
+                            }
+                        }
+
+                        var count = fac.relationships.Length - 1;
+                        var temp_rel = new string[count];
+                        var temp_val = new string[count];
+                        var temp_war = new string[count];
+
+                        int i2 = 0;
+                        int i3 = 0;
+                        foreach (string trg in fac.relationships)
+                        {
+                            if (i3 != i)
+                            {
+                                temp_rel[i2] = fac.relationships[i3];
+                                temp_val[i2] = fac.relationValues[i3];
+                                //temp_war[i2] = fac.relationsAtWar[i3];
+                                i2++;
+                            }
+                            i3++;
+                        }
+
+                        fac.relationships = temp_rel;
+                        fac.relationValues = temp_val;
+                        //fac.relationsAtWar = temp_war;
+
+                        KingdomRelation = new Kingdom[fac.relationships.Length];
+                        //IsAtWar_Bool = new bool[fac.relationsAtWar.Length];
+
+                        //if (fac.relationsAtWar != null && fac.relationsAtWar.Length != 0)
+                        //{
+                        //    i2 = 0;
+                        //    foreach (var rel in fac.relationsAtWar)
+                        //    {
+                        //        if (rel == "true")
+                        //        {
+                        //            IsAtWar_Bool[i2] = true;
+                        //        }
+                        //        else
+                        //        {
+                        //            IsAtWar_Bool[i2] = false;
+                        //        }
+                        //        i2++;
+                        //    }
+                        //}
+
+                        return;
+
+                    }
+
+
+
+                    EditorGUILayout.EndHorizontal();
+
+                    DrawUILine(colUILine, 3, 12);
+                    i++;
+                }
+            }
+        }
+    }
+
+    private void CheckKingdomLinkedData()
+    {
+        // Load Liked Data
+
+        if (_IS_changed_Kingdom)
+        {
+            int i2 = 0;
+
+            foreach (var rel in KingdomRelation)
+            {
+                if (rel != null && rel.id == _changed_Kingdom)
+                {
+                        bool existingFaction = false;
+                        foreach (string relationAsset in rel.fac_relationships)
+                        {
+                            if (relationAsset.Contains("Faction." + fac.id))
+                            {
+                                existingFaction = true;
+                            }
+                        }
+                        // Debug.Log(existingKingdom);
+
+                        if (!existingFaction)
+                        {
+
+                            var objectsDic = new Dictionary<string, string>();
+                            var boolsList = new List<string>();
+
+                            var i3 = 0;
+                            foreach (string relationAsset in rel.fac_relationships)
+                            {
+                                // Debug.Log(relationAsset);
+                                if (!objectsDic.ContainsKey(rel.fac_relationships[i3]))
+                                {
+                                    objectsDic.Add(rel.fac_relationships[i3], rel.fac_relationValues[i3]);
+                                    i3++;
+                                }
+                            }
+
+                            rel.fac_relationships = new string[objectsDic.Count + 1];
+                            rel.fac_relationValues = new string[objectsDic.Count + 1];
+
+                            i3 = 0;
+                            foreach (var obj in objectsDic)
+                            {
+                                rel.fac_relationValues[i3] = obj.Value;
+                                rel.fac_relationships[i3] = obj.Key;
+                                i3++;
+                            }
+
+                            rel.fac_relationships[rel.fac_relationships.Length - 1] = "Faction." + fac.id;
+
+                            i3 = 0;
+                            foreach (var facRel in fac.fac_relationships)
+                            {
+                                if (facRel == "Kingdom." + rel.id)
+                                {
+                                    rel.fac_relationValues[rel.fac_relationValues.Length - 1] = fac.relationValues[i3];
+                                }
+                                i3++;
+                            }
+
+
+                        }
+                        else
+                        {
+                            int i3 = 0;
+                            foreach (string relationAsset in rel.fac_relationships)
+                            {
+                                if (relationAsset == "Faction." + fac.id)
+                                {
+                                    var i4 = 0;
+                                    foreach (var facRel in fac.relationships)
+                                    {
+                                        if (facRel == "Kingdom." + rel.id)
+                                        {
+                                            rel.fac_relationValues[i3] = fac.relationValues[i4];
+                                        }
+                                        i4++;
+                                    }
+                                }
+                                i3++;
+                            }
+
+                        }
+
+
+                    }
+                    i2++;
+                }
+
+                i2 = 0;
+                if (_changed_OLD_Kingdom != null)
+                {
+                    // string oldKingdomLabel = "Kingdom." + _changed_OLD_Kingdom.id;
+                    // GetKingdomAsset(ref oldKingdomLabel, ref _changed_OLD_Kingdom);
+                    // Debug.Log(_changed_OLD_Kingdom.kingdomName);
+
+
+                    bool oldKingdom = false;
+                    foreach (var rel in KingdomRelation)
+                    {
+                        if (rel.id == _changed_OLD_Kingdom.id)
+                        {
+                            oldKingdom = true;
+                        }
+                        i2++;
+                    }
+
+                    if (!oldKingdom)
+                    {
+                        i2 = 0;
+                        foreach (var rel in _changed_OLD_Kingdom.fac_relationships)
+                        {
+                            if (rel == "Faction." + fac.id)
+                            {
+                                var objects = new Dictionary<string, string>();
+                            _changed_OLD_Kingdom.fac_relationships[i2] = "remove";
+
+                                i2 = 0;
+                                foreach (string relationAsset in _changed_OLD_Kingdom.fac_relationships)
+                                {
+                                    if (relationAsset != "remove")
+                                    {
+                                        objects.Add(relationAsset, _changed_OLD_Kingdom.fac_relationValues[i2]);
+                                    }
+                                    i2++;
+                                }
+
+                            _changed_OLD_Kingdom.fac_relationships = new string[objects.Count];
+                            _changed_OLD_Kingdom.fac_relationValues = new string[objects.Count];
+
+                                i2 = 0;
+                                foreach (var obj in objects)
+                                {
+                                _changed_OLD_Kingdom.fac_relationValues[i2] = obj.Value;
+                                _changed_OLD_Kingdom.fac_relationships[i2] = obj.Key;
+                                    i2++;
+                                }
+                            }
+                            i2++;
+                        }
+                    }
+
+                    // Debug.Log(_changed_OLD_Kingdom.id);
+                }
+
+
+                _changed_Kingdom = "";
+            _IS_changed_Kingdom = false;
+        }
+    }
+
+    private void GetKingdomAsset(ref string kingdomLink, ref Kingdom kingdom)
+    {
+        // Face Key Template template
+        // 
+        if (kingdomLink != null && kingdomLink != "")
+        {
+            if (kingdomLink.Contains("Kingdom."))
+            {
+                // string[] assetFiles = Directory.GetFiles(dataPath + npc.moduleName + "/_Templates/NPCtemplates/", "*.asset");
+
+                string dataName = kingdomLink.Replace("Kingdom.", "");
+
+                string assetPath;
+                string assetPathShort;
+
+
+                assetPath = dataPath + fac.moduleID + "/Kingdoms/" + dataName + ".asset";
+                assetPathShort = "/Kingdoms/" + dataName + ".asset";
+
+
+                if (System.IO.File.Exists(assetPath))
+                {
+                    kingdom = (Kingdom)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Kingdom));
+                }
+                else
+                {
+                    // SEARCH IN DEPENDENCIES
+                    string modSett = modsSettingsPath + fac.moduleID + ".asset";
+                    ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
+
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
+                    {
+                        string dpdPath = modsSettingsPath + dpdMod + ".asset";
+
+                        if (System.IO.File.Exists(dpdPath))
+                        {
+                            string dpdAsset = dataPath + dpdMod + assetPathShort;
+
+                            if (System.IO.File.Exists(dpdAsset))
+                            {
+                                kingdom = (Kingdom)AssetDatabase.LoadAssetAtPath(dpdAsset, typeof(Kingdom));
+                                break;
+                            }
+                            else
+                            {
+                                kingdom = null;
+                            }
+
+                        }
+                    }
+
+                    //Check is dependency OF
+                    if (kingdom == null)
+                    {
+                        string[] mods = Directory.GetFiles(modsSettingsPath, "*.asset");
+
+                        foreach (string mod in mods)
+                        {
+                            ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
+
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
+                            {
+                                if (depend == fac.moduleID)
+                                {
+                                    foreach (var data in iSDependencyOfMod.modFilesData.npcChrData.NPCCharacters)
+                                    {
+                                        if (data.id == dataName)
+                                        {
+                                            string dpdAsset = dataPath + iSDependencyOfMod.id + assetPathShort;
+                                            kingdom = (Kingdom)AssetDatabase.LoadAssetAtPath(dpdAsset, typeof(Kingdom));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (kingdom == null)
+                        {
+
+                            Debug.Log("Kingdom " + dataName + " - Not EXIST in" + " ' " + fac.moduleID + " ' " + "resources, and they dependencies.");
+
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    private void CreateAttributeToggle(ref bool attrBool, ref string attr, string toggleLabel)
+    {
+        attrBool = GUILayout.Toggle(attrBool, toggleLabel);
+
+        if (attrBool)
+        {
+            attr = "true";
+        }
+        else
+        {
+            attr = "false";
+        }
+    }
+    void DrawFactionRelationshipsEditor()
+    {
+        Vector2 textDimensions;
+        GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
+        buttonStyle.fontStyle = FontStyle.Bold;
+        buttonStyle.hover.textColor = Color.green;
+
+        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
+        titleStyle.fontSize = 16;
+
+        Color newCol;
+        ColorUtility.TryParseHtmlString("#00d2f3", out newCol);
+        Color newCol2;
+        ColorUtility.TryParseHtmlString("#00aaff", out newCol2);
+        titleStyle.normal.textColor = newCol;
+
+        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        hiderStyle.fontSize = 10;
+        hiderStyle.normal.textColor = newCol;
+
+        var originDimensions = EditorGUIUtility.labelWidth;
+
+        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Relationships: "));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+
+        var showEditorLabel = "Hide";
+        if (!showFactionsRelationshipsEditor)
+        {
+            hiderStyle.fontSize = 16;
+            showEditorLabel = "Factions Relationships";
+        }
+
+        showFactionsRelationshipsEditor = EditorGUILayout.Foldout(showFactionsRelationshipsEditor, showEditorLabel, hiderStyle);
+
+        if (showFactionsRelationshipsEditor)
+        {
+
+            EditorGUILayout.LabelField("Factions Relationships", titleStyle, GUILayout.ExpandWidth(true));
+            DrawUILine(colUILine, 3, 12);
+
+
+            // if (kingd.relationships == null)
+            // {
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button((new GUIContent("Add Relation", "Add relation between Factions")), buttonStyle, GUILayout.Width(128)))
+            {
+                if (fac.fac_relationships == null)
+                    fac.fac_relationships = new string[0];
+
+                if (fac.fac_relationValues == null)
+                    fac.fac_relationValues = new string[0];
+
+                var temp = new string[fac.fac_relationships.Length + 1];
+                fac.fac_relationships.CopyTo(temp, 0);
+                fac.fac_relationships = temp;
+
+                fac.fac_relationships[fac.fac_relationships.Length - 1] = "";
+
+                temp = new string[fac.fac_relationValues.Length + 1];
+                fac.fac_relationValues.CopyTo(temp, 0);
+                fac.fac_relationValues = temp;
+
+                fac.fac_relationValues[fac.fac_relationValues.Length - 1] = "0";
+
+                FactionRelation = new Faction[fac.fac_relationships.Length];
+
+                return;
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(4);
+            // DrawUILine(colUILine, 3, 12);
+            // }
+
+            buttonStyle.fontStyle = FontStyle.Bold;
+            buttonStyle.hover.textColor = Color.red;
+
+            int i = 0;
+            if (fac.fac_relationships != null && fac.fac_relationships.Length != 0)
+            {
+                foreach (var relation in fac.fac_relationships)
+                {
+                    //Debug.Log(relation);
+                    GetFactionAsset(ref fac.fac_relationships[i], ref FactionRelation[i]);
+                    i++;
+                }
+
+                CheckFactionLinkedData();
+
+                i = 0;
+                foreach (var relation in fac.fac_relationships)
+                {
+
+                    if (FactionRelation[i] != null)
+                    {
+                        _changed_OLD_Faction = FactionRelation[i];
+                    }
+                    else
+                    {
+                        _changed_OLD_Faction = null;
+                    }
+
+                    // GetKingdomAsset(ref kingd.relationships[i], ref KingdomRelation[i]);
+
+                    // ColorUtility.TryParseHtmlString("#F65314", out newCol2);
+                    titleStyle.fontSize = 13;
+                    titleStyle.normal.textColor = newCol2;
+
+                    // GetKingdomAsset(ref kingd.relationships[i], ref KingdomRelation[i]);
+
+
+                    if (FactionRelation[i] != null)
+                    {
+                        ColorUtility.TryParseHtmlString("#" + FactionRelation[i].color, out newCol2);
+                        //titleStyle.normal.textColor = new Color(newCol2.r, newCol2.g, newCol2.b, 1);
+
+                        string kingdom_soloName = FactionRelation[i].factionName;
+                        RemoveTSString(ref kingdom_soloName);
+                        EditorGUILayout.LabelField(kingdom_soloName, titleStyle, GUILayout.ExpandWidth(true));
+                    }
+                    else
+                    {
+                        ColorUtility.TryParseHtmlString("#6a737b", out newCol2);
+                        titleStyle.normal.textColor = newCol2;
+
+                        EditorGUILayout.LabelField("None", titleStyle, GUILayout.ExpandWidth(true));
+                    }
+
+                    EditorGUILayout.Space(2);
+
+                    textDimensions = GUI.skin.label.CalcSize(new GUIContent("Faction: "));
+                    EditorGUIUtility.labelWidth = textDimensions.x;
+
+                    // EditorGUILayout.LabelField("Kingdom:", EditorStyles.label, GUILayout.ExpandWidth(false));
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUI.BeginChangeCheck();
+
+                    FactionRelation[i] = (Faction)EditorGUILayout.ObjectField(FactionRelation[i], typeof(Faction), true, GUILayout.MaxWidth(192));
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        if (FactionRelation[i] != null)
+                        {
+                            if (FactionRelation[i].id != fac.id)
+                                _changed_Faction = FactionRelation[i].id;
+                            else
+                            {
+                                FactionRelation[i] = null;
+                                _changed_Faction = "";
+                            }
+
+                            _IS_changed_Faction = true;
+                        }
+
+                    }
+
+                    if (FactionRelation[i] != null)
+                    {
+                        fac.fac_relationships[i] = "Faction." + FactionRelation[i].id;
+                    }
+                    else
+                    {
+                        fac.fac_relationships[i] = "";
+                    }
+
+                    EditorGUI.BeginChangeCheck();
+
+                    CreateIntAttribute(ref fac.fac_relationValues[i], "Relation Value:");
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        if (FactionRelation[i] != null)
+                        {
+                            _changed_Faction = FactionRelation[i].id;
+                            _IS_changed_Faction = true;
+                        }
+
+                    }
+
+                    // EditorGUILayout.Space();
+
+                    if (GUILayout.Button((new GUIContent("X", "Remove Relation")), buttonStyle, GUILayout.Width(32)))
+                    {
+
+                        if (FactionRelation[i] != null)
+                        {
+                            foreach (var rel in FactionRelation[i].fac_relationships)
+                            {
+                                if (rel != null && rel == "Faction." + fac.id)
+                                {
+                                    var dpd_count = 0;
+
+                                    if (FactionRelation[i].fac_relationships.Length != 0)
+                                        dpd_count = FactionRelation[i].fac_relationships.Length - 1;
+
+                                    var dpd_temp_rel = new string[dpd_count];
+                                    var dpd_temp_val = new string[dpd_count];
+
+                                    int dpd_i2 = 0;
+                                    var dpd_i3 = 0;
+                                    foreach (string trg in FactionRelation[i].fac_relationships)
+                                    {
+                                        if (trg != "Faction." + fac.id)
+                                        {
+                                            dpd_temp_rel[dpd_i2] = FactionRelation[i].fac_relationships[dpd_i3];
+                                            dpd_temp_val[dpd_i2] = FactionRelation[i].fac_relationValues[dpd_i3];
+                                            dpd_i2++;
+                                        }
+                                        dpd_i3++;
+                                    }
+
+                                    FactionRelation[i].fac_relationships = dpd_temp_rel;
+                                    FactionRelation[i].fac_relationValues = dpd_temp_val;
+                                }
+                            }
+                        }
+
+                        var count = 0;
+
+                        if (fac.fac_relationships.Length != 0)
+                            count = fac.fac_relationships.Length - 1;
+
+                        var temp_rel = new string[count];
+                        var temp_val = new string[count];
+
+                        int i2 = 0;
+                        int i3 = 0;
+                        foreach (string trg in fac.fac_relationships)
+                        {
+                            if (i3 != i)
+                            {
+                                temp_rel[i2] = fac.fac_relationships[i3];
+                                temp_val[i2] = fac.fac_relationValues[i3];
+                                i2++;
+                            }
+                            i3++;
+                        }
+
+                        fac.fac_relationships = temp_rel;
+                        fac.fac_relationValues = temp_val;
+
+                        FactionRelation = new Faction[fac.fac_relationships.Length];
+
+                        return;
+
+                    }
+
+
+
+                    EditorGUILayout.EndHorizontal();
+
+                    DrawUILine(colUILine, 3, 12);
+                    i++;
+                }
+            }
+        }
+    }
+
+    private void CheckFactionLinkedData()
+    {
+        // Load Liked Data
+
+        if (_IS_changed_Faction)
+        {
+            int i2 = 0;
+
+            foreach (var rel in FactionRelation)
+            {
+                if (rel != null && rel.id == _changed_Faction)
+                {
+                    bool existingFaction = false;
+                    foreach (string relationAsset in rel.fac_relationships)
+                    {
+                        if (relationAsset.Contains("Faction." + fac.id))
+                        {
+                            existingFaction = true;
+                        }
+                    }
+                    // Debug.Log(existingKingdom);
+
+
+                    if (!existingFaction)
+                    {
+
+                        var objectsDic = new Dictionary<string, string>();
+                        var boolsList = new List<string>();
+
+                        var i3 = 0;
+                        foreach (string relationAsset in rel.fac_relationships)
+                        {
+                            // Debug.Log(relationAsset);
+                            if (!objectsDic.ContainsKey(rel.fac_relationships[i3]))
+                            {
+                                objectsDic.Add(rel.fac_relationships[i3], rel.fac_relationValues[i3]);
+                                i3++;
+                            }
+                        }
+
+                        rel.fac_relationships = new string[objectsDic.Count + 1];
+                        rel.fac_relationValues = new string[objectsDic.Count + 1];
+
+                        i3 = 0;
+                        foreach (var obj in objectsDic)
+                        {
+                            rel.fac_relationValues[i3] = obj.Value;
+                            rel.fac_relationships[i3] = obj.Key;
+                            i3++;
+                        }
+
+                        rel.fac_relationships[rel.fac_relationships.Length - 1] = "Faction." + fac.id;
+
+                        i3 = 0;
+                        foreach (var facRel in fac.fac_relationships)
+                        {
+                            if (facRel == "Faction." + rel.id)
+                            {
+                                rel.fac_relationValues[rel.fac_relationValues.Length - 1] = fac.fac_relationValues[i3];
+                            }
+                            i3++;
+                        }
+
+
+                    }
+                    else
+                    {
+                        int i3 = 0;
+                        foreach (string relationAsset in rel.fac_relationships)
+                        {
+                            if (relationAsset == "Faction." + fac.id)
+                            {
+                                var i4 = 0;
+                                foreach (var facRel in fac.fac_relationships)
+                                {
+                                    if (facRel == "Faction." + rel.id)
+                                    {
+                                        rel.fac_relationValues[i3] = fac.fac_relationValues[i4];
+                                    }
+                                    i4++;
+                                }
+                            }
+                            i3++;
+                        }
+
+                    }
+
+
+                }
+                i2++;
+            }
+
+            i2 = 0;
+            if (_changed_OLD_Faction != null)
+            {
+                // string oldKingdomLabel = "Kingdom." + _changed_OLD_Kingdom.id;
+                // GetKingdomAsset(ref oldKingdomLabel, ref _changed_OLD_Kingdom);
+                // Debug.Log(_changed_OLD_Kingdom.kingdomName);
+
+
+                bool oldKingdom = false;
+                foreach (var rel in FactionRelation)
+                {
+                    if (rel.id == _changed_OLD_Faction.id)
+                    {
+                        oldKingdom = true;
+                    }
+                    i2++;
+                }
+
+                if (!oldKingdom)
+                {
+                    i2 = 0;
+                    foreach (var rel in _changed_OLD_Faction.fac_relationships)
+                    {
+                        if (rel == "Faction." + fac.id)
+                        {
+                            var objects = new Dictionary<string, string>();
+                            _changed_OLD_Faction.fac_relationships[i2] = "remove";
+
+                            i2 = 0;
+                            foreach (string relationAsset in _changed_OLD_Faction.fac_relationships)
+                            {
+                                if (relationAsset != "remove")
+                                {
+                                    objects.Add(relationAsset, _changed_OLD_Faction.fac_relationValues[i2]);
+                                }
+                                i2++;
+                            }
+
+                            _changed_OLD_Faction.fac_relationships = new string[objects.Count];
+                            _changed_OLD_Faction.fac_relationValues = new string[objects.Count];
+
+                            i2 = 0;
+                            foreach (var obj in objects)
+                            {
+                                _changed_OLD_Faction.fac_relationValues[i2] = obj.Value;
+                                _changed_OLD_Faction.fac_relationships[i2] = obj.Key;
+                                i2++;
+                            }
+                        }
+                        i2++;
+                    }
+                }
+
+                // Debug.Log(_changed_OLD_Kingdom.id);
+            }
+
+
+            _changed_Faction = "";
+            _IS_changed_Faction = false;
+        }
+    }
+    private void GetFactionAsset(ref string factionLink, ref Faction faction)
+    {
+        // 
+        if (factionLink != null && factionLink != "")
+        {
+            if (factionLink.Contains("Faction."))
+            {
+                // string[] assetFiles = Directory.GetFiles(dataPath + npc.moduleName + "/_Templates/NPCtemplates/", "*.asset");
+
+                string dataName = factionLink.Replace("Faction.", "");
+
+                string assetPath;
+                string assetPathShort;
+
+
+                assetPath = dataPath + fac.moduleID + "/Factions/" + dataName + ".asset";
+                assetPathShort = "/Factions/" + dataName + ".asset";
+
+
+                if (System.IO.File.Exists(assetPath))
+                {
+                    faction = (Faction)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Faction));
+                }
+                else
+                {
+                    // SEARCH IN DEPENDENCIES
+                    string modSett = modsSettingsPath + fac.moduleID + ".asset";
+                    ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
+
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
+                    {
+                        string dpdPath = modsSettingsPath + dpdMod + ".asset";
+
+                        if (System.IO.File.Exists(dpdPath))
+                        {
+                            string dpdAsset = dataPath + dpdMod + assetPathShort;
+
+                            if (System.IO.File.Exists(dpdAsset))
+                            {
+                                faction = (Faction)AssetDatabase.LoadAssetAtPath(dpdAsset, typeof(Faction));
+                                break;
+                            }
+                            else
+                            {
+                                faction = null;
+                            }
+
+                        }
+                    }
+
+                    //Check is dependency OF
+                    if (faction == null)
+                    {
+                        string[] mods = Directory.GetFiles(modsSettingsPath, "*.asset");
+
+                        foreach (string mod in mods)
+                        {
+                            ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
+
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
+                            {
+                                if (depend == fac.moduleID)
+                                {
+                                    foreach (var data in iSDependencyOfMod.modFilesData.npcChrData.NPCCharacters)
+                                    {
+                                        if (data.id == dataName)
+                                        {
+                                            string dpdAsset = dataPath + iSDependencyOfMod.id + assetPathShort;
+                                            faction = (Faction)AssetDatabase.LoadAssetAtPath(dpdAsset, typeof(Faction));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (faction == null)
+                        {
+
+                            Debug.Log("Faction " + dataName + " - Not EXIST in" + " ' " + fac.moduleID + " ' " + "resources, and they dependencies.");
+
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    void CreateIntAttribute(ref string attribute, string label)
+    {
+
+        Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent(label + " "));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+
+        int val;
+        int.TryParse(attribute, out val);
+        val = EditorGUILayout.IntField(label, val, GUILayout.MaxWidth(162));
+        attribute = val.ToString();
+
+    }
     private void DrawMinorTemplatesEditor()
     {
         DrawUILine(colUILine, 3, 12);
@@ -1173,7 +2299,7 @@ public class FactionAssetEditor : Editor
                 string modSett = modsSettingsPath + fac.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1203,7 +2329,7 @@ public class FactionAssetEditor : Editor
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == fac.moduleID)
                             {
@@ -1302,7 +2428,7 @@ public class FactionAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1334,7 +2460,7 @@ public class FactionAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == fac.moduleID)
                                 {
@@ -1478,7 +2604,7 @@ public class FactionAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1510,7 +2636,7 @@ public class FactionAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == fac.moduleID)
                                 {

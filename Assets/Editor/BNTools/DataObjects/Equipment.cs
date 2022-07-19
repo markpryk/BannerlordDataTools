@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Equipment : ScriptableObject
 {
+
     public string id;
     public string moduleID;
     public string culture;
@@ -25,7 +26,12 @@ public class Equipment : ScriptableObject
     public bool IsCombatantTemplate;
     public bool IsNoncombatantTemplate;
 
-    public bool IsChildTemplate;
+    public bool IsChildEquipmentTemplate;
     public bool IsWandererEquipment;
+
+    // Update 1.8.0
+    public bool IsGentryEquipment;
+    public bool IsRebelHeroEquipment;
+    public bool IsTeenagerEquipmentTemplate;
 
 }

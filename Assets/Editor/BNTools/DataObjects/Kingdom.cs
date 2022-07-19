@@ -36,6 +36,8 @@ public class Kingdom : ScriptableObject
     public string[] relationValues;
     public string[] relationsAtWar;
 
+    public string[] fac_relationships;
+    public string[] fac_relationValues;
     /// Policies
 
     public string[] policies;

@@ -51,7 +51,7 @@ And easy organize your work layout.
 
 ![ScreenShot](Images/asset_browser/asset_property.gif)
 
-#### - To reset layout go to BDT settings --> Load BDt Layout
+#### - To reset layout go to BDT settings --> Load BDT Layout
 
 ---------------------------------------------
 #### [Exporting process -->](export.md)

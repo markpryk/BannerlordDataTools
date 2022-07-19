@@ -108,7 +108,7 @@ public class ModListPopup : EditorWindow
         // DEPENDENCIES
         EditorGUILayout.LabelField("Depended Modules:", EditorStyles.boldLabel);
 
-        foreach (string dependency in modList[index].modDependencies)
+        foreach (string dependency in modList[index].modDependenciesInternal)
         {
 
             if (dependency == "Native")
@@ -270,7 +270,7 @@ public class ModListPopup : EditorWindow
         {
             default:
 
-                ModuleReceiver asset = ScriptableObject.CreateInstance<ModuleReceiver>();
+                ModuleReceiver asset = CreateInstance<ModuleReceiver>();
                 asset = modList[index];
 
                 string headModulePath = "Assets/Resources/SubModulesData/";
@@ -285,32 +285,25 @@ public class ModListPopup : EditorWindow
                 {
                     Directory.CreateDirectory(headModuleResourcesPath);
                 }
-                
+
                 //var mod_asset_path = headModulePath + asset.id + ".asset";
                 //if (!File.Exists(mod_asset_path))
-                    AssetDatabase.CreateAsset(asset, headModulePath + asset.id + ".asset");
+                AssetDatabase.CreateAsset(asset, headModulePath + asset.id + ".asset");
                 // AssetDatabase.SaveAssets();
-
 
                 DataWindow.currentMod = asset;
                 DataWindow.source = asset;
 
-                ModFilesManager filesManager = new ModFilesManager();
+                var mfg = new ModFilesManager(asset, true, ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
+                DestroyImmediate(mfg);
+                Debug.ClearDeveloperConsole();
 
-                filesManager.module = asset;
-
-                filesManager.modsSettingsPath = headModulePath;
-                filesManager.modsResourcesPath = headModuleResourcesPath;
-
-                filesManager.CreateLoadDictionaries();
-                filesManager.CreateModSettings(ref _cultures,ref _kingdoms,ref _factions,ref _heroes,ref _NPC,ref _items, ref _equip,ref _pt,ref _settlement);
-
-                foreach (string dependency in modList[index].modDependencies)
+                foreach (string dependency in modList[index].modDependenciesInternal)
                 {
 
                     if (dependency != "Native")
                     {
-                        ModuleReceiver DPDasset = ScriptableObject.CreateInstance<ModuleReceiver>();
+                        ModuleReceiver DPDasset = CreateInstance<ModuleReceiver>();
 
                         foreach (var mod in modList)
                         {
@@ -337,16 +330,9 @@ public class ModListPopup : EditorWindow
                                 // DataWindow.currentMod = DPDasset;
                                 // DataWindow.source = DPDasset;
 
-                                ModFilesManager dpdFileManager = new ModFilesManager();
+                                ModFilesManager dpdFileManager = new ModFilesManager(DPDasset, true, ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
+                                DestroyImmediate(dpdFileManager);
 
-                                dpdFileManager.module = DPDasset;
-
-                                dpdFileManager.modsSettingsPath = dpdModPath;
-                                dpdFileManager.modsResourcesPath = dpdModResourcesPath;
-
-
-                                dpdFileManager.CreateLoadDictionaries();
-                                dpdFileManager.CreateModSettings(ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
                             }
 
                         }

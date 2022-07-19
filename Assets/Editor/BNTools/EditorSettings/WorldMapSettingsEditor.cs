@@ -11,7 +11,7 @@ using System.Text;
 using System.Linq;
 using UnityEngine.EventSystems;
 
-public class ModuleSettingsEditor : EditorWindow
+public class WorldMapSettingsEditor : EditorWindow
 {
     Color colUILine = new Color(0.5f, 0.5f, 0.5f, 0.05f);
 
@@ -32,7 +32,7 @@ public class ModuleSettingsEditor : EditorWindow
 
     static void Init()
     {
-        var window = GetWindow<ModuleSettingsEditor>("Module Settings");
+        var window = GetWindow<WorldMapSettingsEditor>("World Map Settings");
         window.position = new Rect(0, 0, 1024, 1024);
         window.Show();
 

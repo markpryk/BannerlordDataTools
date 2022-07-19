@@ -161,7 +161,7 @@ public class TranslationEditor : EditorWindow
                                 LoadTSFromLanguageData(module);
                             }
 
-                            foreach (var mod in currentMod.modDependencies)
+                            foreach (var mod in currentMod.modDependenciesInternal)
                             {
                                 if (System.IO.File.Exists(modsSettingsPath + mod + ".asset"))
                                 {
@@ -182,7 +182,7 @@ public class TranslationEditor : EditorWindow
                             {
                                 ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                                foreach (var depend in iSDependencyOfMod.modDependencies)
+                                foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                                 {
                                     if (depend == module)
                                     {

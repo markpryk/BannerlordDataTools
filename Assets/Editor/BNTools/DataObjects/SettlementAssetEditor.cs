@@ -187,7 +187,7 @@ public class SettlementAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == settl.moduleID)
                     {
@@ -405,7 +405,7 @@ public class SettlementAssetEditor : Editor
                     string modSett = modsSettingsPath + settl.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -435,7 +435,7 @@ public class SettlementAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == settl.moduleID)
                                 {
@@ -497,7 +497,7 @@ public class SettlementAssetEditor : Editor
                     string modSett = modsSettingsPath + settl.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -527,7 +527,7 @@ public class SettlementAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == settl.moduleID)
                                 {
@@ -725,7 +725,7 @@ public class SettlementAssetEditor : Editor
         else if (settl.isVillage)
         {
             settl.LOC_complex_template = "LocationComplexTemplate.village_complex";
-        } 
+        }
         else if (settl.isHideout)
         {
             settl.LOC_complex_template = "LocationComplexTemplate.hideout_complex";
@@ -812,6 +812,24 @@ public class SettlementAssetEditor : Editor
                 // DrawUILine(colUILine, 3, 12);
                 if (GUILayout.Button((new GUIContent("Add Location", "Add selected Location for this Settlement")), buttonStyle, GUILayout.Width(128)))
                 {
+                    if (settl.LOC_scn == null)
+                        settl.LOC_scn = new string[0];
+
+                    if (settl.LOC_scn_1 == null)
+                        settl.LOC_scn_1 = new string[0];
+
+                    if (settl.LOC_scn_2 == null)
+                        settl.LOC_scn_2 = new string[0];
+
+                    if (settl.LOC_scn_3 == null)
+                        settl.LOC_scn_3 = new string[0];
+
+                    if (settl.LOC_max_prosperity == null)
+                        settl.LOC_max_prosperity = new string[0];
+
+                    if (settl.LOC_id == null)
+                        settl.LOC_id = new string[0];
+
                     var temp = new string[settl.LOC_id.Length + 1];
                     settl.LOC_id.CopyTo(temp, 0);
                     settl.LOC_id = temp;
@@ -865,6 +883,9 @@ public class SettlementAssetEditor : Editor
                     {
                         foreach (var complexLocation in complex.locationsComplexID)
                         {
+                            if (settl.LOC_id == null)
+                                settl.LOC_id = new string[0];
+
                             int i = 0;
                             foreach (var settlLoc in settl.LOC_id)
                             {
@@ -1040,6 +1061,16 @@ public class SettlementAssetEditor : Editor
                 // DrawUILine(colUILine, 3, 12);
                 if (GUILayout.Button((new GUIContent("Add Area", "Add selected Areas for this Settlement")), buttonStyle, GUILayout.Width(128)))
                 {
+
+                    if (settl.AREA_type == null)
+                        settl.AREA_type = new string[0];
+
+                    if (settl.AREA_name == null)
+                        settl.AREA_name = new string[0];
+
+                    if (soloAreaName == null)
+                        soloAreaName = new string[0];
+
                     var temp = new string[settl.AREA_type.Length + 1];
                     settl.AREA_type.CopyTo(temp, 0);
                     settl.AREA_type = temp;
@@ -1075,6 +1106,8 @@ public class SettlementAssetEditor : Editor
                     {
                         foreach (var complexAreas in complex.locationAreasID)
                         {
+                            if (settl.AREA_type == null)
+                                settl.AREA_type = new string[0];
 
                             int i = 0;
                             foreach (var areaType in settl.AREA_type)
@@ -1209,7 +1242,7 @@ public class SettlementAssetEditor : Editor
                     string modSett = modsSettingsPath + settl.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1239,7 +1272,7 @@ public class SettlementAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == settl.moduleID)
                                 {
@@ -1310,7 +1343,7 @@ public class SettlementAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1342,7 +1375,7 @@ public class SettlementAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == settl.moduleID)
                                 {
@@ -1494,7 +1527,7 @@ public class SettlementAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1526,7 +1559,7 @@ public class SettlementAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == settl.moduleID)
                                 {
@@ -1670,7 +1703,7 @@ public class SettlementAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1702,7 +1735,7 @@ public class SettlementAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == settl.moduleID)
                                 {

@@ -26,6 +26,10 @@ public class Faction : ScriptableObject
     public string is_sect;
     public string is_nomad;
 
+    // UPDATES 1.8.0
+    public string is_noble;
+    public string flag_mesh;
+
     public string[] minor_faction_character_templates;
     //Category  -  minor_faction_character_templates - 0
     // template ---> id
@@ -54,6 +58,18 @@ public class Faction : ScriptableObject
     public string default_party_template;
     public string tier;
     public string text;
+
+    /// Kingdom Relations
+
+    public string[] relationships;
+    public string[] relationValues;
+    public string[] relationsAtWar;
+
+    /// Factions Relations
+
+    public string[] fac_relationships;
+    public string[] fac_relationValues;
+
 
     // internal
     public float Node_X;

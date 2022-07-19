@@ -53,7 +53,14 @@ public class EquipmentAssetEditor : Editor
     public bool _IsWandererEquipment_btn;
     public bool _IsChildTemplate_btn;
 
+    // update 1.8.0
+    public bool _IsGentryEquipment_btn;
+    public bool _IsRebelHeroEquipment_btn;
+    public bool _IsTeenagerEquipmentTemplate_btn;
+
     Equipment equip;
+
+    bool _showEquipmentFlags;
 
     bool isDependency = false;
     string configPath = "Assets/Settings/BDT_settings.asset";
@@ -62,7 +69,8 @@ public class EquipmentAssetEditor : Editor
 
     string isDependMsg = "|DPD-MSG|";
 
-    public void OnEnable()
+
+    private void OnEnable()
     {
         equip = (Equipment)target;
         EditorUtility.SetDirty(equip);
@@ -83,9 +91,6 @@ public class EquipmentAssetEditor : Editor
             eqpSetID_bool = new bool[equip.eqpSetID.Length];
 
     }
-
-
-
     public override void OnInspectorGUI()
     {
 
@@ -97,7 +102,7 @@ public class EquipmentAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == equip.moduleID)
                     {
@@ -217,258 +222,7 @@ public class EquipmentAssetEditor : Editor
         // NPC name & translationString tag
         DrawUILine(colUILine, 3, 12);
 
-        // BOOLEANS NPC
-
-        EditorGUILayout.BeginHorizontal();
         var originLabelWidth = EditorGUIUtility.labelWidth;
-
-        // is civilian template
-
-        if (equip.IsCivilianTemplate == true)
-        {
-            _IsCivilianTemplate_btn = true;
-        }
-        else
-        {
-            _IsCivilianTemplate_btn = false;
-        }
-
-
-
-        var textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Civilian Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsCivilianTemplate_btn = EditorGUILayout.Toggle("Is Civilian Template", _IsCivilianTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsCivilianTemplate_btn)
-        {
-            equip.IsCivilianTemplate = true;
-        }
-        else
-        {
-            equip.IsCivilianTemplate = false;
-        }
-
-        // is noble template
-
-        if (equip.IsNobleTemplate == true)
-        {
-            _IsNobleTemplate_btn = true;
-        }
-        else
-        {
-            _IsNobleTemplate_btn = false;
-        }
-
-
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Noble Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsNobleTemplate_btn = EditorGUILayout.Toggle("Is Noble Template", _IsNobleTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsNobleTemplate_btn)
-        {
-            equip.IsNobleTemplate = true;
-        }
-        else
-        {
-            equip.IsNobleTemplate = false;
-        }
-
-        // is medium template
-        if (equip.IsMediumTemplate == true)
-        {
-            _IsMediumTemplate_btn = true;
-        }
-        else
-        {
-            _IsMediumTemplate_btn = false;
-        }
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Medium Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsMediumTemplate_btn = EditorGUILayout.Toggle("Is Medium Template", _IsMediumTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsMediumTemplate_btn)
-        {
-            equip.IsMediumTemplate = true;
-        }
-        else
-        {
-            equip.IsMediumTemplate = false;
-        }
-
-        // is heavy template
-        if (equip.IsHeavyTemplate == true)
-        {
-            _IsHeavyTemplate_btn = true;
-        }
-        else
-        {
-            _IsHeavyTemplate_btn = false;
-        }
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Heavy Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsHeavyTemplate_btn = EditorGUILayout.Toggle("Is Heavy Template", _IsHeavyTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsHeavyTemplate_btn)
-        {
-            equip.IsHeavyTemplate = true;
-        }
-        else
-        {
-            equip.IsHeavyTemplate = false;
-        }
-        EditorGUILayout.EndHorizontal();
-
-        DrawUILine(colUILine, 3, 12);
-
-        EditorGUILayout.BeginHorizontal();
-
-        // is Flamboyant Template
-        if (equip.IsFlamboyantTemplate == true)
-        {
-            _IsFlamboyantTemplate_btn = true;
-        }
-        else
-        {
-            _IsFlamboyantTemplate_btn = false;
-        }
-
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Flamboyant Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsFlamboyantTemplate_btn = EditorGUILayout.Toggle("Is Flamboyant Template", _IsFlamboyantTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsFlamboyantTemplate_btn)
-        {
-            equip.IsFlamboyantTemplate = true;
-        }
-        else
-        {
-            equip.IsFlamboyantTemplate = false;
-        }
-
-        // is stoic template
-        if (equip.IsStoicTemplate == true)
-        {
-            _IsStoicTemplate_btn = true;
-        }
-        else
-        {
-            _IsStoicTemplate_btn = false;
-        }
-
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Stoic Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsStoicTemplate_btn = EditorGUILayout.Toggle("Is Stoic Template", _IsStoicTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsStoicTemplate_btn)
-        {
-            equip.IsStoicTemplate = true;
-        }
-        else
-        {
-            equip.IsStoicTemplate = false;
-        }
-
-        // is nomad template
-        if (equip.IsNomadTemplate == true)
-        {
-            _IsNomadTemplate_btn = true;
-        }
-        else
-        {
-            _IsNomadTemplate_btn = false;
-        }
-
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Nomad Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsNomadTemplate_btn = EditorGUILayout.Toggle("Is Nomad Template", _IsNomadTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsNomadTemplate_btn)
-        {
-            equip.IsNomadTemplate = true;
-        }
-        else
-        {
-            equip.IsNomadTemplate = false;
-        }
-        // IsChildTemplate
-        if (equip.IsNomadTemplate == true)
-        {
-            _IsNomadTemplate_btn = true;
-        }
-        else
-        {
-            _IsNomadTemplate_btn = false;
-        }
-
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Child Template"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsChildTemplate_btn = EditorGUILayout.Toggle("Is Child Template", _IsChildTemplate_btn);
-        DrawUILineVertical(colUILine, 1, 1, 16);
-        EditorGUILayout.Space(-5);
-
-        if (_IsChildTemplate_btn)
-        {
-            equip.IsChildTemplate = true;
-        }
-        else
-        {
-            equip.IsChildTemplate = false;
-        }
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.Space(5);
-        DrawUILine(colUILine, 3, 12);
-
-        // IsWandererEquipment
-        if (equip.IsWandererEquipment == true)
-        {
-            _IsWandererEquipment_btn = true;
-        }
-        else
-        {
-            _IsWandererEquipment_btn = false;
-        }
-
-
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Wanderer Equipment"));
-        EditorGUIUtility.labelWidth = textDimensions.x;
-        _IsWandererEquipment_btn = EditorGUILayout.Toggle("Is Wanderer Equipment", _IsWandererEquipment_btn);
-      
-        if (_IsWandererEquipment_btn)
-        {
-            equip.IsWandererEquipment = true;
-        }
-        else
-        {
-            equip.IsWandererEquipment = false;
-        }
-        EditorGUIUtility.labelWidth = originLabelWidth;
-
-        DrawUILine(colUILine, 3, 12);
-
-        ///
-        ///----- End toggles 
-
 
         GUILayout.BeginHorizontal();
 
@@ -490,7 +244,7 @@ public class EquipmentAssetEditor : Editor
                     string modSett = modsSettingsPath + equip.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -520,7 +274,7 @@ public class EquipmentAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == equip.moduleID)
                                 {
@@ -546,7 +300,7 @@ public class EquipmentAssetEditor : Editor
             }
         }
 
-        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Culture:"));
+        var textDimensions = GUI.skin.label.CalcSize(new GUIContent("Culture:"));
         EditorGUIUtility.labelWidth = textDimensions.x - 32;
 
         EditorGUILayout.LabelField("Culture:", EditorStyles.label);
@@ -562,13 +316,92 @@ public class EquipmentAssetEditor : Editor
             equip.culture = "";
         }
 
-        //CULTURE END
+
         GUILayout.FlexibleSpace();
         EditorGUIUtility.labelWidth = originLabelWidth;
         EditorGUILayout.EndHorizontal();
-        GUILayout.Space(8);
+        //GUILayout.Space(8);
         // EditorGUI.EndDisabledGroup();
         DrawUILine(colUILine, 3, 12);
+
+        //CULTURE END
+
+        Color newCol;
+        ColorUtility.TryParseHtmlString("#ff4f81", out newCol);
+
+        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        hiderStyle.fontSize = 10;
+        hiderStyle.normal.textColor = newCol;
+
+
+         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Equipment Flags: "));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+
+        var showEditorLabel = "Hide";
+        if (!_showEquipmentFlags)
+        {
+            hiderStyle.fontSize = 16;
+            showEditorLabel = "Equipment Flags";
+        }
+
+        _showEquipmentFlags = EditorGUILayout.Foldout(_showEquipmentFlags, showEditorLabel, hiderStyle);
+
+        if (_showEquipmentFlags)
+        {
+            // BOOLEANS NPC
+
+            // is civilian template
+            DrawEquipmentFlagBool(ref equip.IsCivilianTemplate, ref _IsCivilianTemplate_btn, "IsCivilianTemplate");
+            // is noble template
+            DrawEquipmentFlagBool(ref equip.IsNobleTemplate, ref _IsNobleTemplate_btn, "IsNobleTemplate");
+            // is medium template
+            DrawEquipmentFlagBool(ref equip.IsMediumTemplate, ref _IsMediumTemplate_btn, "IsMediumTemplate");
+            // is heavy template
+            DrawEquipmentFlagBool(ref equip.IsHeavyTemplate, ref _IsHeavyTemplate_btn, "IsHeavyTemplate");
+            // is Flamboyant Template
+            DrawEquipmentFlagBool(ref equip.IsFlamboyantTemplate, ref _IsFlamboyantTemplate_btn, "IsFlamboyantTemplate");
+            // is stoic template
+            DrawEquipmentFlagBool(ref equip.IsStoicTemplate, ref _IsStoicTemplate_btn, "IsStoicTemplate");
+
+            // is nomad template
+            DrawEquipmentFlagBool(ref equip.IsNomadTemplate, ref _IsNomadTemplate_btn, "IsNomadTemplate");
+
+            // IsChildTemplate
+            DrawEquipmentFlagBool(ref equip.IsChildEquipmentTemplate, ref _IsChildTemplate_btn, "IsChildEquipmentTemplate");
+            // IsWandererEquipment
+            DrawEquipmentFlagBool(ref equip.IsWandererEquipment, ref _IsWandererEquipment_btn, "IsWandererEquipment");
+            // IsGentryEquipment
+            DrawEquipmentFlagBool(ref equip.IsGentryEquipment, ref _IsGentryEquipment_btn, "IsGentryEquipment");
+
+            // IsRebelHeroEquipment
+            DrawEquipmentFlagBool(ref equip.IsRebelHeroEquipment, ref _IsRebelHeroEquipment_btn, "IsRebelHeroEquipment");
+
+            // IsTeenagerEquipmentTemplate
+            DrawEquipmentFlagBool(ref equip.IsTeenagerEquipmentTemplate, ref _IsTeenagerEquipmentTemplate_btn, "IsTeenagerEquipmentTemplate");
+
+            // IsEquipmentTemplate
+            DrawEquipmentFlagBool(ref equip.IsEquipmentTemplate, ref _IsEquipmentTemplate_btn, "IsEquipmentTemplate");
+
+            // IsWoodlandTemplate
+            DrawEquipmentFlagBool(ref equip.IsWoodlandTemplate, ref _IsWoodlandTemplate_btn, "IsWoodlandTemplate");
+
+            // IsFemaleTemplate
+            DrawEquipmentFlagBool(ref equip.IsFemaleTemplate, ref _IsFemaleTemplate_btn, "IsFemaleTemplate");
+
+
+            // IsEquipmentTemplate
+            DrawEquipmentFlagBool(ref equip.IsCombatantTemplate, ref _IsCombatantTemplate_btn, "IsCombatantTemplate");
+
+            // IsWoodlandTemplate
+            DrawEquipmentFlagBool(ref equip.IsNoncombatantTemplate, ref _IsNoncombatantTemplate_btn, "IsNoncombatantTemplate");
+            EditorGUIUtility.labelWidth = originLabelWidth;
+
+
+            ///
+            ///----- End toggles 
+        }
+        DrawUILine(colUILine, 3, 12);
+
         EditorGUILayout.Space(4);
 
         //Draw Body Editor
@@ -576,15 +409,15 @@ public class EquipmentAssetEditor : Editor
         GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
         titleStyle.fontSize = 14;
 
-        Color newCol;
+        //Color newCol;
         ColorUtility.TryParseHtmlString("#aca095", out newCol);
         titleStyle.normal.textColor = newCol;
 
-        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        //GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
         hiderStyle.fontSize = 10;
         hiderStyle.normal.textColor = newCol;
 
-        var showEditorLabel = "Hide - Equipment Editor";
+         showEditorLabel = "Hide - Equipment Editor";
         if (!showEquipmentEditor)
         {
             hiderStyle.fontSize = 16;
@@ -669,7 +502,7 @@ public class EquipmentAssetEditor : Editor
 
                         originLabelWidth = EditorGUIUtility.labelWidth;
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Is Civilian" + " "));
-                        
+
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
                         set.IsCivilianEquip = EditorGUILayout.Toggle("Is Civilian", set.IsCivilianEquip);
@@ -730,7 +563,7 @@ public class EquipmentAssetEditor : Editor
 
                             }
 
-                           // AssetDatabase.Refresh();
+                            // AssetDatabase.Refresh();
 
                             return;
                         }
@@ -1233,7 +1066,7 @@ public class EquipmentAssetEditor : Editor
                     string modSett = modsSettingsPath + equip.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1263,7 +1096,7 @@ public class EquipmentAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == equip.moduleID)
                                 {
@@ -1772,7 +1605,7 @@ public class EquipmentAssetEditor : Editor
 
                     if (item == null)
                     {
-                        foreach (var dependency in module.modDependencies)
+                        foreach (var dependency in module.modDependenciesInternal)
                         {
                             modSettings = modsSettingsPath + dependency + ".asset";
 
@@ -1805,7 +1638,7 @@ public class EquipmentAssetEditor : Editor
 
                             if (module.id != equip.moduleID)
                             {
-                                foreach (var modDPD in module.modDependencies)
+                                foreach (var modDPD in module.modDependenciesInternal)
                                 {
                                     if (modDPD == equip.moduleID)
                                     {
@@ -1838,6 +1671,35 @@ public class EquipmentAssetEditor : Editor
                 }
             }
         }
+    }
+
+    private void DrawEquipmentFlagBool(ref bool equipmentFlag, ref bool equipmentFlagView, string equipmentFlagName)
+    {
+        if (equipmentFlag == true)
+        {
+            equipmentFlagView = true;
+        }
+        else
+        {
+            equipmentFlagView = false;
+        }
+
+
+        Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent("IsTeenagerEquipmentTemplate "));
+        EditorGUIUtility.labelWidth = textDimensions.x;
+        equipmentFlagView = EditorGUILayout.Toggle(equipmentFlagName, equipmentFlagView);
+
+        if (equipmentFlagView)
+        {
+            equipmentFlag = true;
+        }
+        else
+        {
+            equipmentFlag = false;
+        }
+
+        DrawUILine(colUILine, 1, 2);
+
     }
 
     // void DrawUpgradeTargetsEditor()

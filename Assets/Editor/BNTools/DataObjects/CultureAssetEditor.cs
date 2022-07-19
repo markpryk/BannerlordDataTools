@@ -154,6 +154,10 @@ public class CultureAssetEditor : Editor
     public PartyTemplate vassal_reward_party_template;
     public PartyTemplate bandit_boss_party_template;
 
+    //Update 1.8.0
+    public Equipment default_battle_equipment_roster;
+    public Equipment default_civilian_equipment_roster;
+
     //public string faction_banner_key;
     public bool is_bandit;
     public int militia_bonus;
@@ -224,14 +228,14 @@ public class CultureAssetEditor : Editor
             TTT_NPC_four = new NPCCharacter[cult.TTT_four_participants.Length];
         }
 
-        if (cult.child_character_templates != null && cult.child_character_templates.Length > 0)
-        {
-            child_character_templates = new NPCCharacter[cult.child_character_templates.Length];
-        } 
+        //if (cult.child_character_templates != null && cult.child_character_templates.Length > 0)
+        //{
+        //    child_character_templates = new NPCCharacter[cult.child_character_templates.Length];
+        //} 
         if (cult.notable_and_wanderer_templates != null && cult.notable_and_wanderer_templates.Length > 0)
         {
             notable_and_wanderer_templates = new NPCCharacter[cult.notable_and_wanderer_templates.Length];
-        } 
+        }
         if (cult.lord_templates != null && cult.lord_templates.Length > 0)
         {
             lord_templates = new NPCCharacter[cult.lord_templates.Length];
@@ -246,8 +250,8 @@ public class CultureAssetEditor : Editor
         if (cult.reward_item_id != null && cult.reward_item_id.Length > 0)
             vassal_reward_items = new Item[cult.reward_item_id.Length];
         else
-            vassal_reward_items = new Item[0]; 
-        
+            vassal_reward_items = new Item[0];
+
         if (cult.banner_icon_id != null && cult.banner_icon_id.Length > 0)
             possible_clan_banner_icon_ids = new int[cult.banner_icon_id.Length];
         else
@@ -267,7 +271,7 @@ public class CultureAssetEditor : Editor
             {
                 var currModSettings = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + settingsAsset.currentModule + ".asset", typeof(ModuleReceiver));
                 // Debug.Log(currModSettings.id);
-                foreach (var depend in currModSettings.modDependencies)
+                foreach (var depend in currModSettings.modDependenciesInternal)
                 {
                     if (depend == cult.moduleID)
                     {
@@ -349,7 +353,7 @@ public class CultureAssetEditor : Editor
         EditorGUI.BeginDisabledGroup(isDependency);
 
         GUIStyle foldoutHeader = new GUIStyle(EditorStyles.foldoutHeader);
-        GUIStyle headerBoldStyle = new GUIStyle(EditorStyles.label);
+        GUIStyle headerBoldStyle = new GUIStyle(EditorStyles.boldLabel);
         GUIStyle labelStyle = new GUIStyle(EditorStyles.label);
         labelStyle.normal.textColor = new Color(0.5f, 0.5f, 0.5f, 1);
 
@@ -682,6 +686,7 @@ public class CultureAssetEditor : Editor
                 BannerEditor assetMng = (BannerEditor)CreateInstance(typeof(BannerEditor));
                 assetMng.bannerKey = cult.faction_banner_key;
                 //assetMng.ReadBannerKey();
+                assetMng.inputNPC = null;
                 assetMng.inputKingdom = null;
                 assetMng.inputFaction = null;
                 assetMng.inputCulture = cult;
@@ -691,6 +696,7 @@ public class CultureAssetEditor : Editor
                 BannerEditor assetMng = BANNER_EDITOR_Instance;
                 assetMng.bannerKey = cult.faction_banner_key;
                 //assetMng.ReadBannerKey();
+                assetMng.inputNPC = null;
                 assetMng.inputKingdom = null;
                 assetMng.inputFaction = null;
                 assetMng.inputCulture = cult;
@@ -704,9 +710,22 @@ public class CultureAssetEditor : Editor
         EditorGUILayout.LabelField("Default Face Key:", EditorStyles.boldLabel);
         cult.default_face_key = EditorGUILayout.TextField(cult.default_face_key);
 
-        // AssignBattleNPC
         DrawUILine(colUILine, 3, 12);
 
+        //// Assign Equipments (WIP) - Temporary unused
+        ///
+        ////ColorUtility.TryParseHtmlString("#ffc168", out col);
+        //ColorUtility.TryParseHtmlString("#ff9933", out col_opened);
+
+        //headerBoldStyle.normal.textColor = col;
+        //headerBoldStyle.onNormal.textColor = col_opened;
+        //EditorGUILayout.LabelField("Default Equipments", headerBoldStyle);
+        //DrawUILine(colUILine, 1, 6);
+        //AssignEquipments(ref cult.default_battle_equipment_roster, default_battle_equipment_roster, "Default Battle Equipment Roster:");
+        //AssignEquipments(ref cult.default_civilian_equipment_roster, default_civilian_equipment_roster, "Default Civilian Equipment Roster:");
+
+        //// AssignBattleNPC
+        //DrawUILine(colUILine, 3, 12);
 
         // Assign party templates
         ColorUtility.TryParseHtmlString("#01b636", out col);
@@ -856,7 +875,6 @@ public class CultureAssetEditor : Editor
 
         }
 
-
         DrawUILine(colUILine, 3, 12);
 
         DrawNamesEditor(ref cult.male_names, ref showMaleNamesEditor, ref m_soloName, ref m_name_TranslationString, ref translationStringMale_Names, 0);
@@ -869,8 +887,8 @@ public class CultureAssetEditor : Editor
 
         DrawUILine(colUILine, 3, 12);
 
-        DrawNPCTemplatesEditor(ref show_chld_template,ref cult.child_character_templates, ref child_character_templates, "Child Character", "#00bce4", "#0cb9c1");
-        DrawUILine(colUILine, 3, 12);
+        //DrawNPCTemplatesEditor(ref show_chld_template,ref cult.child_character_templates, ref child_character_templates, "Child Character", "#00bce4", "#0cb9c1");
+        //DrawUILine(colUILine, 3, 12);
 
         DrawNPCTemplatesEditor(ref show_notable_and_wanderer_templates, ref cult.notable_and_wanderer_templates, ref notable_and_wanderer_templates, "Notable and Wanderer", "#00c16e", "#00a78e");
         DrawUILine(colUILine, 3, 12);
@@ -943,7 +961,7 @@ public class CultureAssetEditor : Editor
 
     }
 
-    void DrawNPCTemplatesEditor(ref bool show_template_editor, ref string[] templates_array,ref NPCCharacter[] characters, string editor_name, string colorA, string colorB)
+    void DrawNPCTemplatesEditor(ref bool show_template_editor, ref string[] templates_array, ref NPCCharacter[] characters, string editor_name, string colorA, string colorB)
     {
         Vector2 textDimensions;
         GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButtonLeft);
@@ -982,14 +1000,16 @@ public class CultureAssetEditor : Editor
 
 
 
-            EditorGUILayout.LabelField(editor_name+ " Templates", titleStyle, GUILayout.ExpandWidth(true));
+            EditorGUILayout.LabelField(editor_name + " Templates", titleStyle, GUILayout.ExpandWidth(true));
             EditorGUILayout.Space(4);
             DrawUILine(colUILine, 1, 6);
 
 
-            if (GUILayout.Button((new GUIContent("Add Template", "Add new "+ editor_name + " template")), buttonStyle, GUILayout.Width(128)))
+            if (GUILayout.Button((new GUIContent("Add Template", "Add new " + editor_name + " template")), buttonStyle, GUILayout.Width(128)))
             {
 
+                if (templates_array == null)
+                    templates_array = new string[0];
 
                 var temp = new string[templates_array.Length + 1];
                 templates_array.CopyTo(temp, 0);
@@ -1009,7 +1029,7 @@ public class CultureAssetEditor : Editor
                 int i = 0;
                 foreach (var targetAsset in templates_array)
                 {
-                     //Debug.Log(targetAsset);
+                    //Debug.Log(targetAsset);
                     GetNPCAsset(ref templates_array[i], ref characters[i], false);
                     if (characters[i] == null)
                     {
@@ -1031,7 +1051,7 @@ public class CultureAssetEditor : Editor
                     titleStyle.normal.textColor = newCol;
 
                     titleStyle.fontSize = 11;
-                    EditorGUILayout.LabelField(editor_name +" - " + i, titleStyle, GUILayout.ExpandWidth(true));
+                    EditorGUILayout.LabelField(editor_name + " - " + i, titleStyle, GUILayout.ExpandWidth(true));
                     // EditorGUILayout.Space(8);
                     ColorUtility.TryParseHtmlString("#FF9900", out newCol);
                     titleStyle.normal.textColor = newCol;
@@ -1195,6 +1215,9 @@ public class CultureAssetEditor : Editor
             }
             DrawUILine(colUILine, 3, 12);
 
+            if (tournamentTemplates == null)
+                tournamentTemplates = new string[0];
+
             int i = 0;
             foreach (var targetAsset in tournamentTemplates)
             {
@@ -1338,7 +1361,7 @@ public class CultureAssetEditor : Editor
                     string modSett = modsSettingsPath + cult.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -1368,7 +1391,7 @@ public class CultureAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == cult.moduleID)
                                 {
@@ -1529,6 +1552,9 @@ public class CultureAssetEditor : Editor
 
 
             titleStyle.fontSize = 12;
+
+            if (names_container == null)
+                names_container = new string[0];
 
             int i = 0;
             foreach (var _Name in names_container)
@@ -1735,6 +1761,8 @@ public class CultureAssetEditor : Editor
 
             if (GUILayout.Button((new GUIContent("Add Icon", "Add new possible clan banner icon to this Culture")), buttonStyle, GUILayout.Width(128)))
             {
+                if (cult.banner_icon_id == null)
+                    cult.banner_icon_id = new string[0];
 
                 var temp = new string[cult.banner_icon_id.Length + 1];
                 cult.banner_icon_id.CopyTo(temp, 0);
@@ -1850,6 +1878,8 @@ public class CultureAssetEditor : Editor
 
             if (GUILayout.Button((new GUIContent("Add Reward item", "Add new reward item to this Culture")), buttonStyle, GUILayout.Width(128)))
             {
+                if (cult.reward_item_id == null)
+                    cult.reward_item_id = new string[0];
 
                 var temp = new string[cult.reward_item_id.Length + 1];
                 cult.reward_item_id.CopyTo(temp, 0);
@@ -1981,7 +2011,7 @@ public class CultureAssetEditor : Editor
                 string modSett = modsSettingsPath + cult.moduleID + ".asset";
                 ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                foreach (string dpdMod in currMod.modDependencies)
+                foreach (string dpdMod in currMod.modDependenciesInternal)
                 {
                     string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2011,7 +2041,7 @@ public class CultureAssetEditor : Editor
                     {
                         ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                        foreach (var depend in iSDependencyOfMod.modDependencies)
+                        foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                         {
                             if (depend == cult.moduleID)
                             {
@@ -2095,6 +2125,8 @@ public class CultureAssetEditor : Editor
                 // DrawUILine(colUILine, 3, 12);
                 if (GUILayout.Button((new GUIContent("Add Cultural Feat", "Add selected Feat for this Culture")), buttonStyle, GUILayout.Width(128)))
                 {
+                    if (cult.cultural_feat_id == null)
+                        cult.cultural_feat_id = new string[0];
 
                     var objects = new List<string>();
 
@@ -2135,7 +2167,7 @@ public class CultureAssetEditor : Editor
             buttonStyle.hover.textColor = Color.red;
 
             int i = 0;
-            if (cult.cultural_feat_id.Length != 0)
+            if (cult.cultural_feat_id != null && cult.cultural_feat_id.Length != 0)
             {
                 foreach (var feat in cult.cultural_feat_id)
                 {
@@ -2281,7 +2313,7 @@ public class CultureAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2313,7 +2345,7 @@ public class CultureAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == cult.moduleID)
                                 {
@@ -2474,7 +2506,7 @@ public class CultureAssetEditor : Editor
                     string modSett = modsSettingsPath + cult.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2504,7 +2536,7 @@ public class CultureAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == cult.moduleID)
                                 {
@@ -2594,7 +2626,7 @@ public class CultureAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2626,7 +2658,7 @@ public class CultureAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == cult.moduleID)
                                 {
@@ -2771,7 +2803,7 @@ public class CultureAssetEditor : Editor
 
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2803,7 +2835,7 @@ public class CultureAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == cult.moduleID)
                                 {
@@ -2935,7 +2967,7 @@ public class CultureAssetEditor : Editor
                     string modSett = modsSettingsPath + cult.moduleID + ".asset";
                     ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
 
-                    foreach (string dpdMod in currMod.modDependencies)
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
                     {
                         string dpdPath = modsSettingsPath + dpdMod + ".asset";
 
@@ -2965,7 +2997,7 @@ public class CultureAssetEditor : Editor
                         {
                             ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
 
-                            foreach (var depend in iSDependencyOfMod.modDependencies)
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
                             {
                                 if (depend == cult.moduleID)
                                 {
@@ -3010,6 +3042,122 @@ public class CultureAssetEditor : Editor
         GUILayout.EndHorizontal();
     }
 
+    public void AssignEquipments(ref string equip, Equipment equipObject, string fieldName)
+    {
+
+        if (equip != null && equip != "" && equipObject == null)
+        {
+            // npcObject = new NPCCharacter();
+            if (equip.Contains("EquipmentRoster."))
+            {
+
+                string dataName = equip.Replace("EquipmentRoster.", "");
+                string asset = dataPath + cult.moduleID + "/NPC/Equipment/EquipmentMain/" + dataName + ".asset";
+                string assetPathSets = dataPath + cult.moduleID + "/Sets/Equipments/" + dataName + ".asset";
+
+                if (System.IO.File.Exists(asset))
+                {
+                    equipObject = (Equipment)AssetDatabase.LoadAssetAtPath(asset, typeof(Equipment));
+                }
+                else if (System.IO.File.Exists(assetPathSets))
+                {
+                    equipObject = (Equipment)AssetDatabase.LoadAssetAtPath(assetPathSets, typeof(Equipment));
+                }
+                else
+                {
+                    // SEARCH IN DEPENDENCIES
+                    string modSett = modsSettingsPath + cult.moduleID + ".asset";
+                    ModuleReceiver currMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modSett, typeof(ModuleReceiver));
+
+                    foreach (string dpdMod in currMod.modDependenciesInternal)
+                    {
+                        string dpdPath = modsSettingsPath + dpdMod + ".asset";
+
+                        if (System.IO.File.Exists(dpdPath))
+                        {
+                            string dpdAsset = dataPath + dpdMod + "/NPC/Equipment/EquipmentMain/" + dataName + ".asset";
+                            string dpdAssetSets = dataPath + dpdMod + "/Sets/Equipments/" + dataName + ".asset";
+
+                            if (System.IO.File.Exists(dpdAsset))
+                            {
+                                equipObject = (Equipment)AssetDatabase.LoadAssetAtPath(dpdAsset, typeof(Equipment));
+                                break;
+                            }
+                            else if (System.IO.File.Exists(dpdAssetSets))
+                            {
+                                equipObject = (Equipment)AssetDatabase.LoadAssetAtPath(dpdAssetSets, typeof(Equipment));
+                            }
+                            else
+                            {
+                                equipObject = null;
+                            }
+
+                        }
+                    }
+
+                    //Check is dependency OF
+                    if (equipObject == null)
+                    {
+                        string[] mods = Directory.GetFiles(modsSettingsPath, "*.asset");
+
+                        foreach (string mod in mods)
+                        {
+                            ModuleReceiver iSDependencyOfMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(mod, typeof(ModuleReceiver));
+
+                            foreach (var depend in iSDependencyOfMod.modDependenciesInternal)
+                            {
+                                if (depend == cult.moduleID)
+                                {
+                                    foreach (var data in iSDependencyOfMod.modFilesData.npcChrData.NPCCharacters)
+                                    {
+                                        if (data.id == dataName)
+                                        {
+                                            string dpdAsset = dataPath + iSDependencyOfMod.id + "/NPC/Equipment/EquipmentMain/" + dataName + ".asset";
+                                            string dpdAssetSets = dataPath + iSDependencyOfMod.id + "/Sets/Equipments/" + dataName + ".asset";
+
+                                            if (System.IO.File.Exists(dpdAsset))
+                                            {
+                                                equipObject = (Equipment)AssetDatabase.LoadAssetAtPath(dpdAsset, typeof(Equipment));
+                                                break;
+                                            }
+                                            else if (System.IO.File.Exists(dpdAssetSets))
+                                            {
+                                                equipObject = (Equipment)AssetDatabase.LoadAssetAtPath(dpdAssetSets, typeof(Equipment));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (equipObject == null)
+                        {
+                            Debug.Log("Equipment " + dataName + " - Not EXIST in" + " ' " + cult.moduleID + " ' " + "resources, and they dependencies.");
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        GUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField(fieldName, EditorStyles.label);
+        equipObject = (Equipment)EditorGUILayout.ObjectField(equipObject, typeof(Equipment), true);
+        //equipObject = (Equipment)field;
+
+        if (equipObject != null)
+        {
+            equip = "EquipmentRoster." + equipObject.id;
+        }
+        else
+        {
+            equip = "";
+
+        }
+        GUILayout.EndHorizontal();
+    }
     public static AssetsDataManager ADM_Instance
     {
         get { return EditorWindow.GetWindow<AssetsDataManager>(); }

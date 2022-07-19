@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
 [System.Serializable]
+
+
 public class Item : ScriptableObject
 {
+
     public string moduleID;
     public string XmlFileName;
 
@@ -39,7 +41,6 @@ public class Item : ScriptableObject
     public string holster_mesh_with_weapon;
     public string has_lower_holster_priority;
     public string holster_position_shift;
-
 
     // ITEM COMPONENT
 
@@ -98,7 +99,6 @@ public class Item : ScriptableObject
     public string WPN_passby_sound_code;
     public string WPN_sticking_rotation;
     public string WPN_sticking_position;
-
    
     // WEAPON FLAGS
 
@@ -145,9 +145,6 @@ public class Item : ScriptableObject
     public string HRS_is_pack_animal;
     public string HRS_mane_mesh;
 
-    // ITEM HORSES & OTHER UPDATE
-    
-
     // TRADE GOODS
     public string TRADE_morale_bonus;
 
@@ -166,8 +163,6 @@ public class Item : ScriptableObject
     public string FLG_UseTeamColor;
     public string FLG_ForceAttachOffHandSecondaryItemBone;
     public string FLG_DoesNotHideChest;
-
-    
 
     ///  ADDITIONAL MESHES
 
@@ -192,20 +187,31 @@ public class Item : ScriptableObject
     /// 1.7.2
     ///  UPDATE
 
-    // int
-    // crossbow
     public string WPN_reload_phase_count;
-    //all
     public string WPN_item_modifier_group;
-
-   // bool
-   // boulder
     public string WPN_FLG_AffectsAreaBig;
-    
-    // bool
     public string CT_has_modifier;
 
-    //
+    // Update 1.8.0
+    public string FLG_CanBePickedUpFromCorpse;
+    public string FLG_WoodenAttack;
+
+    public string prerequisite_item;
+    public string using_arm_band;
+
+    public string WPN_shield_width;
+    public string WPN_shield_down_length;
+
+    public string WPN_FLG_FirearmAmmo;
+    public string WPN_FLG_NotUsableWithTwoHand;
+    public string WPN_FLG_BonusAgainstShield;
+    public string WPN_FLG_CanDismount;
+
+    // public string HRS_mane_mesh_multiplier; (TODO)
+    //  public string ARMOR_body_deform_type; (TODO)
+    // public string WPN_banner_level; (TODO)
+    // public string WPN_effect; (TODO)
+    // public string WPN_effect_amount; (TODO)
 
     /// Internal Variables
 
@@ -215,6 +221,5 @@ public class Item : ScriptableObject
     public bool IsHorse;
     public bool IsTrade;
     public bool IsCraftedItem;
-
 
 }

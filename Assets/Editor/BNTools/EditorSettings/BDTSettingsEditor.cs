@@ -19,9 +19,6 @@ public class BDTSettingsEditor : EditorWindow
     //bool write_debug_data_log = false;
     //bool assign_definitions = true;
 
-    public string BDT_Version = "0.0.57b";
-    public string BN_Version_compatibility = "e1.7.2";
-
     /// <summary>
     /// BD Settings
     /// </summary>
@@ -85,7 +82,7 @@ public class BDTSettingsEditor : EditorWindow
         EditorGUILayout.LabelField("BDT - Settings", headerLabelStyle);
         // GUILayout.Space(2);
         DrawUILine(colUILine, 1, 4);
-        EditorGUILayout.HelpBox($" BDT Version {BDT_Version} {Environment.NewLine} Bannerlord compatibility {BN_Version_compatibility}", MessageType.None);
+        EditorGUILayout.HelpBox($" BDT Version {settingsAsset.BDTVersion} {Environment.NewLine} Bannerlord compatibility {settingsAsset.BannerlordVersionCompatibility}", MessageType.None);
         DrawUILine(colUILine, 1, 4);
 
         if (Directory.Exists(settingsAsset.BNModulesPath + "Native"))
@@ -96,6 +93,10 @@ public class BDTSettingsEditor : EditorWindow
 
             settingsAsset.BNModulesPath = EditorGUILayout.TextField(settingsAsset.BNModulesPath);
             settingsAsset.load_a = true;
+
+            DrawUILine(colUILine, 1, 4);
+
+            settingsAsset.ableToDeleteModOrigins = EditorGUILayout.Toggle(new GUIContent("Able to delete mod origins", "Asking you at module deleting if you want to delete the Module/YourMod resources from bannerlord modules folder. Warning!!! This action cant be reverted!"), settingsAsset.ableToDeleteModOrigins);
 
             DrawUILine(colUILine, 1, 4);
 
@@ -126,10 +127,10 @@ public class BDTSettingsEditor : EditorWindow
                 EditorGUILayout.HelpBox(" Native Data Loaded ✔ ", MessageType.None);
                 DrawUILine(colUILine, 1, 4);
 
-                //if (GUILayout.Button("Reimport Native Definitions Data"))
-                //{
-                //    ImportBannerlordNativeDefinitions(false);
-                //}
+                if (GUILayout.Button("Reimport Native Definitions Data"))
+                {
+                    ImportBannerlordNativeDefinitions(false);
+                }
 
                 //DrawUILine(colUILine, 1, 4);
 
@@ -145,6 +146,9 @@ public class BDTSettingsEditor : EditorWindow
 
     private void ImportBannerlordNativeDefinitions(bool write_debug_data_log)
     {
+       var _defaultRefreshMode = AssetDatabase.ActiveRefreshImportMode;
+        AssetDatabase.ActiveRefreshImportMode = AssetDatabase.RefreshImportMode.OutOfProcessPerQueue;
+
         string[] native_modules = new string[] { "Native", "SandBox", "SandBoxCore" };
         string debug_path = "Assets/debug_readed_data.txt";
 
@@ -214,6 +218,11 @@ public class BDTSettingsEditor : EditorWindow
             index++;
         }
 
+        // Tattoos definitions
+        settingsAsset.TattooTagDefinitions = new string[] { "tattoo1" }; 
+        
+        // races definitions
+        settingsAsset.RaceDefinitions = new string[] { "human" };
 
         // debug log data
         if (write_debug_data_log)
@@ -241,9 +250,11 @@ public class BDTSettingsEditor : EditorWindow
 
         settingsAsset.load_b = true;
 
+        AssetDatabase.ActiveRefreshImportMode = _defaultRefreshMode;
+
         //AssetDatabase.SaveAssetIfDirty(settingsAsset);
-        //AssetDatabase.SaveAssets();
-        //AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
     public void WorldMapIcons()
@@ -593,6 +604,9 @@ public class BDTSettingsEditor : EditorWindow
         // Formation Position Preference
         // none - Back - Front
         ReadAttributeValue(mainNode, childNode, "NPCCharacters", "NPCCharacter", "formation_position_preference", ref settingsAsset.FormationPosPrefDefinitions, "", "none");
+
+        // Preferred Upgrade Formation
+        ReadAttributeValue(mainNode, childNode, "Heroes", "Hero", "preferred_upgrade_formation", ref settingsAsset.PreferredUpgradeFormationDefinitions, "", "none");
 
         // Skills
         // Engineering

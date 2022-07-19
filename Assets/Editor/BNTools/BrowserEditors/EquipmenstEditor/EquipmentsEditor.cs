@@ -42,6 +42,7 @@ public class EquipmentsEditor : EditorWindow
     public bool show_IsCivilianTemplate = true;
     public bool show_IsCombatantTemplate = true;
     public bool show_IsNoncombatantTemplate = true;
+    //TODO add 1.8.0 browser filters flags 
     public bool show_other = true;
 
     //
