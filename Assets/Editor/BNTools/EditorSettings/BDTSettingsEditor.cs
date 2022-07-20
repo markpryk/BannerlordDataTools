@@ -1083,6 +1083,9 @@ public class BDTSettingsEditor : EditorWindow
 
     public void ReadAttributeValue(XmlNode mainNode, XmlNode childNode, string main_naming, string child_naming, string attribute_item, ref string[] definitions_array, string exclude_link, string zeroAttribute)
     {
+        if (definitions_array == null)
+            definitions_array = new string[0];
+
         if (zeroAttribute != "" && !definitions_array.Contains(zeroAttribute))
         {
             definitions_array = new string[1];
