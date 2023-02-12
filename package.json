@@ -3,8 +3,6 @@
     "version": "0.0.62.0b",
     "displayName": "Bannerlord Data Tools",
     "description": "Modding data tools for Mount&Blade II: Bannerlord",
-    "unity": "2019.1",
-    "unityRelease": "0b5",
     "documentationUrl": "https://github.com/markpryk/BannerlordDataTools#editors-documentation--overview",
     "changelogUrl": "https://discord.com/channels/961361419377442856/961364045896777829",
     "licensesUrl": "https://github.com/markpryk/BannerlordDataTools#editors-documentation--overview",
