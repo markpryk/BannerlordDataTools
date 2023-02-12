@@ -52,13 +52,18 @@ public class TranslationEditor : EditorWindow
 
             if (options == null)
             {
-                options = new string[translationsData.Keys.Count];
+                options = new string[translationsData.Keys.Count - 1];
 
                 int i = 0;
                 foreach (string language in translationsData.Keys)
                 {
-                    options[i] = language;
-                    i++;
+                    if (language != "English")
+                    {
+                        options[i] = language;
+                        i++;
+                    }
+
+                    
                 }
             }
 
@@ -70,7 +75,7 @@ public class TranslationEditor : EditorWindow
                 EditorUtility.SetDirty(defaultData);
                 if (!isDependency)
                 {
-                   
+
 
                     DrawUILine(colUILine, 3, 12);
                     GUILayout.BeginHorizontal();
@@ -102,8 +107,8 @@ public class TranslationEditor : EditorWindow
                     DrawUILine(colUILine, 3, 12);
 
                     GUILayout.BeginHorizontal();
-                    if(ts_editor_index == 0)
-                    EditorGUILayout.LabelField("Default Text:", EditorStyles.boldLabel);
+                    if (ts_editor_index == 0)
+                        EditorGUILayout.LabelField("Default Text:", EditorStyles.boldLabel);
                     if (ts_editor_index == 1)
                         EditorGUILayout.LabelField("Plural Text:", EditorStyles.boldLabel);
                     if (currentTranslationData != null)
@@ -353,7 +358,7 @@ public class TranslationEditor : EditorWindow
                                 Faction fac = obj as Faction;
                                 TranslationKeyGenerator(ref fac.text, fac.moduleID, "FactionsTranslationData", true);
                                 isDependency = false;
-                            } 
+                            }
                             else if (objectID == 22)
                             {
                                 Faction fac = obj as Faction;
@@ -732,7 +737,7 @@ public class TranslationEditor : EditorWindow
                     {
                         TranslationKeyGenerator(ref fac.text, fac.moduleID, "FactionsTranslationData", false);
                     }
-                } 
+                }
                 else if (objectID == 22)
                 {
                     Faction fac = obj as Faction;
@@ -862,7 +867,7 @@ public class TranslationEditor : EditorWindow
                 data.translationData.translationStrings.Add(keyString);
 
                 string transPath = data.modResourcesPath + "/TranslationData/" + TSfoldeName + "/" + keyString.id + ".asset";
-				EditorUtility.SetDirty (keyString);
+                EditorUtility.SetDirty(keyString);
                 AssetDatabase.CreateAsset(keyString, transPath);
                 //AssetDatabase.SaveAssets();
 
@@ -1057,7 +1062,7 @@ public class TranslationEditor : EditorWindow
 
                                 // TS_lang_Assets.Add(translationAsset, path);
                                 AssetDatabase.CreateAsset(translationAsset, path);
-								EditorUtility.SetDirty (translationAsset);
+                                EditorUtility.SetDirty(translationAsset);
                                 //AssetDatabase.SaveAssets();
                                 // Debug.Log(translationAsset);
                                 break;
@@ -1127,7 +1132,7 @@ public class TranslationEditor : EditorWindow
 
                                 if (idVal == defaultData.stringTranslationID)
                                 {
-                                     Debug.Log(idVal);
+                                    //Debug.Log(idVal);
                                     TranslationString translationAsset = CreateInstance<TranslationString>();
 
                                     translationAsset.moduleID = module;
@@ -1138,7 +1143,7 @@ public class TranslationEditor : EditorWindow
                                     translationAsset.editorType = "Imported";
                                     translationAsset.lenguage_short_Tag = lenguageFolderName;
 
-                                  
+
                                     if (nodeChild.Attributes["text"].Value.Contains("{@Plural}"))
                                     {
                                         var text = nodeChild.Attributes["text"].Value;
@@ -1193,9 +1198,9 @@ public class TranslationEditor : EditorWindow
 
                                     // TS_lang_Assets.Add(translationAsset, path);
                                     AssetDatabase.CreateAsset(translationAsset, path);
-									EditorUtility.SetDirty (translationAsset);
+                                    EditorUtility.SetDirty(translationAsset);
                                     //AssetDatabase.SaveAssets();
-                                     Debug.Log(path);
+                                    //Debug.Log(path);
                                     break;
                                 }
 
@@ -1232,7 +1237,7 @@ public class TranslationEditor : EditorWindow
 
         // string transPath = modFilesAsset.modResourcesPath + "/TranslationData/_Languages/" + "/" + translationAsset.id + ".asset";
         string transPath = modFilesAsset.modResourcesPath + "/TranslationData/_Languages/" + langFolderName + "/" + langFolderName + "_" + translationAsset.id + ".asset";
-		EditorUtility.SetDirty (translationAsset);
+        EditorUtility.SetDirty(translationAsset);
         AssetDatabase.CreateAsset(translationAsset, transPath);
         //AssetDatabase.SaveAssets();
 

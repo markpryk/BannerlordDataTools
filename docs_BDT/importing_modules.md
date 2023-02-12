@@ -6,13 +6,6 @@
 
 ![ScreenShot](Images/import_mod/importing_0.PNG)
 
-```diff
-! Note:                                                                                            
-First time importing procces may be take (30 - 45) min if you import Sandbox & SandboxCore modules.
-Its create asset file for every imported data.
-If you reimport or update modules version is more, more quickly.
-```
-
 #### - You can switch between imported modules using (Module Receiver)
 
 ![ScreenShot](Images/import_mod/importing_1.PNG)

@@ -19,8 +19,8 @@ This tool give a possibility to have a project with the moddable data, this faci
 ---------------------------------------------
 
 #### Releases
-##### latest version: 0.0.58.1b -- 20 July 2022 
-##### Bannerlord version compatibility: e1.8.0 
+##### latest version: 0.0.63.0b -- 12 February 2023 
+##### Bannerlord version compatibility: v1.1.0 
 ##### - [Changelog (Discord server)](https://discord.gg/Fz7GQA6C9K)
 ---------------------------------------------
 
