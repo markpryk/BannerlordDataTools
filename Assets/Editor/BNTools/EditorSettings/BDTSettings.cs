@@ -9,8 +9,8 @@ using System.IO;
 [CreateAssetMenu(fileName = "BDT_settings.asset", menuName = "BDT/Settings Asset", order = 1)]
 public class BDTSettings : ScriptableObject
 {
-    const string BDT_Version = "0.0.58.1b";
-    const string BN_Version_compatibility = "e1.8.0";
+    const string BDT_Version = "0.0.62.0b";
+    const string BN_Version_compatibility = "v1.1.0";
 
     public string BDTVersion
     {
