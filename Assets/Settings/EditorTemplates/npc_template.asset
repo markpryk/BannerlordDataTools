@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd83e8bf1befaf84685a513395211e36, type: 3}
+  m_Name: npc_template
+  m_EditorClassIdentifier: 
+  XmlFileName: 
+  moduleID: template
+  id: npc_template_0
+  npcName: 
+  is_female: false
+  is_hero: false
+  is_companion: false
+  is_mercenary: false
+  is_child_template: false
+  is_template: false
+  age: 20
+  voice: curt
+  culture: 
+  default_group: Cavalry
+  level: 0
+  occupation: Lord
+  banner_symbol_mesh_name: 
+  banner_symbol_color: 
+  skill_template: 
+  battleTemplate: 
+  civilianTemplate: 
+  BP_version: 4
+  BP_age: 0
+  BP_weight: 0
+  BP_build: 0
+  BP_key: 00005C0B4000034D649A7797787A473B743A45888527B857869AA27956B54D3C0007A5A6073DE87C00001105000030A30000001F000000000000000001182000
+  _Has_Max_BP: 0
+  Max_BP_version: 
+  Max_BP_age: 
+  Max_BP_weight: 
+  Max_BP_build: 
+  Max_BP_key: 
+  skills: []
+  skillValues: []
+  traits: []
+  traitValues: []
+  feats: []
+  featValues: []
+  IsCivilianEquip: 00
+  eqp_Item0:
+  - 
+  eqp_Item1:
+  - 
+  eqp_Item2:
+  - 
+  eqp_Item3:
+  - 
+  eqp_Head:
+  - 
+  eqp_Gloves:
+  - 
+  eqp_Body:
+  - 
+  eqp_Leg:
+  - 
+  eqp_Cape:
+  - 
+  eqp_Horse:
+  - 
+  eqp_HorseHarness:
+  - 
+  upgrade_requires: 
+  upgrade_targets: []
+  is_basic_troop: false
+  formation_position_preference: none
+  COMP_Companion: 
+  face_key_template: 
