@@ -59,17 +59,17 @@ sysinfo.txt
 crashlytics-build.properties
 
 #Modules
-[Aa]ssets/Resources/Data/*
-[Aa]ssets/Resources/SubModulesData/*
-[Aa]ssets/Settings/Definitions/**/*.meta
-[Aa]ssets/Settings/Definitions/CraftingPieces/*
-[Aa]ssets/Settings/Definitions/ItemTypes/*
-[Aa]ssets/Settings/Definitions/Languages/*
-[Aa]ssets/Settings/Definitions/LocationComplexTemplate/*
-[Aa]ssets/ViewData/*
+[Aa]ssets/BDT/Resources/Data/*
+[Aa]ssets/BDT/Resources/SubModulesData/*
+[Aa]ssets/BDT/Settings/Definitions/**/*.meta
+[Aa]ssets/BDT/Settings/Definitions/CraftingPieces/*
+[Aa]ssets/BDT/Settings/Definitions/ItemTypes/*
+[Aa]ssets/BDT/Settings/Definitions/Languages/*
+[Aa]ssets/BDT/Settings/Definitions/LocationComplexTemplate/*
+[Aa]ssets/BDT/ViewData/*
 
-Assets/Settings/BDT_settings.asset.meta
-Assets/Settings/BDT_settings.asset
+Assets/BDT/Settings/BDT_settings.asset.meta
+Assets/BDT/Settings/BDT_settings.asset
 UserSettings/Layouts/CurrentMaximizeLayout.dwlt
 
-[Aa]ssets/Editor/BNTools/Utils/PrefabsCreator*
+[Aa]ssets/BDT/Editor/BNTools/Utils/PrefabsCreator*
