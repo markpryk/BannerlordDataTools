@@ -2542,7 +2542,7 @@ public class CultureAssetEditor : Editor
                                 {
                                     if (iSDependencyOfMod.modFilesData != null)
                                     {
-                                        foreach (var data in iSDependencyOfMod.modFilesData.PTdata.partyTemplates)
+                                        foreach (var data in iSDependencyOfMod.modFilesData.PTdata.party)
                                         {
                                             if (data.id == dataName)
                                             {

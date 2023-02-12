@@ -127,7 +127,7 @@ public class BNDataExporter : EditorWindow
             GUILayout.EndHorizontal();
             xmlAvailable = true;
         }
-        if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0)
+        if (exported_Mod.modFilesData.PTdata.party.Count != 0)
         {
             GUILayout.BeginHorizontal();
             expSettings.PartyTemplate_xml_name = EditorGUILayout.TextField("Party Templates", expSettings.PartyTemplate_xml_name, GUILayout.Width(320));
@@ -273,7 +273,7 @@ public class BNDataExporter : EditorWindow
                         WriteKingdomAsset();
                     if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0 && expSettings.export_npc)
                         WriteNPCAsset();
-                    if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0 && expSettings.export_pt)
+                    if (exported_Mod.modFilesData.PTdata.party.Count != 0 && expSettings.export_pt)
                         WritePartyTemplateAsset();
                     if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0 && expSettings.export_settl)
                         WriteSettlementAsset();
@@ -356,7 +356,7 @@ public class BNDataExporter : EditorWindow
             WriteXMLReferenceNode(node, doc, "Kingdoms", exportSettings.Kingdom_xml_name.Replace(".xml", ""));
         if (exported_Mod.modFilesData.npcChrData.NPCCharacters.Count != 0 && exportSettings.export_npc)
             WriteXMLReferenceNode(node, doc, "NPCCharacters", exportSettings.NPCCharacter_xml_name.Replace(".xml", ""));
-        if (exported_Mod.modFilesData.PTdata.partyTemplates.Count != 0 && exportSettings.export_pt)
+        if (exported_Mod.modFilesData.PTdata.party.Count != 0 && exportSettings.export_pt)
             WriteXMLReferenceNode(node, doc, "partyTemplates", exportSettings.PartyTemplate_xml_name.Replace(".xml", ""));
         if (exported_Mod.modFilesData.settlementsData.settlements.Count != 0 && exportSettings.export_settl)
             WriteXMLReferenceNode(node, doc, "Settlements", exportSettings.Settlement_xml_name.Replace(".xml", ""));
@@ -1047,7 +1047,7 @@ public class BNDataExporter : EditorWindow
         {
             OverrideNodeValues(list, mainNode, childNode, "Heroes", "Hero", "id", asset.id);
         }
-        foreach (var asset in exported_Mod.modFilesData.PTdata.partyTemplates)
+        foreach (var asset in exported_Mod.modFilesData.PTdata.party)
         {
             OverrideNodeValues(list, mainNode, childNode, "partyTemplates", "MBPartyTemplate", "id", asset.id);
         }
@@ -1701,7 +1701,6 @@ public class BNDataExporter : EditorWindow
 
         foreach (Item item in exported_Mod.modFilesData.itemsData.items)
         {
-
             if (item.IsCraftedItem)
             {
                 BNXmlWriter.WriteStartElement("CraftedItem");
@@ -1716,7 +1715,7 @@ public class BNDataExporter : EditorWindow
                 if (item.CT_has_modifier == "true")
                 {
                     CheckAndWriteAttribute(BNXmlWriter, "has_modifier", item.CT_has_modifier);
-                    CheckAndWriteAttribute(BNXmlWriter, "item_modifier_group", item.WPN_item_modifier_group);
+                    CheckAndWriteAttribute(BNXmlWriter, "modifier_group", item.WPN_modifier_group);
                 }
 
                 BNXmlWriter.WriteFullEndElement();
@@ -1766,10 +1765,13 @@ public class BNDataExporter : EditorWindow
 
                 BNXmlWriter.WriteStartElement("ItemComponent");
 
-                if (item.IsWeapon)
+                if (item.IsWeapon || item.Type == "Banner")
                 {
 
-                    BNXmlWriter.WriteStartElement("Weapon");
+                    if (item.Type == "Banner")
+                        BNXmlWriter.WriteStartElement("Banner");
+                    else
+                        BNXmlWriter.WriteStartElement("Weapon");
 
                     //WEAPONS
                     CheckAndWriteAttribute(BNXmlWriter, "weapon_class", item.WPN_weapon_class);
@@ -1804,11 +1806,15 @@ public class BNDataExporter : EditorWindow
 
                     // Update 1.7.2
                     CheckAndWriteAttribute(BNXmlWriter, "reload_phase_count", item.WPN_reload_phase_count);
-                    CheckAndWriteAttribute(BNXmlWriter, "item_modifier_group", item.WPN_item_modifier_group);
+                    CheckAndWriteAttribute(BNXmlWriter, "modifier_group", item.WPN_modifier_group);
 
                     //Update 1.8.0
                     CheckAndWriteAttribute(BNXmlWriter, "shield_width", item.WPN_shield_width);
                     CheckAndWriteAttribute(BNXmlWriter, "shield_down_length", item.WPN_shield_down_length);
+
+                    //Update 1.1.0
+                    CheckAndWriteAttribute(BNXmlWriter, "effect", item.WPN_effect);
+                    CheckAndWriteAttribute(BNXmlWriter, "banner_level", item.WPN_banner_level);
 
                     BNXmlWriter.WriteStartElement("WeaponFlags");
 
@@ -1860,7 +1866,7 @@ public class BNDataExporter : EditorWindow
                     // ARM ARMOR
                     CheckAndWriteAttribute(BNXmlWriter, "arm_armor", item.ARMOR_arm_armor);
                     CheckAndWriteAttribute(BNXmlWriter, "covers_hands", item.ARMOR_covers_hands);
-                    CheckAndWriteAttribute(BNXmlWriter, "modifier_group", item.ARMOR_modifier_group);
+                    CheckAndWriteAttribute(BNXmlWriter, "modifier_group", item.WPN_modifier_group);
                     CheckAndWriteAttribute(BNXmlWriter, "material_type", item.ARMOR_material_type);
                     CheckAndWriteAttribute(BNXmlWriter, "family_type", item.ARMOR_family_type);
 
@@ -1899,7 +1905,7 @@ public class BNDataExporter : EditorWindow
                     CheckAndWriteAttribute(BNXmlWriter, "is_mountable", item.HRS_is_mountable);
                     CheckAndWriteAttribute(BNXmlWriter, "extra_health", item.HRS_extra_health);
                     CheckAndWriteAttribute(BNXmlWriter, "skeleton_scale", item.HRS_skeleton_scale);
-                    CheckAndWriteAttribute(BNXmlWriter, "modifier_group", item.ARMOR_modifier_group);
+                    CheckAndWriteAttribute(BNXmlWriter, "modifier_group", item.WPN_modifier_group);
 
                     // ITEM HORSES & OTHER UPDATE
                     CheckAndWriteAttribute(BNXmlWriter, "is_pack_animal", item.HRS_is_pack_animal);
@@ -3356,7 +3362,7 @@ public class BNDataExporter : EditorWindow
         BNXmlWriter.WriteStartDocument();
         BNXmlWriter.WriteStartElement("partyTemplates");
 
-        foreach (PartyTemplate PT in exported_Mod.modFilesData.PTdata.partyTemplates)
+        foreach (PartyTemplate PT in exported_Mod.modFilesData.PTdata.party)
         {
             BNXmlWriter.WriteStartElement("MBPartyTemplate");
 

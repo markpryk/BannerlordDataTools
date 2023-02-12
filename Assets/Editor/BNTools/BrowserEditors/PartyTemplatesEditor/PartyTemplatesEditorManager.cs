@@ -205,7 +205,7 @@ public class PartyTemplatesEditorManager : EditorWindow
                     {
                         var asstPath = AssetDatabase.GetAssetPath(dic);
 
-                        currMod.modFilesData.PTdata.partyTemplates.Remove(dic);
+                        currMod.modFilesData.PTdata.party.Remove(dic);
                         AssetDatabase.DeleteAsset(asstPath);
                     }
 
@@ -243,7 +243,7 @@ public class PartyTemplatesEditorManager : EditorWindow
         {
             contains_Bool = false;
 
-            for (int i2 = 0; i2 < currMod.modFilesData.PTdata.partyTemplates.Count; i2++)
+            for (int i2 = 0; i2 < currMod.modFilesData.PTdata.party.Count; i2++)
             {
                 for (int i3 = 0; i3 < modifyDic.Count; i3++)
                 {
@@ -259,7 +259,7 @@ public class PartyTemplatesEditorManager : EditorWindow
                     }
 
                     // Debug.Log(assetName);
-                    if (currMod.modFilesData.PTdata.partyTemplates[i2].id == assetName)
+                    if (currMod.modFilesData.PTdata.party[i2].id == assetName)
                     {
                         contains_Bool = true;
                         // break;
@@ -500,7 +500,7 @@ public class PartyTemplatesEditorManager : EditorWindow
     {
         contains_Bool = false;
 
-        for (int i2 = 0; i2 < currMod.modFilesData.PTdata.partyTemplates.Count; i2++)
+        for (int i2 = 0; i2 < currMod.modFilesData.PTdata.party.Count; i2++)
         {
             for (int i3 = 0; i3 < modifyDic.Count; i3++)
             {
@@ -536,7 +536,7 @@ public class PartyTemplatesEditorManager : EditorWindow
                     }
                 }
 
-                if (currMod.modFilesData.PTdata.partyTemplates[i2].id == assetName)
+                if (currMod.modFilesData.PTdata.party[i2].id == assetName)
                 {
 
                     contains_Bool = true;
@@ -552,9 +552,9 @@ public class PartyTemplatesEditorManager : EditorWindow
                 existingStackCount = 0;
                 var assetName = "";
 
-                for (int i3 = 0; i3 < currMod.modFilesData.PTdata.partyTemplates.Count; i3++)
+                for (int i3 = 0; i3 < currMod.modFilesData.PTdata.party.Count; i3++)
                 {
-                    var npcCharObj = currMod.modFilesData.PTdata.partyTemplates[i3];
+                    var npcCharObj = currMod.modFilesData.PTdata.party[i3];
 
                     for (int i4 = 0; i4 < modifyDic.Count; i4++)
                     {
@@ -606,9 +606,9 @@ public class PartyTemplatesEditorManager : EditorWindow
         int stack = 0;
         var assetName = assetID_new + "_";
 
-        for (int i3 = 0; i3 < currMod.modFilesData.PTdata.partyTemplates.Count; i3++)
+        for (int i3 = 0; i3 < currMod.modFilesData.PTdata.party.Count; i3++)
         {
-            var npcCharObj = currMod.modFilesData.PTdata.partyTemplates[i3];
+            var npcCharObj = currMod.modFilesData.PTdata.party[i3];
 
             if (modifyDic.Count == 1)
             {
@@ -900,7 +900,7 @@ public class PartyTemplatesEditorManager : EditorWindow
         AssetDatabase.CreateAsset(data, asstPath);
        // AssetDatabase.SaveAssets();
 
-        currMod.modFilesData.PTdata.partyTemplates.Add(data);
+        currMod.modFilesData.PTdata.party.Add(data);
     }
 
     void OverrideIfExist(ModuleReceiver currMod, PartyTemplate dic, string naming)
@@ -929,21 +929,21 @@ public class PartyTemplatesEditorManager : EditorWindow
         AssetDatabase.CreateAsset(data, asstPath);
        // AssetDatabase.SaveAssets();
 
-        currMod.modFilesData.PTdata.partyTemplates.Add(data);
+        currMod.modFilesData.PTdata.party.Add(data);
     }
 
     private void RemoveOnOverride(ModuleReceiver currMod, string nameID)
     {
-        for (int index2 = 0; index2 < currMod.modFilesData.PTdata.partyTemplates.Count; index2++)
+        for (int index2 = 0; index2 < currMod.modFilesData.PTdata.party.Count; index2++)
         {
-            var npc = currMod.modFilesData.PTdata.partyTemplates;
+            var npc = currMod.modFilesData.PTdata.party;
             if (npc[index2].id == nameID)
             {
                 // overrideAsset = npc[index];
 
                 var RemPath = AssetDatabase.GetAssetPath(npc[index2]);
 
-                currMod.modFilesData.PTdata.partyTemplates.Remove(npc[index2]);
+                currMod.modFilesData.PTdata.party.Remove(npc[index2]);
                 AssetDatabase.DeleteAsset(RemPath);
                 // return;
             }
@@ -1053,7 +1053,7 @@ public class PartyTemplatesEditorManager : EditorWindow
         int stackExist = 0;
         contains_Bool = false;
 
-        for (int i2 = 0; i2 < currMod.modFilesData.PTdata.partyTemplates.Count; i2++)
+        for (int i2 = 0; i2 < currMod.modFilesData.PTdata.party.Count; i2++)
         {
             for (int i3 = 0; i3 < stack_count; i3++)
             {
@@ -1069,7 +1069,7 @@ public class PartyTemplatesEditorManager : EditorWindow
                 }
 
                 // Debug.Log(assetName);
-                if (currMod.modFilesData.PTdata.partyTemplates[i2].id == assetName)
+                if (currMod.modFilesData.PTdata.party[i2].id == assetName)
                 {
                     contains_Bool = true;
                     break;
@@ -1086,9 +1086,9 @@ public class PartyTemplatesEditorManager : EditorWindow
             //existingStackCount = 0;
             var assetName = assetID_new + "_";
 
-            for (int i3 = 0; i3 < currMod.modFilesData.PTdata.partyTemplates.Count; i3++)
+            for (int i3 = 0; i3 < currMod.modFilesData.PTdata.party.Count; i3++)
             {
-                var facObj = currMod.modFilesData.PTdata.partyTemplates[i3];
+                var facObj = currMod.modFilesData.PTdata.party[i3];
 
                 if (A_index == 0)
                 {
@@ -1214,9 +1214,9 @@ public class PartyTemplatesEditorManager : EditorWindow
             existingStackCount = 0;
             var nm = "";
 
-            for (int i3 = 0; i3 < currMod.modFilesData.PTdata.partyTemplates.Count; i3++)
+            for (int i3 = 0; i3 < currMod.modFilesData.PTdata.party.Count; i3++)
             {
-                var npcCharObj = currMod.modFilesData.PTdata.partyTemplates[i3];
+                var npcCharObj = currMod.modFilesData.PTdata.party[i3];
 
                 for (int i4 = 0; i4 < stack_count; i4++)
                 {
@@ -1363,13 +1363,13 @@ public class PartyTemplatesEditorManager : EditorWindow
 
 
                     contains_Bool = false;
-                    for (int i2 = 0; i2 < currMod.modFilesData.PTdata.partyTemplates.Count; i2++)
+                    for (int i2 = 0; i2 < currMod.modFilesData.PTdata.party.Count; i2++)
                     {
-                        if (currMod.modFilesData.PTdata.partyTemplates[i2].id == eqpAsset.id)
+                        if (currMod.modFilesData.PTdata.party[i2].id == eqpAsset.id)
                         {
                             var eqpLoad = (PartyTemplate)AssetDatabase.LoadAssetAtPath(path, typeof(PartyTemplate));
 
-                            currMod.modFilesData.PTdata.partyTemplates[i2] = eqpLoad;
+                            currMod.modFilesData.PTdata.party[i2] = eqpLoad;
                             contains_Bool = true;
                             break;
                         }
@@ -1378,7 +1378,7 @@ public class PartyTemplatesEditorManager : EditorWindow
                     if (!contains_Bool)
                     {
                         var itemLoad = (PartyTemplate)AssetDatabase.LoadAssetAtPath(path, typeof(PartyTemplate));
-                        currMod.modFilesData.PTdata.partyTemplates.Add(itemLoad);
+                        currMod.modFilesData.PTdata.party.Add(itemLoad);
                     }
 
 

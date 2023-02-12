@@ -9,5 +9,5 @@ using System;
 public class PartyTemplatesData : ScriptableObject
 {
   [SerializeField]
-  public List<PartyTemplate> partyTemplates;
+  public List<PartyTemplate> party;
 }

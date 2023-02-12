@@ -970,8 +970,7 @@ public class TranslationEditor : EditorWindow
 
             foreach (XmlNode langNode in Root.ChildNodes)
             {
-                // Debug.Log(langNode.Name);
-                // string path;
+                //Debug.Log(langNode.Name);
 
                 if (langNode.Name == "tags")
                 {
@@ -987,8 +986,7 @@ public class TranslationEditor : EditorWindow
                         if (nodeChild.Name == "string" && nodeChild.Attributes["id"] != null)
                         {
                             var idVal = nodeChild.Attributes["id"].Value;
-                            // var soloID = idVal;
-                            // idVal = "{=" + idVal + "}";
+
 
                             // if translation string exist in the project DATA
 
@@ -1115,23 +1113,22 @@ public class TranslationEditor : EditorWindow
 
                     if (langNode.Name == "strings" && langTag != "")
                     {
-
                         foreach (XmlNode nodeChild in langNode.ChildNodes)
                         {
 
                             if (nodeChild.Name == "string" && nodeChild.Attributes["id"] != null)
                             {
                                 var idVal = nodeChild.Attributes["id"].Value;
+
                                 // var soloID = idVal;
                                 // idVal = "{=" + idVal + "}";
 
                                 // if translation string exist in the project DATA
 
-
                                 if (idVal == defaultData.stringTranslationID)
                                 {
-                                    // Debug.Log(idVal);
-                                    TranslationString translationAsset = ScriptableObject.CreateInstance<TranslationString>();
+                                     Debug.Log(idVal);
+                                    TranslationString translationAsset = CreateInstance<TranslationString>();
 
                                     translationAsset.moduleID = module;
                                     translationAsset.id = "{=" + idVal + "}";
@@ -1198,7 +1195,7 @@ public class TranslationEditor : EditorWindow
                                     AssetDatabase.CreateAsset(translationAsset, path);
 									EditorUtility.SetDirty (translationAsset);
                                     //AssetDatabase.SaveAssets();
-                                    // Debug.Log(translationAsset);
+                                     Debug.Log(path);
                                     break;
                                 }
 

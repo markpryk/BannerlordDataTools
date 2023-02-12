@@ -415,7 +415,7 @@ public class PartyTemplatesEditor : EditorWindow
     // ! CHECK
     public void CheckAndResort()
     {
-        var PTData = loadedMod.modFilesData.PTdata.partyTemplates;
+        var PTData = loadedMod.modFilesData.PTdata.party;
 
         if (PT_ListBool != null && PT_ListBool.Count != 0)
         {

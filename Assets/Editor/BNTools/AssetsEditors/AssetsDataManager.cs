@@ -539,7 +539,7 @@ public class AssetsDataManager : EditorWindow
 
                 var contains = false;
 
-                foreach (var data in currentMod.modFilesData.PTdata.partyTemplates)
+                foreach (var data in currentMod.modFilesData.PTdata.party)
                 {
                     if (data.id == assetName_new)
                     {
@@ -1687,7 +1687,7 @@ public class AssetsDataManager : EditorWindow
                         {
                             ModuleReceiver currentMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + bdt_settings.currentModule + ".asset", typeof(ModuleReceiver));
 
-                            currentMod.modFilesData.PTdata.partyTemplates.Add(copiedPT);
+                            currentMod.modFilesData.PTdata.party.Add(copiedPT);
                         }
 
                         this.Close();
@@ -1708,7 +1708,7 @@ public class AssetsDataManager : EditorWindow
                         {
                             ModuleReceiver currentMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(modsSettingsPath + bdt_settings.currentModule + ".asset", typeof(ModuleReceiver));
 
-                            currentMod.modFilesData.PTdata.partyTemplates.Add(copiedPT);
+                            currentMod.modFilesData.PTdata.party.Add(copiedPT);
 
                             // OVERRIDE
                             foreach (var cult in currentMod.modFilesData.culturesData.cultures)

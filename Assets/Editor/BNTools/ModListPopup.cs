@@ -32,11 +32,11 @@ public class ModListPopup : EditorWindow
     public bool _equip = true;
     public bool _settlement = true;
     public bool _pt = true;
+
+    private bool _alreadyImported;
     static void Init()
     {
         EditorWindow window = GetWindow(typeof(ModListPopup));
-
-
         window.Show();
     }
 
@@ -61,7 +61,7 @@ public class ModListPopup : EditorWindow
         textDimensions = GUI.skin.label.CalcSize(new GUIContent("--"));
         EditorGUIUtility.labelWidth = textDimensions.x;
 
-        if (System.IO.File.Exists(modsSettingsPath + options[index] + ".asset"))
+        if (File.Exists(modsSettingsPath + options[index] + ".asset"))
         {
             EditorGUILayout.Space(2);
             // Debug.Log(options[index]);
@@ -101,6 +101,8 @@ public class ModListPopup : EditorWindow
                 EditorGUILayout.EndHorizontal();
 
                 doString = "Reimport Module";
+
+                _alreadyImported = true;
             }
         }
         DrawUILine(colUILine, 3, 4);
@@ -266,82 +268,88 @@ public class ModListPopup : EditorWindow
 
     void ImportData()
     {
-        switch (index)
+        if(_alreadyImported)
         {
-            default:
-
-                ModuleReceiver asset = CreateInstance<ModuleReceiver>();
-                asset = modList[index];
-
-                string headModulePath = "Assets/Resources/SubModulesData/";
-                string headModuleResourcesPath = "Assets/Resources/Data/";
-
-                if (!Directory.Exists(headModulePath))
-                {
-                    Directory.CreateDirectory(headModulePath);
-                }
-
-                if (!Directory.Exists(headModuleResourcesPath))
-                {
-                    Directory.CreateDirectory(headModuleResourcesPath);
-                }
-
-                //var mod_asset_path = headModulePath + asset.id + ".asset";
-                //if (!File.Exists(mod_asset_path))
-                AssetDatabase.CreateAsset(asset, headModulePath + asset.id + ".asset");
-                // AssetDatabase.SaveAssets();
-
-                DataWindow.currentMod = asset;
-                DataWindow.source = asset;
-
-                var mfg = new ModFilesManager(asset, true, ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
-                DestroyImmediate(mfg);
-                Debug.ClearDeveloperConsole();
-
-                foreach (string dependency in modList[index].modDependenciesInternal)
-                {
-
-                    if (dependency != "Native")
-                    {
-                        ModuleReceiver DPDasset = CreateInstance<ModuleReceiver>();
-
-                        foreach (var mod in modList)
-                        {
-
-                            if (mod.id == dependency && isSelectedDPD[mod.id] == true)
-                            {
-                                DPDasset = mod;
-
-                                string dpdModPath = headModulePath;
-                                string dpdModResourcesPath = headModuleResourcesPath;
-
-                                if (!Directory.Exists(dpdModPath))
-                                {
-                                    Directory.CreateDirectory(dpdModPath);
-                                }
-
-                                if (!Directory.Exists(dpdModResourcesPath))
-                                {
-                                    Directory.CreateDirectory(dpdModResourcesPath);
-                                }
-
-                                AssetDatabase.CreateAsset(DPDasset, dpdModPath + DPDasset.id + ".asset");
-                                //  AssetDatabase.SaveAssets();
-                                // DataWindow.currentMod = DPDasset;
-                                // DataWindow.source = DPDasset;
-
-                                ModFilesManager dpdFileManager = new ModFilesManager(DPDasset, true, ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
-                                DestroyImmediate(dpdFileManager);
-
-                            }
-
-                        }
-                    }
-                }
-
-                this.Close();
-                break;
+            if (EditorUtility.DisplayDialog($"Current module {modList[index].id} is already imported", "You can reimport it, but: \n" +
+                                           "Warning!!! All old data related to this mod will be deleted.",
+                                           "Yes, Just remove all and reimport", "Cancel"))
+            {
+                CleanModData(modList[index].id);
+            }
+            else
+            {
+                return;
+            }
         }
+
+        ModuleReceiver asset = CreateInstance<ModuleReceiver>();
+        asset = modList[index];
+
+        string headModulePath = "Assets/Resources/SubModulesData/";
+        string headModuleResourcesPath = "Assets/Resources/Data/";
+
+        if (!Directory.Exists(headModulePath))
+        {
+            Directory.CreateDirectory(headModulePath);
+        }
+
+        if (!Directory.Exists(headModuleResourcesPath))
+        {
+            Directory.CreateDirectory(headModuleResourcesPath);
+        }
+
+        //var mod_asset_path = headModulePath + asset.id + ".asset";
+        //if (!File.Exists(mod_asset_path))
+        AssetDatabase.CreateAsset(asset, headModulePath + asset.id + ".asset");
+        // AssetDatabase.SaveAssets();
+
+        DataWindow.currentMod = asset;
+        DataWindow.source = asset;
+
+        var mfg = new ModFilesManager(asset, true, ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
+
+        foreach (string dependency in modList[index].modDependenciesInternal)
+        {
+
+            if (dependency != "Native")
+            {
+                ModuleReceiver DPDasset = CreateInstance<ModuleReceiver>();
+
+                foreach (var mod in modList)
+                {
+
+                    if (mod.id == dependency && isSelectedDPD[mod.id] == true)
+                    {
+                        DPDasset = mod;
+
+                        string dpdModPath = headModulePath;
+                        string dpdModResourcesPath = headModuleResourcesPath;
+
+                        if (!Directory.Exists(dpdModPath))
+                        {
+                            Directory.CreateDirectory(dpdModPath);
+                        }
+
+                        if (!Directory.Exists(dpdModResourcesPath))
+                        {
+                            Directory.CreateDirectory(dpdModResourcesPath);
+                        }
+
+                        AssetDatabase.CreateAsset(DPDasset, dpdModPath + DPDasset.id + ".asset");
+                        //  AssetDatabase.SaveAssets();
+                        // DataWindow.currentMod = DPDasset;
+                        // DataWindow.source = DPDasset;
+
+                        ModFilesManager dpdFileManager = new ModFilesManager(DPDasset, true, ref _cultures, ref _kingdoms, ref _factions, ref _heroes, ref _NPC, ref _items, ref _equip, ref _pt, ref _settlement);
+                    }
+
+                }
+            }
+        }
+
+        this.Close();
+
+        EditorUtility.LoadWindowLayout("Assets/Settings/BDT_UnityLayout.wlt");
     }
 
     static void CheckVersion(string v1, string v2, ref bool isGreater)
@@ -369,6 +377,32 @@ public class ModListPopup : EditorWindow
         }
         return;
 
+    }
+
+    private void CleanModData(string modID)
+    {
+        string dataPath = $"Assets/Resources/Data/{modID}";
+        string sub_dataPath = $"Assets/Resources/SubModulesData/{modID}";
+        string sub_dataPathConfigMeta = $"Assets/Resources/SubModulesData/{modID}.asset.meta";
+        string mod_asset = $"Assets/Resources/SubModulesData/{modID}.asset";
+
+        if (File.Exists(mod_asset))
+            File.Delete(mod_asset);
+
+        if (Directory.Exists(dataPath))
+            Directory.Delete(dataPath, true);
+        if (Directory.Exists(sub_dataPath))
+            Directory.Delete(sub_dataPath, true);
+
+        if (File.Exists(dataPath + ".meta"))
+            File.Delete(dataPath + ".meta");
+        if (File.Exists(sub_dataPath + ".meta"))
+            File.Delete(sub_dataPath + ".meta");
+        if (File.Exists(sub_dataPathConfigMeta))
+            File.Delete(sub_dataPathConfigMeta);
+
+        //AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
     // UI DRAW TOOLS

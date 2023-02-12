@@ -682,7 +682,7 @@ public class FactionAssetEditor : Editor
                             {
                                 if (depend == fac.moduleID)
                                 {
-                                    foreach (var data in iSDependencyOfMod.modFilesData.PTdata.partyTemplates)
+                                    foreach (var data in iSDependencyOfMod.modFilesData.PTdata.party)
                                     {
                                         if (data.id == dataName)
                                         {

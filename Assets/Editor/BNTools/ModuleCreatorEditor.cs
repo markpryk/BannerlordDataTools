@@ -32,12 +32,12 @@ public class ModuleCreatorEditor : EditorWindow
     bool showDependenciesEditor;
     Vector2 scrollPos;
 
-    
+
 
 
     string modID;
     string modName;
-    string modV = "0.0.1";
+    string modV = "v0.0.1";
     bool defaultModule = true;
     List<ModuleReceiver.Dependency> _dependencies;
 
@@ -81,6 +81,9 @@ public class ModuleCreatorEditor : EditorWindow
         string cfgPath = "Assets/Settings/BDT_settings.asset";
         var settings_asset = (BDTSettings)AssetDatabase.LoadAssetAtPath(cfgPath, typeof(BDTSettings));
         Directories = Directory.GetDirectories(settings_asset.BNModulesPath);
+
+        //Debug.Log(settings_asset.BNModulesPath);
+
         ExistingModules = new List<string>();
         DirectoryNames = new List<string>();
 
@@ -91,7 +94,7 @@ public class ModuleCreatorEditor : EditorWindow
             if (File.Exists(Directories[i] + "/SubModule.xml"))
             {
                 ExistingModules.Add(dirName);
-                //Debug.Log(existingModules[i]);
+
             }
 
             DirectoryNames.Add(dirName);
@@ -118,6 +121,10 @@ public class ModuleCreatorEditor : EditorWindow
 
         EditorGUILayout.LabelField("Version:", EditorStyles.boldLabel);
         modV = EditorGUILayout.TextField(modV);
+
+        if (!Char.IsLetter(modV[0]))
+            EditorGUILayout.HelpBox($"Your version need to start with a letter, to avoid errors at launcher loading.", MessageType.Error);
+
         DrawUILine(colUILine, 1, 4);
 
         EditorGUILayout.BeginHorizontal();
@@ -294,7 +301,7 @@ public class ModuleCreatorEditor : EditorWindow
 
         bool import = false;
         var mfm = new ModFilesManager(asset, false, ref import, ref import, ref import, ref import, ref import, ref import, ref import, ref import, ref import);
-        DestroyImmediate(mfm);
+        //mfm.IsCreationProcces = true;
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -302,6 +309,7 @@ public class ModuleCreatorEditor : EditorWindow
         DataWindow.currentMod = asset;
         DataWindow.source = asset;
 
+        EditorUtility.ClearProgressBar();
     }
     private void CreateSubModuleDirecotries()
     {

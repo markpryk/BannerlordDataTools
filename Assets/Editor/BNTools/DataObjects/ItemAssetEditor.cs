@@ -35,6 +35,9 @@ public class ItemAssetEditor : Editor
     public string[] subtypes_options;
     public int subtypes_index = 0;
 
+    public string[] wpn_effect_options;
+    public int wpn_effect_index = 0;
+
     //-------
     public string[] physics_mats_options;
     public int physics_mats_index = 0;
@@ -46,8 +49,8 @@ public class ItemAssetEditor : Editor
     public int swing_type_index = 0;
 
     ///
-    public string[] armor_modifier_group_options;
-    public int armor_modifier_group_index = 0;
+    public string[] modifier_group_options;
+    public int modifier_group_index = 0;
     public string[] material_type_options;
     public int material_type_index = 0;
 
@@ -161,8 +164,8 @@ public class ItemAssetEditor : Editor
     public bool CT_has_modifier_bool;
 
     // Weapon Modifiers Group
-    public string[] wpn_modifier_group_options;
-    public int wpn_modifier_group_index = 0;
+    //public string[] wpn_modifier_group_options;
+    //public int wpn_modifier_group_index = 0;
 
     // Update 1.8.0
     public bool FLG_CanBePickedUpFromCorpse_bool;
@@ -184,10 +187,8 @@ public class ItemAssetEditor : Editor
     //public string[] body_deform_type_options;
     //public int body_deform_type_index = 0;
     //public int WPN_banner_level_value;
-    //public string[] wpn_effect_options;
-    //public int wpn_effect_index = 0;
     //public int WPN_effect_amount;
-
+   
 
     // HORSE MATERIALS 
     List<HorseManeMaterial> horseMatsList;
@@ -279,8 +280,7 @@ public class ItemAssetEditor : Editor
                 CreateOptions(ref item.WPN_thrust_damage_type, ref thrust_type_options, ref thrust_type_index, settingsAsset.ThurstDamageTypesDefinitions);
                 CreateOptions(ref item.WPN_swing_damage_type, ref swing_type_options, ref swing_type_index, settingsAsset.SwingDamageTypesDefinitions);
                 CreateOptions(ref item.WPN_ammo_class, ref ammo_class_options, ref ammo_class_index, settingsAsset.AmmoClassesDefinitions);
-
-                CreateOptions(ref item.ARMOR_modifier_group, ref armor_modifier_group_options, ref armor_modifier_group_index, settingsAsset.ModifierGroupDefinitions);
+                CreateOptions(ref item.WPN_modifier_group, ref modifier_group_options, ref modifier_group_index, settingsAsset.ItemModifierGroupDefinitions);
                 CreateOptions(ref item.ARMOR_material_type, ref material_type_options, ref material_type_index, settingsAsset.MaterialTypesDefinitions);
                 CreateOptions(ref item.ARMOR_body_mesh_type, ref body_mesh_type_options, ref body_mesh_type_index, settingsAsset.BodyMeshTypesDefinitions);
 
@@ -298,7 +298,10 @@ public class ItemAssetEditor : Editor
                 CreateOptions(ref item.CT_crafting_template, ref crafting_templates_options, ref crafting_templates_index, settingsAsset.CraftingTemplatesDefinitions);
 
                 // MODIFIERS GROUPS WPN - update 1.7.2
-                CreateOptions(ref item.WPN_item_modifier_group, ref wpn_modifier_group_options, ref wpn_modifier_group_index, settingsAsset.ItemModifierGroupDefinitions);
+                //CreateOptions(ref item.WPN_item_modifier_group, ref wpn_modifier_group_options, ref wpn_modifier_group_index, settingsAsset.ItemModifierGroupDefinitions);
+
+                CreateOptions(ref item.WPN_effect, ref wpn_effect_options, ref wpn_effect_index, settingsAsset.ItemEffectsDefinitions);
+
 
                 if (item.IsCraftedItem)
                     RefreshCraftingPieces();
@@ -493,14 +496,13 @@ public class ItemAssetEditor : Editor
         }
 
         // Crafting pieces
-
-
         CraftingPiecesList();
-
     }
 
     private void CraftingPiecesList()
     {
+        settingsAsset.CheckAndRefreshCraftingPieces();
+
         CP_list = new List<CraftingPiece>();
 
         if (item.CT_pieces_id != null)
@@ -777,8 +779,8 @@ public class ItemAssetEditor : Editor
                 var textDim = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                 EditorGUIUtility.labelWidth = textDim.x;
 
-                wpn_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", wpn_modifier_group_index, wpn_modifier_group_options, GUILayout.Width(240));
-                item.WPN_item_modifier_group = wpn_modifier_group_options[wpn_modifier_group_index];
+                modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                item.WPN_modifier_group = modifier_group_options[modifier_group_index];
 
                 DrawUILine(colUILine, 3, 12);
             }
@@ -1415,8 +1417,8 @@ public class ItemAssetEditor : Editor
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        armor_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", armor_modifier_group_index, armor_modifier_group_options, GUILayout.Width(240));
-                        item.ARMOR_modifier_group = armor_modifier_group_options[armor_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILine(colUILine, 3, 12);
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Monster: "));
@@ -1766,8 +1768,8 @@ public class ItemAssetEditor : Editor
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        armor_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", armor_modifier_group_index, armor_modifier_group_options, GUILayout.Width(240));
-                        item.ARMOR_modifier_group = armor_modifier_group_options[armor_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILineVertical(colUILine, 1, 1, 16);
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Material Type: "));
@@ -1842,8 +1844,8 @@ public class ItemAssetEditor : Editor
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        armor_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", armor_modifier_group_index, armor_modifier_group_options, GUILayout.Width(240));
-                        item.ARMOR_modifier_group = armor_modifier_group_options[armor_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILineVertical(colUILine, 1, 1, 16);
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Material Type: "));
@@ -1890,8 +1892,8 @@ public class ItemAssetEditor : Editor
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        armor_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", armor_modifier_group_index, armor_modifier_group_options, GUILayout.Width(240));
-                        item.ARMOR_modifier_group = armor_modifier_group_options[armor_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILineVertical(colUILine, 1, 1, 16);
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Material Type: "));
@@ -1922,8 +1924,8 @@ public class ItemAssetEditor : Editor
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        armor_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", armor_modifier_group_index, armor_modifier_group_options, GUILayout.Width(240));
-                        item.ARMOR_modifier_group = armor_modifier_group_options[armor_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILineVertical(colUILine, 1, 1, 16);
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Material Type: "));
@@ -1954,8 +1956,8 @@ public class ItemAssetEditor : Editor
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        armor_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", armor_modifier_group_index, armor_modifier_group_options, GUILayout.Width(240));
-                        item.ARMOR_modifier_group = armor_modifier_group_options[armor_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILineVertical(colUILine, 1, 1, 16);
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Material Type: "));
@@ -1993,8 +1995,8 @@ public class ItemAssetEditor : Editor
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        armor_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", armor_modifier_group_index, armor_modifier_group_options, GUILayout.Width(240));
-                        item.ARMOR_modifier_group = armor_modifier_group_options[armor_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILineVertical(colUILine, 1, 1, 16);
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Material Type: "));
@@ -2152,8 +2154,8 @@ public class ItemAssetEditor : Editor
 
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
-                        wpn_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", wpn_modifier_group_index, wpn_modifier_group_options, GUILayout.Width(240));
-                        item.WPN_item_modifier_group = wpn_modifier_group_options[wpn_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
                         DrawUILine(colUILine, 3, 12);
 
                         // LargeShield FLAGS
@@ -2300,7 +2302,7 @@ public class ItemAssetEditor : Editor
                         EditorGUIUtility.labelWidth = originDimensions;
                     }
                     // TwoHandedPolearm EDITOR
-                    else if (item.WPN_weapon_class == "TwoHandedPolearm" || item.WPN_weapon_class == "OneHandedAxe" || item.WPN_weapon_class == "OneHandedSword")
+                    else if (item.WPN_weapon_class == "TwoHandedPolearm" || item.WPN_weapon_class == "OneHandedAxe" || item.WPN_weapon_class == "OneHandedSword" || item.WPN_weapon_class == "Banner")
                     {
                         EditorGUILayout.LabelField("Weapon Class:", EditorStyles.boldLabel, GUILayout.ExpandWidth(false));
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("---------------"));
@@ -2310,11 +2312,13 @@ public class ItemAssetEditor : Editor
 
                         item.WPN_weapon_class = weapon_class_options[weapon_class_index];
 
+                        DrawUILine(colUILine, 3, 12);
+
                         textDimensions = GUI.skin.label.CalcSize(new GUIContent("Modifier Group: "));
                         EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        wpn_modifier_group_index = EditorGUILayout.Popup("Modifier Group:", wpn_modifier_group_index, wpn_modifier_group_options, GUILayout.Width(240));
-                        item.WPN_item_modifier_group = wpn_modifier_group_options[wpn_modifier_group_index];
+                        modifier_group_index = EditorGUILayout.Popup("Modifier Group:", modifier_group_index, modifier_group_options, GUILayout.Width(240));
+                        item.WPN_modifier_group = modifier_group_options[modifier_group_index];
 
                         DrawUILine(colUILine, 3, 12);
 
@@ -2340,6 +2344,35 @@ public class ItemAssetEditor : Editor
 
                         DrawUILine(colUILine, 3, 12);
 
+
+                        /// banner level & effect
+                        if (item.WPN_weapon_class == "Banner"&&  wpn_effect_options != null)
+                        {
+                            EditorGUILayout.BeginHorizontal();
+                            textDimensions = GUI.skin.label.CalcSize(new GUIContent("Banner Level: "));
+                            EditorGUIUtility.labelWidth = textDimensions.x;
+
+                            int bl;
+                            int.TryParse(item.WPN_banner_level, out bl);
+                            bl = EditorGUILayout.IntField("Banner Level:", bl, GUILayout.MaxWidth(162));
+                            item.WPN_banner_level = bl.ToString();
+                            //DrawUILineVertical(colUILine, 1, 1, 16);
+                            EditorGUILayout.EndHorizontal();
+
+                            DrawUILine(colUILine, 3, 12);
+                           
+                            // EFFECT
+                            EditorGUILayout.LabelField("Effect:", EditorStyles.boldLabel, GUILayout.ExpandWidth(false));
+                            textDimensions = GUI.skin.label.CalcSize(new GUIContent("Effect---"));
+                            EditorGUIUtility.labelWidth = textDimensions.x;
+
+                            wpn_effect_index = EditorGUILayout.Popup(wpn_effect_index, wpn_effect_options, GUILayout.Width(300));
+
+                            item.WPN_effect = wpn_effect_options[wpn_effect_index];
+
+
+                            DrawUILine(colUILine, 3, 12);
+                        }
 
 
                         EditorGUILayout.BeginHorizontal();
@@ -2404,20 +2437,20 @@ public class ItemAssetEditor : Editor
                         DrawUILine(colUILine, 3, 12);
 
                         /// MISSILE SPEED
-                        if (item.WPN_weapon_class == "OneHandedAxe" || item.WPN_weapon_class == "OneHandedSword")
-                        {
-                            EditorGUILayout.BeginHorizontal();
-                            textDimensions = GUI.skin.label.CalcSize(new GUIContent("Missile Speed: "));
-                            EditorGUIUtility.labelWidth = textDimensions.x;
+                        //if (item.WPN_weapon_class == "OneHandedAxe" || item.WPN_weapon_class == "OneHandedSword")
+                        //{
+                        EditorGUILayout.BeginHorizontal();
+                        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Missile Speed: "));
+                        EditorGUIUtility.labelWidth = textDimensions.x;
 
-                            int ms;
-                            int.TryParse(item.WPN_missile_speed, out ms);
-                            ms = EditorGUILayout.IntField("Missile Speed:", ms, GUILayout.MaxWidth(162));
-                            item.WPN_missile_speed = ms.ToString();
-                            DrawUILineVertical(colUILine, 1, 1, 16);
-                            EditorGUILayout.EndHorizontal();
-                            DrawUILine(colUILine, 3, 12);
-                        }
+                        int ms;
+                        int.TryParse(item.WPN_missile_speed, out ms);
+                        ms = EditorGUILayout.IntField("Missile Speed:", ms, GUILayout.MaxWidth(162));
+                        item.WPN_missile_speed = ms.ToString();
+                        DrawUILineVertical(colUILine, 1, 1, 16);
+                        EditorGUILayout.EndHorizontal();
+                        DrawUILine(colUILine, 3, 12);
+                        //}
 
                         // Thrust damage
                         EditorGUILayout.LabelField("Thrust Damage Type:", EditorStyles.boldLabel);
@@ -2950,71 +2983,71 @@ public class ItemAssetEditor : Editor
                     }
                     // Banner EDITOR
                     ///
-                    else if (item.WPN_weapon_class == "Banner")
-                    {
-                        EditorGUILayout.LabelField("Weapon Class:", EditorStyles.boldLabel, GUILayout.ExpandWidth(false));
-                        textDimensions = GUI.skin.label.CalcSize(new GUIContent("---------------"));
-                        EditorGUIUtility.labelWidth = textDimensions.x;
+                    //else if (item.WPN_weapon_class == "Banner")
+                    //{
+                    //    EditorGUILayout.LabelField("Weapon Class:", EditorStyles.boldLabel, GUILayout.ExpandWidth(false));
+                    //    textDimensions = GUI.skin.label.CalcSize(new GUIContent("---------------"));
+                    //    EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        weapon_class_index = EditorGUILayout.Popup(weapon_class_index, weapon_class_options, GUILayout.Width(162));
+                    //    weapon_class_index = EditorGUILayout.Popup(weapon_class_index, weapon_class_options, GUILayout.Width(162));
 
-                        item.WPN_weapon_class = weapon_class_options[weapon_class_index];
+                    //    item.WPN_weapon_class = weapon_class_options[weapon_class_index];
 
-                        DrawUILine(colUILine, 3, 12);
+                    //    DrawUILine(colUILine, 3, 12);
 
-                        EditorGUILayout.BeginHorizontal();
-                        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Physics Material: "));
-                        EditorGUIUtility.labelWidth = textDimensions.x;
-                        physics_mats_index = EditorGUILayout.Popup("Physics Material:", physics_mats_index, physics_mats_options, GUILayout.Width(240));
-                        item.WPN_physics_material = physics_mats_options[physics_mats_index];
-                        DrawUILineVertical(colUILine, 1, 1, 16);
+                    //    EditorGUILayout.BeginHorizontal();
+                    //    textDimensions = GUI.skin.label.CalcSize(new GUIContent("Physics Material: "));
+                    //    EditorGUIUtility.labelWidth = textDimensions.x;
+                    //    physics_mats_index = EditorGUILayout.Popup("Physics Material:", physics_mats_index, physics_mats_options, GUILayout.Width(240));
+                    //    item.WPN_physics_material = physics_mats_options[physics_mats_index];
+                    //    DrawUILineVertical(colUILine, 1, 1, 16);
 
-                        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Item Usage: "));
-                        EditorGUIUtility.labelWidth = textDimensions.x;
-                        item_usage_index = EditorGUILayout.Popup("Item Usage: ", item_usage_index, item_usage_options, GUILayout.Width(256));
-                        item.WPN_item_usage = item_usage_options[item_usage_index];
-                        EditorGUILayout.EndHorizontal();
-                        DrawUILine(colUILine, 3, 12);
+                    //    textDimensions = GUI.skin.label.CalcSize(new GUIContent("Item Usage: "));
+                    //    EditorGUIUtility.labelWidth = textDimensions.x;
+                    //    item_usage_index = EditorGUILayout.Popup("Item Usage: ", item_usage_index, item_usage_options, GUILayout.Width(256));
+                    //    item.WPN_item_usage = item_usage_options[item_usage_index];
+                    //    EditorGUILayout.EndHorizontal();
+                    //    DrawUILine(colUILine, 3, 12);
 
-                        // POSITION S
-                        textDimensions = GUI.skin.label.CalcSize(new GUIContent(" Position: "));
-                        EditorGUIUtility.labelWidth = textDimensions.x;
+                    //    // POSITION S
+                    //    textDimensions = GUI.skin.label.CalcSize(new GUIContent(" Position: "));
+                    //    EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        posVec3 = EditorGUILayout.Vector3Field(" Position:", posVec3, GUILayout.MaxWidth(352));
-                        string pos = posVec3.x + "," + posVec3.y + "," + posVec3.z;
-                        item.WPN_position = pos;
+                    //    posVec3 = EditorGUILayout.Vector3Field(" Position:", posVec3, GUILayout.MaxWidth(352));
+                    //    string pos = posVec3.x + "," + posVec3.y + "," + posVec3.z;
+                    //    item.WPN_position = pos;
 
-                        DrawUILine(colUILine, 3, 12);
+                    //    DrawUILine(colUILine, 3, 12);
 
-                        // BAR 1
-                        EditorGUILayout.BeginHorizontal();
+                    //    // BAR 1
+                    //    EditorGUILayout.BeginHorizontal();
 
-                        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Speed Rating:"));
-                        EditorGUIUtility.labelWidth = textDimensions.x;
+                    //    textDimensions = GUI.skin.label.CalcSize(new GUIContent("Speed Rating:"));
+                    //    EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        int sr;
-                        int.TryParse(item.WPN_speed_rating, out sr);
-                        sr = EditorGUILayout.IntField("Speed Rating:", sr, GUILayout.MaxWidth(256));
-                        item.WPN_speed_rating = sr.ToString();
-                        // item.WPN_speed_rating = EditorGUILayout.TextField("Speed Rating:", item.WPN_speed_rating, GUILayout.MaxWidth(256));
-                        DrawUILineVertical(colUILine, 1, 1, 16);
+                    //    int sr;
+                    //    int.TryParse(item.WPN_speed_rating, out sr);
+                    //    sr = EditorGUILayout.IntField("Speed Rating:", sr, GUILayout.MaxWidth(256));
+                    //    item.WPN_speed_rating = sr.ToString();
+                    //    // item.WPN_speed_rating = EditorGUILayout.TextField("Speed Rating:", item.WPN_speed_rating, GUILayout.MaxWidth(256));
+                    //    DrawUILineVertical(colUILine, 1, 1, 16);
 
-                        textDimensions = GUI.skin.label.CalcSize(new GUIContent("Weapon Lenght:"));
-                        EditorGUIUtility.labelWidth = textDimensions.x;
+                    //    textDimensions = GUI.skin.label.CalcSize(new GUIContent("Weapon Lenght:"));
+                    //    EditorGUIUtility.labelWidth = textDimensions.x;
 
-                        int wl;
-                        int.TryParse(item.WPN_weapon_length, out wl);
-                        wl = EditorGUILayout.IntField("Weapon Lenght:", wl, GUILayout.MaxWidth(256));
-                        item.WPN_weapon_length = wl.ToString();
-                        // item.WPN_weapon_length = EditorGUILayout.TextField("Weapon Lenght:", item.WPN_weapon_length, GUILayout.MaxWidth(256));
-                        DrawUILineVertical(colUILine, 1, 1, 16);
+                    //    int wl;
+                    //    int.TryParse(item.WPN_weapon_length, out wl);
+                    //    wl = EditorGUILayout.IntField("Weapon Lenght:", wl, GUILayout.MaxWidth(256));
+                    //    item.WPN_weapon_length = wl.ToString();
+                    //    // item.WPN_weapon_length = EditorGUILayout.TextField("Weapon Lenght:", item.WPN_weapon_length, GUILayout.MaxWidth(256));
+                    //    DrawUILineVertical(colUILine, 1, 1, 16);
 
-                        EditorGUILayout.EndHorizontal();
+                    //    EditorGUILayout.EndHorizontal();
 
-                        DrawUILine(colUILine, 3, 12);
+                    //    DrawUILine(colUILine, 3, 12);
 
 
-                    }
+                    //}
                     else
                     {
                         EditorGUILayout.LabelField("Weapon Class:", EditorStyles.boldLabel, GUILayout.ExpandWidth(false));

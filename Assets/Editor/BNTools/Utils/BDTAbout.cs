@@ -1,17 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using System.IO;
-using System.Text.RegularExpressions;
 using System;
-using System.Text;
-using System.Buffers.Binary;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using System.Security.Cryptography;
-using System.Runtime.CompilerServices;
-
 public class BDTAbout : EditorWindow
 {
     Color colUILine = new Color(0.5f, 0.5f, 0.5f, 0.05f);
@@ -29,8 +18,6 @@ public class BDTAbout : EditorWindow
         var window = GetWindow<BDTAbout>("About");
         window.position = new Rect(512, 256, 280, 236);
         window.Show();
-
-
     }
     void OnGUI()
     {

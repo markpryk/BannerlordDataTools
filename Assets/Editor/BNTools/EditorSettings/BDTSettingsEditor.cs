@@ -136,7 +136,7 @@ public class BDTSettingsEditor : EditorWindow
 
                 if (GUILayout.Button("Load BDT Layout"))
                 {
-                    UnityEditor.EditorUtility.LoadWindowLayout("Assets/Settings/BDT_UnityLayout.wlt");
+                    EditorUtility.LoadWindowLayout("Assets/Settings/BDT_UnityLayout.wlt");
                 }
             }
 
@@ -195,28 +195,28 @@ public class BDTSettingsEditor : EditorWindow
         // ItemTypes (internal)
         CreateInternalItemTypes();
 
-        var cp_path = "Assets/Settings/Definitions/CraftingPieces/";
+        var cp_path_temp = "Assets/Settings/Definitions/.CraftingPieces/";
+        var cp_path_final = "Assets/Settings/Definitions/CraftingPieces/";
 
-        if (Directory.Exists(cp_path))
+        if (Directory.Exists(cp_path_final))
         {
-            FileUtil.DeleteFileOrDirectory(cp_path);
-            Directory.CreateDirectory(cp_path);
+            FileUtil.DeleteFileOrDirectory(cp_path_final);
+            Directory.CreateDirectory(cp_path_temp);
         }
         else
         {
-            Directory.CreateDirectory(cp_path);
+            Directory.CreateDirectory(cp_path_temp);
         }
 
         settingsAsset.NativePiecesDefinitions = new CraftingPiece[CT_Pieces.Count];
-        var index = 0;
         foreach (var cp in CT_Pieces)
         {
-            var full_cp_path = cp_path + cp.ID + ".asset";
+            var full_cp_path = cp_path_temp + cp.ID + ".asset";
             AssetDatabase.CreateAsset(cp, full_cp_path);
-            //AssetDatabase.SaveAssets();
-            settingsAsset.NativePiecesDefinitions[index] = cp;
-            index++;
         }
+
+        Directory.Move(cp_path_temp, cp_path_final);
+        
 
         // Tattoos definitions
         settingsAsset.TattooTagDefinitions = new string[] { "tattoo1" }; 
@@ -247,6 +247,9 @@ public class BDTSettingsEditor : EditorWindow
 
             writer.Close();
         }
+
+        settingsAsset.CheckGUI();
+        settingsAsset.CheckAndRefreshCraftingPieces();
 
         settingsAsset.load_b = true;
 
@@ -619,6 +622,11 @@ public class BDTSettingsEditor : EditorWindow
         // Weapon Class
         // none - LargeShield - TwoHandedPolearm
         ReadAttributeValue(mainNode, childNode, "ItemComponent", "Weapon", "weapon_class", ref settingsAsset.WeaponClassDefinitions, "", "none");
+       
+        // banners
+        ReadAttributeValue(mainNode, childNode, "ItemComponent", "Banner", "effect", ref settingsAsset.ItemEffectsDefinitions, "", "none");
+        ReadAttributeValue(mainNode, childNode, "ItemComponent", "Banner", "weapon_class", ref settingsAsset.WeaponClassDefinitions, "", "none");
+        ReadAttributeValue(mainNode, childNode, "ItemComponent", "Banner", "item_usage", ref settingsAsset.ItemUsageDefinitions, "", "none");
 
         // SubTypes
         // none - two_handed_wpn
@@ -629,8 +637,10 @@ public class BDTSettingsEditor : EditorWindow
         ReadAttributeValue(mainNode, childNode, "Items", "Item", "item_category", ref settingsAsset.ItemCategoryDefinitions, "", "none");
 
         // Modifier Group
-        // none - cloth - cloth_unarmored
-        ReadAttributeValue(mainNode, childNode, "ItemComponent", "Armor", "modifier_group", ref settingsAsset.ModifierGroupDefinitions, "", "none");
+        ReadAttributeValue(mainNode, childNode, "ItemComponent", "Armor", "modifier_group", ref settingsAsset.ItemModifierGroupDefinitions, "", "none");
+        ReadAttributeValue(mainNode, childNode, "ItemComponent", "Weapon", "modifier_group", ref settingsAsset.ItemModifierGroupDefinitions, "", "none");
+        ReadAttributeValue(mainNode, childNode, "ItemComponent", "Banner", "modifier_group", ref settingsAsset.ItemModifierGroupDefinitions, "", "none");
+        ReadAttributeValue(mainNode, childNode, "ItemComponent", "CraftedItem", "modifier_group", ref settingsAsset.ItemModifierGroupDefinitions, "", "none");
 
         // Material Type
         // none - Cloth - Plate
@@ -1183,7 +1193,7 @@ public class BDTSettingsEditor : EditorWindow
 
         // Modifier Group
         // none - cloth - cloth_unarmored
-        settingsAsset.ModifierGroupDefinitions = new string[0];
+        settingsAsset.ItemModifierGroupDefinitions = new string[0];
 
         // Material Type
         // none - Cloth - Plate

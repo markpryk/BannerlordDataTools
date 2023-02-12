@@ -10,13 +10,17 @@ using System.Text;
 using System.Linq;
 using UnityEngine.EventSystems;
 using System.Threading;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class ModFilesManager : Editor
 {
-
+    #region Data
+    private const string TEMP_NAME_RESOURCES = ".BDT_CREATING_MOD_TEMP_RES";
+    private const string TEMP_NAME_DATA = ".BDT_CREATING_MOD_TEMP_DATA";
     public ModFilesManager(ModuleReceiver mod, bool import, ref bool imp_cult, ref bool imp_kgd, ref bool imp_fac, ref bool imp_hero, ref bool imp_npc, ref bool imp_item, ref bool imp_eqp, ref bool imp_pt, ref bool imp_settl)
     {
+        _isImportingProcces = import;
         this.module = mod;
         this.CreateLoadDictionaries();
         if (!import)
@@ -36,6 +40,8 @@ public class ModFilesManager : Editor
     [SerializeField]
     Dictionary<string, string> configs;
 
+    private bool _isImportingProcces = false;
+
     Dictionary<Faction, string> fac_Assets;
     Dictionary<Culture, string> cult_Assets;
     Dictionary<Hero, string> hero_Assets;
@@ -52,7 +58,10 @@ public class ModFilesManager : Editor
     Dictionary<EquipmentSet, string> equipmentSets;
     Dictionary<Equipment, string> equipments;
 
+
     AssetDatabase.RefreshImportMode _defaultRefreshMode;
+
+    #endregion
     public void CreateLoadDictionaries()
     {
         fac_Assets = new Dictionary<Faction, string>();
@@ -179,9 +188,9 @@ public class ModFilesManager : Editor
             PartyTemplatesData PTconfig = ScriptableObject.CreateInstance<PartyTemplatesData>();
             ModDataConfigsPath = asset.modSettingsPath + "/ModDataConfigs/" + "PT_" + module.id + ".asset";
 
-            if (PTconfig.partyTemplates == null)
+            if (PTconfig.party == null)
             {
-                PTconfig.partyTemplates = new List<PartyTemplate>();
+                PTconfig.party = new List<PartyTemplate>();
                 asset.PTdata = PTconfig;
             }
 
@@ -298,8 +307,21 @@ public class ModFilesManager : Editor
         }
     }
 
-    static void CreateDirectories(ModFiles modFilesAsset)
+    public void CreateDirectories(ModFiles modFilesAsset)
     {
+        // Main Directories
+
+        if (_isImportingProcces)
+        {
+            modFilesAsset.modResourcesPath = modFilesAsset.modResourcesPath.Replace(("Data/" + modFilesAsset.mod.id), "Data/" + TEMP_NAME_RESOURCES);
+            modFilesAsset.modSettingsPath = modFilesAsset.modSettingsPath.Replace(("SubModulesData/" + modFilesAsset.mod.id), "SubModulesData/" + TEMP_NAME_DATA);
+
+            if (Directory.Exists(modFilesAsset.modResourcesPath))
+                Directory.Delete(modFilesAsset.modResourcesPath, true);
+            if (Directory.Exists(modFilesAsset.modSettingsPath))
+                Directory.Delete(modFilesAsset.modSettingsPath, true);
+        }
+
         if (!Directory.Exists(modFilesAsset.modSettingsPath))
         {
             Directory.CreateDirectory(modFilesAsset.modSettingsPath);
@@ -308,12 +330,12 @@ public class ModFilesManager : Editor
         {
             Directory.CreateDirectory(modFilesAsset.modResourcesPath);
         }
-
         if (!Directory.Exists(modFilesAsset.modSettingsPath + "/ModDataConfigs"))
         {
             Directory.CreateDirectory(modFilesAsset.modSettingsPath + "/ModDataConfigs");
         }
 
+        // Mod Directories
         if (!Directory.Exists(modFilesAsset.modResourcesPath + "/Kingdoms"))
         {
             Directory.CreateDirectory(modFilesAsset.modResourcesPath + "/Kingdoms");
@@ -3012,9 +3034,10 @@ public class ModFilesManager : Editor
                                 itemAsset.IsHorse = true;
                             }
 
+
                             CheckAssignAtribute(childRelation, ref itemAsset.ARMOR_arm_armor, "arm_armor");
                             CheckAssignAtribute(childRelation, ref itemAsset.ARMOR_covers_hands, "covers_hands");
-                            CheckAssignAtribute(childRelation, ref itemAsset.ARMOR_modifier_group, "modifier_group");
+                            CheckAssignAtribute(childRelation, ref itemAsset.WPN_modifier_group, "modifier_group");
                             CheckAssignAtribute(childRelation, ref itemAsset.ARMOR_material_type, "material_type");
                             CheckAssignAtribute(childRelation, ref itemAsset.ARMOR_family_type, "family_type");
                             CheckAssignAtribute(childRelation, ref itemAsset.ARMOR_body_armor, "body_armor");
@@ -3086,11 +3109,12 @@ public class ModFilesManager : Editor
                             CheckAssignAtribute(childRelation, ref itemAsset.TRADE_morale_bonus, "morale_bonus");
 
 
-                            // pdate 1.7.2
+                            // update 1.7.2
                             CheckAssignAtribute(childRelation, ref itemAsset.WPN_reload_phase_count, "reload_phase_count");
-                            CheckAssignAtribute(childRelation, ref itemAsset.WPN_item_modifier_group, "item_modifier_group");
 
-
+                            // banners data 1.1
+                            CheckAssignAtribute(childRelation, ref itemAsset.WPN_banner_level, "banner_level");
+                            CheckAssignAtribute(childRelation, ref itemAsset.WPN_effect, "effect");
 
                             foreach (XmlNode componentNode in childRelation.ChildNodes)
                             {
@@ -3615,98 +3639,98 @@ public class ModFilesManager : Editor
 
     private void ReadSubModuleXML(ModuleReceiver currentMod, string subModFile)
     {
-            XmlDocument Doc = new XmlDocument();
-            // UTF 8 - 16
-            StreamReader reader = new StreamReader(subModFile);
-            Doc.Load(reader);
+        XmlDocument Doc = new XmlDocument();
+        // UTF 8 - 16
+        StreamReader reader = new StreamReader(subModFile);
+        Doc.Load(reader);
 
-            XmlElement Root = Doc.DocumentElement;
-            XmlNodeList XNL = Root.ChildNodes;
+        XmlElement Root = Doc.DocumentElement;
+        XmlNodeList XNL = Root.ChildNodes;
 
-            var nameNode = Doc.GetElementsByTagName("Name");
-            //var idNode = Doc.GetElementsByTagName("Id");
-            var versionNode = Doc.GetElementsByTagName("Version");
-            var defaultModNode = Doc.GetElementsByTagName("DefaultModule");
-            var moduleCategoryNode = Doc.GetElementsByTagName("ModuleCategory");
-            var officialNode = Doc.GetElementsByTagName("Official");
+        var nameNode = Doc.GetElementsByTagName("Name");
+        //var idNode = Doc.GetElementsByTagName("Id");
+        var versionNode = Doc.GetElementsByTagName("Version");
+        var defaultModNode = Doc.GetElementsByTagName("DefaultModule");
+        var moduleCategoryNode = Doc.GetElementsByTagName("ModuleCategory");
+        var officialNode = Doc.GetElementsByTagName("Official");
 
-            var dependedNode = Doc.GetElementsByTagName("DependedModules");
-            var subModNode = Doc.GetElementsByTagName("SubModules");
-            //var xmlsNode = Doc.GetElementsByTagName("Xmls");
+        var dependedNode = Doc.GetElementsByTagName("DependedModules");
+        var subModNode = Doc.GetElementsByTagName("SubModules");
+        //var xmlsNode = Doc.GetElementsByTagName("Xmls");
 
-            if (currentMod.moduleName == "")
-                currentMod.moduleName = FindXMLNodeValue(nameNode[0], "value");
+        if (currentMod.moduleName == "")
+            currentMod.moduleName = FindXMLNodeValue(nameNode[0], "value");
 
-            //FindXMLNodeValue(idNode[0], "value");
+        //FindXMLNodeValue(idNode[0], "value");
 
-            currentMod.version = FindXMLNodeValue(versionNode[0], "value");
-            currentMod.defaultModule = FindXMLNodeValueBool(defaultModNode[0], "value");
-            currentMod.moduleCategory = FindXMLNodeValue(moduleCategoryNode[0], "value");
-            currentMod.official = FindXMLNodeValueBool(officialNode[0], "value");
+        currentMod.version = FindXMLNodeValue(versionNode[0], "value");
+        currentMod.defaultModule = FindXMLNodeValueBool(defaultModNode[0], "value");
+        currentMod.moduleCategory = FindXMLNodeValue(moduleCategoryNode[0], "value");
+        currentMod.official = FindXMLNodeValueBool(officialNode[0], "value");
 
-            if (dependedNode[0] != null)
-            {
-                //if (currentMod.Dependencies == null)
-                currentMod.Dependencies = new List<ModuleReceiver.Dependency>();
+        if (dependedNode[0] != null)
+        {
+            //if (currentMod.Dependencies == null)
+            currentMod.Dependencies = new List<ModuleReceiver.Dependency>();
 
-                foreach (XmlNode dpd in dependedNode[0])
-                    if (dpd.LocalName == "DependedModule")
+            foreach (XmlNode dpd in dependedNode[0])
+                if (dpd.LocalName == "DependedModule")
+                {
+                    var _id = FindXMLNodeValue(dpd, "Id");
+
+                    //if (_id == "Sandbox")
+                    //    _id = "SandBox";
+
+                    currentMod.Dependencies.Add(new ModuleReceiver.Dependency(
+                      _id,
+                      FindXMLNodeValue(dpd, "DependentVersion"),
+                      FindXMLNodeValueBool(dpd, "Optional")));
+                }
+
+        }
+
+        if (subModNode[0] != null)
+        {
+            //if (currentMod.SubModules == null)
+            currentMod.SubModules = new List<ModuleReceiver.SubModule>();
+
+            foreach (XmlNode subMod in subModNode[0])
+                if (subMod.LocalName == "SubModule")
+                {
+                    var _nm = "";
+                    var _dll = "";
+                    var _class = "";
+                    var _tags = new List<ModuleReceiver.SubModuleTag>();
+
+                    foreach (XmlNode sub in subMod)
                     {
-                        var _id = FindXMLNodeValue(dpd, "Id");
-
-                        //if (_id == "Sandbox")
-                        //    _id = "SandBox";
-
-                        currentMod.Dependencies.Add(new ModuleReceiver.Dependency(
-                          _id,
-                          FindXMLNodeValue(dpd, "DependentVersion"),
-                          FindXMLNodeValueBool(dpd, "Optional")));
-                    }
-
-            }
-
-            if (subModNode[0] != null)
-            {
-                //if (currentMod.SubModules == null)
-                currentMod.SubModules = new List<ModuleReceiver.SubModule>();
-
-                foreach (XmlNode subMod in subModNode[0])
-                    if (subMod.LocalName == "SubModule")
-                    {
-                        var _nm = "";
-                        var _dll = "";
-                        var _class = "";
-                        var _tags = new List<ModuleReceiver.SubModuleTag>();
-
-                        foreach (XmlNode sub in subMod)
+                        switch (sub.LocalName)
                         {
-                            switch (sub.LocalName)
-                            {
-                                case "Name":
-                                    _nm = FindXMLNodeValue(sub, "value");
-                                    break;
-                                case "DLLName":
-                                    _dll = FindXMLNodeValue(sub, "value");
-                                    break;
-                                case "SubModuleClassType":
-                                    _class = FindXMLNodeValue(sub, "value");
-                                    break;
-                                case "Tags":
-                                    foreach (XmlNode tag in sub)
-                                    {
-                                        if (tag.LocalName == "Tag")
-                                            _tags.Add(new ModuleReceiver.SubModuleTag(FindXMLNodeValue(tag, "key"), FindXMLNodeValue(tag, "value")));
-                                    }
-                                    break;
-                            }
+                            case "Name":
+                                _nm = FindXMLNodeValue(sub, "value");
+                                break;
+                            case "DLLName":
+                                _dll = FindXMLNodeValue(sub, "value");
+                                break;
+                            case "SubModuleClassType":
+                                _class = FindXMLNodeValue(sub, "value");
+                                break;
+                            case "Tags":
+                                foreach (XmlNode tag in sub)
+                                {
+                                    if (tag.LocalName == "Tag")
+                                        _tags.Add(new ModuleReceiver.SubModuleTag(FindXMLNodeValue(tag, "key"), FindXMLNodeValue(tag, "value")));
+                                }
+                                break;
                         }
-
-                        currentMod.SubModules.Add(new ModuleReceiver.SubModule(_nm, _dll, _class, _tags, false));
                     }
 
-            }
+                    currentMod.SubModules.Add(new ModuleReceiver.SubModule(_nm, _dll, _class, _tags, false));
+                }
 
-            reader.Close();
+        }
+
+        reader.Close();
     }
 
     private string FindXMLNodeValue(XmlNode node, string value)
@@ -3783,35 +3807,42 @@ public class ModFilesManager : Editor
 
                 if (node.Name == "NPCCharacter" && imp_npc)
                 {
-                    // Debug.Log("Settlement");
                     CreateNPCAsset(node, modFilesAsset, file);
+
                 }
                 if (node.Name == "Culture" && imp_cult)
                 {
                     //Debug.Log(node.Name);
                     CreateCultureAsset(node, modFilesAsset, file);
+
                 }
                 if (node.Name == "MBPartyTemplate" && imp_pt)
                 {
                     // Debug.Log("Settlement");
                     CreatePTAsset(node, modFilesAsset, file);
+
                 }
                 if (node.Name == "Hero" && imp_hero)
                 {
                     // Debug.Log("Settlement");
                     CreateHeroAsset(node, modFilesAsset, file);
+
                 }
                 if (node.Name == "EquipmentRoster" && imp_eqp)
                 {
                     // Debug.Log("Settlement");
                     CreateEquipments(node, modFilesAsset, file);
+
                 }
                 if (node.Name == "Item" || node.Name == "CraftedItem" && imp_eqp)
                 {
                     CreateItemAsset(node, modFilesAsset, file);
                 }
+
+                CleanMemory();
             }
         }
+
 
         EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({1}/{3}) - ", $"Reading XML Files.", 0.5f);
 
@@ -3880,6 +3911,9 @@ public class ModFilesManager : Editor
                     {
                         CreateItemAsset(node, modFilesAsset, file);
                     }
+
+                    CleanMemory();
+
                 }
             }
         }
@@ -3897,9 +3931,37 @@ public class ModFilesManager : Editor
         // Debug.Log("Items " + item_Assets.Count);
         //#
         //CreateLanguages(modFilesAsset);
-        //CheckSettingsLanguages(modFilesAsset);
+
 
         CreateAssetsFile(modFilesAsset);
+
+        CheckSettingsLanguages(modFilesAsset);
+
+        // assign original RES
+        var oldDirRes = modFilesAsset.modResourcesPath;
+        var newDirRes = modFilesAsset.modResourcesPath.Replace(("Data/" + TEMP_NAME_RESOURCES), "Data/" + modFilesAsset.mod.id);
+
+        // assign original DATA
+        var oldDirData = modFilesAsset.modSettingsPath;
+        var newDirData = modFilesAsset.modSettingsPath.Replace(("SubModulesData/" + TEMP_NAME_DATA), "SubModulesData/" + modFilesAsset.mod.id);
+        var id = modFilesAsset.mod.id;
+
+        if (_isImportingProcces)
+        {
+            // not reverting here because file is out of unity
+            //asset.modResourcesPath = newDirRes;
+            //asset.modSettingsPath = newDirData;
+
+            if (Directory.Exists(newDirRes))
+                Directory.Delete(newDirRes, true);
+
+            if (Directory.Exists(newDirData))
+                Directory.Delete(newDirData, true);
+
+            Directory.Move(oldDirRes, newDirRes);
+            Directory.Move(oldDirData, newDirData);
+        }
+
         AssetDatabase.ActiveRefreshImportMode = _defaultRefreshMode;
 
         EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({3}/{3}) - ", $"Finishing Importing...", 1);
@@ -3908,19 +3970,29 @@ public class ModFilesManager : Editor
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        // CreateLanguagesData(modFilesAsset);
+        // revert names
+        if (_isImportingProcces)
+        {
+            var modData = (ModFiles)AssetDatabase.LoadAssetAtPath($"{newDirData}/{id}_Config.asset", typeof(ModFiles));
 
-        // Debug.Log("Languages Translation Strings " + TS_lang_Assets.Count);
-        // CreateLangAssetsFile(modFilesAsset);
+            modData.modResourcesPath = newDirRes;
+            modData.modSettingsPath = newDirData;
 
-        // CREATE TRANSLATION DATA for deafault language (eng)
-        // CreateLanguagesData(modFilesAsset);
+            CopyLanguages(modData);
 
-        //#
-        //CopyLanguages(modFilesAsset);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
 
+       
     }
 
+    public void CleanMemory()
+    {
+        GC.Collect();
+        //EditorUtility.UnloadUnusedAssetsImmediate();
+        //AssetDatabase.Refresh();
+    }
     //check settings
     public void CheckSettingsLanguages(ModFiles modFilesAsset)
     {
@@ -3951,6 +4023,7 @@ public class ModFilesManager : Editor
     // CREATE FILE ASSETS
     public void CreateAssetsFile(ModFiles modFilesAsset)
     {
+
         float progress = 1;
 
         foreach (Kingdom kingd in kingd_Assets.Keys)
@@ -3958,7 +4031,9 @@ public class ModFilesManager : Editor
 
             AssetDatabase.CreateAsset(kingd, kingd_Assets[kingd]);
             modFilesAsset.kingdomsData.kingdoms.Add(kingd);
-            BDTEditorDrawAssetsCretionProgress(ref progress, kingd_Assets.Count, "Kingdom");
+            BDTEditorDrawAssetsCreationProgress(ref progress, kingd_Assets.Count, "Kingdom");
+
+            CleanMemory();
         }
         progress = 1;
 
@@ -3966,7 +4041,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(fac, fac_Assets[fac]);
             modFilesAsset.factionsData.factions.Add(fac);
-            BDTEditorDrawAssetsCretionProgress(ref progress, fac_Assets.Count, "Faction");
+            BDTEditorDrawAssetsCreationProgress(ref progress, fac_Assets.Count, "Faction");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -3974,7 +4051,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(settl, settl_Assets[settl]);
             modFilesAsset.settlementsData.settlements.Add(settl);
-            BDTEditorDrawAssetsCretionProgress(ref progress, settl_Assets.Count, "Settlement");
+            BDTEditorDrawAssetsCreationProgress(ref progress, settl_Assets.Count, "Settlement");
+            CleanMemory();
+
         }
 
         progress = 1;
@@ -3984,7 +4063,9 @@ public class ModFilesManager : Editor
 
             AssetDatabase.CreateAsset(npc, npc_Assets[npc]);
             modFilesAsset.npcChrData.NPCCharacters.Add(npc);
-            BDTEditorDrawAssetsCretionProgress(ref progress, npc_Assets.Count, "NPCCharacter");
+            BDTEditorDrawAssetsCreationProgress(ref progress, npc_Assets.Count, "NPCCharacter");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -3992,15 +4073,19 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(cult, cult_Assets[cult]);
             modFilesAsset.culturesData.cultures.Add(cult);
-            BDTEditorDrawAssetsCretionProgress(ref progress, cult_Assets.Count, "Culture");
+            BDTEditorDrawAssetsCreationProgress(ref progress, cult_Assets.Count, "Culture");
+            CleanMemory();
+
         }
         progress = 1;
 
         foreach (PartyTemplate PT in PT_Assets.Keys)
         {
             AssetDatabase.CreateAsset(PT, PT_Assets[PT]);
-            modFilesAsset.PTdata.partyTemplates.Add(PT);
-            BDTEditorDrawAssetsCretionProgress(ref progress, PT_Assets.Count, "PartyTemplate");
+            modFilesAsset.PTdata.party.Add(PT);
+            BDTEditorDrawAssetsCreationProgress(ref progress, PT_Assets.Count, "PartyTemplate");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -4008,7 +4093,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(hero, hero_Assets[hero]);
             modFilesAsset.heroesData.heroes.Add(hero);
-            BDTEditorDrawAssetsCretionProgress(ref progress, hero_Assets.Count, "Hero");
+            BDTEditorDrawAssetsCreationProgress(ref progress, hero_Assets.Count, "Hero");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -4016,7 +4103,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(equip_roster, eqp_Roster_Assets[equip_roster]);
             modFilesAsset.equipmentSetData.equipmentSets.Add(equip_roster);
-            BDTEditorDrawAssetsCretionProgress(ref progress, eqp_Roster_Assets.Count, "EquipmentSetRoster");
+            BDTEditorDrawAssetsCreationProgress(ref progress, eqp_Roster_Assets.Count, "EquipmentSetRoster");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -4024,7 +4113,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(equip_main, eqp_Main_Assets[equip_main]);
             modFilesAsset.equipmentSetData.equipmentSets.Add(equip_main);
-            BDTEditorDrawAssetsCretionProgress(ref progress, eqp_Main_Assets.Count, "MainEquipmentSet");
+            BDTEditorDrawAssetsCreationProgress(ref progress, eqp_Main_Assets.Count, "MainEquipmentSet");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -4032,7 +4123,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(equipSet, equipmentSets[equipSet]);
             modFilesAsset.equipmentSetData.equipmentSets.Add(equipSet);
-            BDTEditorDrawAssetsCretionProgress(ref progress, equipmentSets.Count, "EquipmentSet");
+            BDTEditorDrawAssetsCreationProgress(ref progress, equipmentSets.Count, "EquipmentSet");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -4040,7 +4133,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(equip, equipments[equip]);
             modFilesAsset.equipmentsData.equipmentSets.Add(equip);
-            BDTEditorDrawAssetsCretionProgress(ref progress, equipments.Count, "Equipment");
+            BDTEditorDrawAssetsCreationProgress(ref progress, equipments.Count, "Equipment");
+            CleanMemory();
+
         }
 
         progress = 1;
@@ -4054,7 +4149,7 @@ public class ModFilesManager : Editor
                 TS.id = TS.id.Replace("*", "");
             }
 
-            if (TS.id != "" && TS.id != "{=}" && TS.id != "{=}{=}")
+            if (CheckNoneStrings(TS.id))
             {
 
                 if (TS_Assets[TS].Contains("*"))
@@ -4066,7 +4161,9 @@ public class ModFilesManager : Editor
                 modFilesAsset.translationData.translationStrings.Add(TS);
             }
 
-            BDTEditorDrawAssetsCretionProgress(ref progress, TS_Assets.Count, "Translation String");
+            BDTEditorDrawAssetsCreationProgress(ref progress, TS_Assets.Count, "Translation String");
+            CleanMemory();
+
         }
 
         progress = 1;
@@ -4075,7 +4172,9 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(item, item_Assets[item]);
             modFilesAsset.itemsData.items.Add(item);
-            BDTEditorDrawAssetsCretionProgress(ref progress, item_Assets.Count, "Item");
+            BDTEditorDrawAssetsCreationProgress(ref progress, item_Assets.Count, "Item");
+            CleanMemory();
+
         }
         progress = 1;
 
@@ -4083,13 +4182,24 @@ public class ModFilesManager : Editor
         {
             AssetDatabase.CreateAsset(language, lang_Assets[language]);
             modFilesAsset.languagesData.languages.Add(language);
-            BDTEditorDrawAssetsCretionProgress(ref progress, lang_Assets.Count, "Mod Language");
+            BDTEditorDrawAssetsCreationProgress(ref progress, lang_Assets.Count, "Mod Language");
+            CleanMemory();
+
         }
 
 
     }
 
-    private void BDTEditorDrawAssetsCretionProgress(ref float progress, int maxCount, string typeID)
+    public bool CheckNoneStrings(string id)
+    {
+        string[] excluded = { "", "{=}", "{=}{=}", "{=!}" };
+
+        if (excluded.Contains(id))
+            return false;
+        else
+            return true;
+    }
+    private void BDTEditorDrawAssetsCreationProgress(ref float progress, int maxCount, string typeID)
     {
         float percent = (float)(progress / maxCount) * 1;
         EditorUtility.DisplayProgressBar($"Importing {module.id} Module Data ({2}/{3}) - ", $"Creating {typeID} Assets ({progress}/{maxCount})", percent);
@@ -4107,22 +4217,31 @@ public class ModFilesManager : Editor
     // }
     public void CopyLanguages(ModFiles modFilesAsset)
     {
-        // string[] engXMLfiles = Directory.GetFiles(modFilesAsset.BNResourcesPath + "/Languages", "*.XML");
+        string[] engXMLfiles = Directory.GetFiles(modFilesAsset.BNResourcesPath + "/Languages", "*.XML");
 
         string dirFrom = modFilesAsset.BNResourcesPath + "/Languages";
         string dirTo = modFilesAsset.modSettingsPath + "/Languages";
 
-        if (System.IO.Directory.Exists(dirFrom))
+        if (Directory.Exists(dirFrom))
         {
-            if (System.IO.Directory.Exists(dirTo))
+            if (!Directory.Exists(dirTo))
             {
-                FileUtil.DeleteFileOrDirectory(dirTo + ".meta");
-                FileUtil.DeleteFileOrDirectory(dirTo);
-                FileUtil.CopyFileOrDirectory(dirFrom, dirTo);
+                Directory.CreateDirectory(dirTo);
             }
-            else
+
+            string[] dirs = Directory.GetDirectories(dirFrom);
+
+            foreach (var dir in dirs)
             {
-                FileUtil.CopyFileOrDirectory(dirFrom, dirTo);
+                if (!dir.Contains("VoicedLines"))
+                {
+                    FileUtil.CopyFileOrDirectory(dir, $"{dirTo}/{Path.GetFileName(dir)}");
+                }
+            }
+
+            foreach (var file in engXMLfiles)
+            {
+                FileUtil.CopyFileOrDirectory(file, $"{dirTo}/{Path.GetFileName(file)}");
             }
         }
 
@@ -4133,8 +4252,6 @@ public class ModFilesManager : Editor
     {
         if (System.IO.Directory.Exists(modFilesAsset.BNResourcesPath + "/Languages"))
         {
-
-
             string[] directories = Directory.GetDirectories(modFilesAsset.BNResourcesPath + "/Languages");
             foreach (var dir in directories)
             {
@@ -4193,7 +4310,7 @@ public class ModFilesManager : Editor
             ModLanguage engLanguageAsset = ScriptableObject.CreateInstance<ModLanguage>();
 
             engLanguageAsset.languageID = engFolderName;
-            engLanguageAsset.languageName = "";
+            engLanguageAsset.languageName = "English";
 
             foreach (string lenguageFile in engXMLfiles)
             {

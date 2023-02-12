@@ -47,7 +47,7 @@ public class Item : ScriptableObject
     // ARM ARMOR
     public string ARMOR_arm_armor;
     public string ARMOR_covers_hands;
-    public string ARMOR_modifier_group;
+    public string WPN_modifier_group;
     public string ARMOR_material_type;
     public string ARMOR_family_type;
 
@@ -99,7 +99,7 @@ public class Item : ScriptableObject
     public string WPN_passby_sound_code;
     public string WPN_sticking_rotation;
     public string WPN_sticking_position;
-   
+
     // WEAPON FLAGS
 
     public string WPN_FLG_RangedWeapon;
@@ -188,7 +188,7 @@ public class Item : ScriptableObject
     ///  UPDATE
 
     public string WPN_reload_phase_count;
-    public string WPN_item_modifier_group;
+    //public string WPN_item_modifier_group;
     public string WPN_FLG_AffectsAreaBig;
     public string CT_has_modifier;
 
@@ -207,11 +207,12 @@ public class Item : ScriptableObject
     public string WPN_FLG_BonusAgainstShield;
     public string WPN_FLG_CanDismount;
 
-    // public string HRS_mane_mesh_multiplier; (TODO)
-    //  public string ARMOR_body_deform_type; (TODO)
-    // public string WPN_banner_level; (TODO)
-    // public string WPN_effect; (TODO)
-    // public string WPN_effect_amount; (TODO)
+    // public string HRS_mane_mesh_multiplier; (TODO) or obsolete
+    // public string ARMOR_body_deform_type; (TODO) or obsolete
+    // public string WPN_effect_amount; (TODO) or obsolete
+
+    public string WPN_banner_level;
+    public string WPN_effect;
 
     /// Internal Variables
 

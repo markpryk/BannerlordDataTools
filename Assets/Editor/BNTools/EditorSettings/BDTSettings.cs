@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using System.IO;
 
 [System.Serializable]
 [CreateAssetMenu(fileName = "BDT_settings.asset", menuName = "BDT/Settings Asset", order = 1)]
@@ -27,6 +28,8 @@ public class BDTSettings : ScriptableObject
     public string currentModule;
 
     public bool ableToDeleteModOrigins;
+
+    public BDT_GUI GUI;
     //Language
     [SerializeField]
     public ModLanguage[] LanguagesDefinitions;
@@ -56,13 +59,13 @@ public class BDTSettings : ScriptableObject
     public string[] WeaponClassDefinitions;
     public string[] SubTypesDefinitions;
     public string[] ItemCategoryDefinitions;
-    public string[] ModifierGroupDefinitions;
     public string[] MaterialTypesDefinitions;
     public string[] HairBeardCoverTypesDefinitions;
     public string[] PhysicsMatsDefinitions;
     public string[] ThurstDamageTypesDefinitions;
     public string[] SwingDamageTypesDefinitions;
     public string[] ItemUsageDefinitions;
+    public string[] ItemEffectsDefinitions;
     public string[] BodyMeshTypesDefinitions;
     public string[] MonstersDefinitions;
     public string[] HorseFamilyTypes;
@@ -167,5 +170,35 @@ public class BDTSettings : ScriptableObject
         VillagesTypeDefinitions.CopyTo(tempDefinition, 0);
         VillagesTypeDefinitions = tempDefinition;
         VillagesTypeDefinitions[VillagesTypeDefinitions.Length - 1] = definition;
+    }
+
+    public void CheckAndRefreshCraftingPieces()
+    {
+        if (NativePiecesDefinitions == null || NativePiecesDefinitions.Length == 0 || NativePiecesDefinitions[0] == null)
+        {
+            var cp = new List<CraftingPiece>();
+            var cp_path = "Assets/Settings/Definitions/CraftingPieces/";
+
+            string[] assets_pieces = Directory.GetFiles(cp_path);
+
+            foreach (var piecePath in assets_pieces)
+            {
+                var piece = (CraftingPiece)AssetDatabase.LoadAssetAtPath(piecePath, typeof(CraftingPiece));
+
+                if (piece != null)
+                    cp.Add(piece);
+            }
+
+            NativePiecesDefinitions = cp.ToArray();
+        }
+    }
+
+    public void CheckGUI()
+    {
+        if (GUI == null)
+        {
+            var path = "Assets/Settings/EditorResources/BDT_GUI/BDT_GUI.asset";
+            GUI = (BDT_GUI)AssetDatabase.LoadAssetAtPath(path, typeof(BDT_GUI));
+        }
     }
 }

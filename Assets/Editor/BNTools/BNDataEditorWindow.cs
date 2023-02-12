@@ -13,9 +13,9 @@ using System.Windows;
 
 
 
-// [CustomEditor(typeof(BNDataEditorWindow))]
-[CanEditMultipleObjects]
-[System.Serializable]
+[CustomEditor(typeof(BNDataEditorWindow))]
+//[CanEditMultipleObjects]
+[Serializable]
 public class BNDataEditorWindow : EditorWindow
 {
     bool DebugOptions;
@@ -31,7 +31,7 @@ public class BNDataEditorWindow : EditorWindow
     // string path = "E:/Games/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/";
     string path = "Assets/Modules/";
     string configPath = "Assets/Settings/BDT_settings.asset";
-    // string dataPath = "Assets/Resources/Data/";
+     string dataResPath = "Assets/Resources/Data/";
     string modsSettingsPath = "Assets/Resources/SubModulesData/";
 
     BDTSettings settingsAsset;
@@ -39,6 +39,10 @@ public class BNDataEditorWindow : EditorWindow
     public bool refresh;
 
     Texture2D header_texture;
+
+    [Header("Rects")]
+    Rect _imageRect = new Rect(10, 10, 720 * 0.8f, 248 * 0.8f);
+    Rect _imageVersionRect = new Rect(590 * 0.8f, 16, 140, 32);
 
     [MenuItem("BNDataTools/BNDataEditor")]
     public static void ShowWindow()
@@ -79,6 +83,8 @@ public class BNDataEditorWindow : EditorWindow
 
         if (currentMod != null)
             EditorUtility.SetDirty(currentMod);
+
+        settingsAsset.CheckGUI();
 
         refresh = true;
     }
@@ -134,11 +140,12 @@ public class BNDataEditorWindow : EditorWindow
             {
                 string asset = modsSettingsPath + settingsAsset.currentModule + ".asset";
 
-                if (System.IO.File.Exists(asset))
+                if (File.Exists(asset))
                 {
                     ModuleReceiver dpdMod = (ModuleReceiver)AssetDatabase.LoadAssetAtPath(asset, typeof(ModuleReceiver));
                     source = dpdMod;
                     currentMod = (ModuleReceiver)source;
+
                 }
                 else
                 {
@@ -158,20 +165,10 @@ public class BNDataEditorWindow : EditorWindow
 
             if (header_texture)
             {
-                GUI.DrawTexture(new Rect(10, 10, 720 * 0.8f, 248 * 0.8f), header_texture, ScaleMode.StretchToFill, true, 1);
-                GUILayout.BeginArea(new Rect(590*0.8f, 16, 140, 32));
-
-                GUILayout.BeginHorizontal();
-
-                GUILayout.FlexibleSpace();
+                GUI.DrawTexture(_imageRect, header_texture, ScaleMode.StretchToFill, true, 1);
+                //GUI.(new Rect(590 * 0.8f, 16, 92, 32),"");
                 style.fontSize = 12;
-                GUILayout.Label($"v{settingsAsset.BDTVersion}", EditorStyles.helpBox, GUILayout.Width(64), GUILayout.Height(20));
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.EndHorizontal();
-
-                GUILayout.EndArea();
+                GUI.Box(new Rect(600 * 0.8f, 16, 80, 24), $"v{settingsAsset.BDTVersion}");
                 GUILayout.Space(256 * 0.8f);
             }
             else
@@ -391,14 +388,14 @@ public class BNDataEditorWindow : EditorWindow
                 path = "Assets/Resources/Data/" + modToLoad.id + "/PartyTemplates";
                 if (AssetDatabase.IsValidFolder(path))
                 {
-                    modToLoad.modFilesData.PTdata.partyTemplates = new List<PartyTemplate>();
+                    modToLoad.modFilesData.PTdata.party = new List<PartyTemplate>();
                     string[] cultAssetFiles = Directory.GetFiles(path, "*.asset");
                     foreach (string file in cultAssetFiles)
                     {
                         PartyTemplate pt = (PartyTemplate)AssetDatabase.LoadAssetAtPath(file, typeof(PartyTemplate));
                         if (pt)
                         {
-                            modToLoad.modFilesData.PTdata.partyTemplates.Add(pt);
+                            modToLoad.modFilesData.PTdata.party.Add(pt);
                         }
                     }
                 }
@@ -636,85 +633,88 @@ public class BNDataEditorWindow : EditorWindow
             string itemName;
             string equipmentName;
 
+            var line = Environment.NewLine;
+            var space = "          ";
+
             if (currentMod.modFilesData.kingdomsData != null)
             {
-                kingdName = currentMod.modFilesData.kingdomsData.kingdoms.Count.ToString() + " - Kingdoms";
+                kingdName = $"    Kingdoms{line}{space}  {currentMod.modFilesData.kingdomsData.kingdoms.Count}";
             }
             else
             {
-                kingdName = " - Kingdoms";
+                kingdName = "Kingdoms";
             }
 
             if (currentMod.modFilesData.factionsData != null)
             {
-                factName = currentMod.modFilesData.factionsData.factions.Count.ToString() + " - Factions";
+                factName = $"      Factions{line}{space}   {currentMod.modFilesData.factionsData.factions.Count}";
             }
             else
             {
-                factName = " - Factions";
+                factName = "Factions";
             }
 
             if (currentMod.modFilesData.settlementsData != null)
             {
-                settName = currentMod.modFilesData.settlementsData.settlements.Count.ToString() + " - Settlements";
+                settName = $"    Settlements{line}{space}    {currentMod.modFilesData.settlementsData.settlements.Count}";
             }
             else
             {
-                settName = " - Settlements";
+                settName = "Settlements";
             }
 
             if (currentMod.modFilesData.npcChrData != null)
             {
-                npcName = currentMod.modFilesData.npcChrData.NPCCharacters.Count.ToString() + " - NPC";
+                npcName = $"        NPC{line}{space}{currentMod.modFilesData.npcChrData.NPCCharacters.Count}";
             }
             else
             {
-                npcName = " - NPC";
+                npcName = "NPC";
             }
 
             if (currentMod.modFilesData.culturesData != null)
             {
-                cultName = currentMod.modFilesData.culturesData.cultures.Count.ToString() + " - Cultures";
+                cultName = $"    Cultures{line}{space} {currentMod.modFilesData.culturesData.cultures.Count}";
             }
             else
             {
-                cultName = " - Cultures";
+                cultName = "Cultures";
             }
 
             if (currentMod.modFilesData.PTdata != null)
             {
-                PTname = currentMod.modFilesData.PTdata.partyTemplates.Count.ToString() + " - Party Templates";
+                PTname = $"Party Templates{line}{space}    {currentMod.modFilesData.PTdata.party.Count}";
             }
             else
             {
-                PTname = " - Party Templates";
+                PTname = "Party Templates";
             }
 
             if (currentMod.modFilesData.heroesData != null)
             {
-                heroName = currentMod.modFilesData.heroesData.heroes.Count.ToString() + " - Heroes";
+                heroName = $"Heroes{line}{space}{currentMod.modFilesData.heroesData.heroes.Count}";
             }
             else
             {
-                heroName = " - Heroes";
+                heroName = "Heroes";
             }
 
             if (currentMod.modFilesData.itemsData != null)
             {
-                itemName = currentMod.modFilesData.itemsData.items.Count.ToString() + " - Items";
+                itemName = $"       Items{line}{space} {currentMod.modFilesData.itemsData.items.Count}";
             }
             else
             {
-                itemName = " - Items";
+                itemName = "Items";
             }
 
             if (currentMod.modFilesData.itemsData != null)
             {
-                equipmentName = currentMod.modFilesData.equipmentsData.equipmentSets.Count.ToString() + " - Equipments";
+                equipmentName = $"   Equipments{line}{space}   {currentMod.modFilesData.equipmentsData.equipmentSets.Count}";
             }
             else
             {
-                equipmentName = " - Equipemnts";
+                equipmentName = "Equipments";
             }
 
 
@@ -729,80 +729,87 @@ public class BNDataEditorWindow : EditorWindow
             // button Bar
             GUILayout.Space(8);
 
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button(cultName, GUILayout.Width(128), GUILayout.Height(32)))
+            Action cultAction = new Action(() =>
             {
                 CulturesEditor cultEditor = (CulturesEditor)EditorWindow.GetWindow(typeof(CulturesEditor), false, "Cultures Editor", true);
                 cultEditor.loadedMod = currentMod;
                 cultEditor.CheckAndResort();
-            }
+            });
 
-            if (GUILayout.Button(kingdName, GUILayout.Width(128), GUILayout.Height(32)))
+            var ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.Culture);
+            IconButton(0, 0, ico, cultName, cultAction);
+
+            Action kgdAction = new Action(() =>
             {
                 KingdomsEditor kingdomesEditor = (KingdomsEditor)EditorWindow.GetWindow(typeof(KingdomsEditor), false, "Kingdoms Editor", true);
                 kingdomesEditor.loadedMod = currentMod;
                 kingdomesEditor.CheckAndResort();
-            }
+            });
 
+            ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.Kingdom);
+            IconButton(0, 1, ico, kingdName, kgdAction);
 
-            if (GUILayout.Button(factName, GUILayout.Width(128), GUILayout.Height(32)))
+            Action facAction = new Action(() =>
             {
-
                 FactionEditor factionsEditor = (FactionEditor)EditorWindow.GetWindow(typeof(FactionEditor), false, "Factions Editor", true);
                 factionsEditor.loadedMod = currentMod;
                 factionsEditor.CheckAndResort();
-                // factionsEditor.ShowWindow();
+            });
 
-            }
+            ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.Faction);
+            IconButton(0, 2, ico, factName, facAction);
 
-            if (GUILayout.Button(settName, GUILayout.Width(128), GUILayout.Height(32)))
+            Action settAction = new Action(() =>
             {
                 SettlementsEditor settlementsEditor = (SettlementsEditor)EditorWindow.GetWindow(typeof(SettlementsEditor), false, "Settlements Editor", true);
                 settlementsEditor.loadedMod = currentMod;
                 settlementsEditor.CheckAndResort();
-            }
+            });
 
-            EditorGUILayout.EndHorizontal();
-            DrawUILine(col, 1, 6);
+            ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.Settlement);
+            IconButton(0, 3, ico, settName, settAction);
 
-            EditorGUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(npcName, GUILayout.Width(128), GUILayout.Height(32)))
+            Action npcAction = new Action(() =>
             {
                 NPCEditor npcEditor = (NPCEditor)EditorWindow.GetWindow(typeof(NPCEditor), false, "Characters Editor", true);
                 npcEditor.loadedMod = currentMod;
                 npcEditor.CheckAndResort();
-            }
+            });
 
+            ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.NPC);
+            IconButton(1, 0, ico, npcName, npcAction);
 
-            if (GUILayout.Button(itemName, GUILayout.Width(128), GUILayout.Height(32)))
+            Action itemAction = new Action(() =>
             {
                 ItemsEditor item_editor = (ItemsEditor)EditorWindow.GetWindow(typeof(ItemsEditor), false, "Items Editor", true);
                 item_editor.loadedMod = currentMod;
                 item_editor.CheckAndResort();
-            }
+            });
 
-            if (GUILayout.Button(equipmentName, GUILayout.Width(128), GUILayout.Height(32)))
+            ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.Item);
+            IconButton(1, 1, ico, itemName, itemAction);
+
+            Action eqpAction = new Action(() =>
             {
                 EquipmentsEditor eqp_editor = (EquipmentsEditor)EditorWindow.GetWindow(typeof(EquipmentsEditor), false, "Equipemnts Editor", true);
                 eqp_editor.loadedMod = currentMod;
                 eqp_editor.CheckAndResort();
-            }
+            });
 
-            if (GUILayout.Button(PTname, GUILayout.Width(128), GUILayout.Height(32)))
+            ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.Equip);
+            IconButton(1, 2, ico, equipmentName, eqpAction);
+
+            Action PTAction = new Action(() =>
             {
                 PartyTemplatesEditor pt_editor = (PartyTemplatesEditor)EditorWindow.GetWindow(typeof(PartyTemplatesEditor), false, "Party Templates Editor", true);
                 pt_editor.loadedMod = currentMod;
                 pt_editor.CheckAndResort();
-            }
+            });
 
-            // if (GUILayout.Button("Heroes", GUILayout.Width(128)))
-            // {
+            ico = settingsAsset.GUI.GetGuiIcon(BDT_GUI.GUI_Icon.Party);
+            IconButton(1, 3, ico, PTname, PTAction);
 
-            // }
-
-            EditorGUILayout.EndHorizontal();
-
+            GUILayout.Space(140);
             DrawUILine(col, 3, 12);
 
             // EditorGUILayout.LabelField("Save & Export:", EditorStyles.boldLabel);
@@ -886,7 +893,7 @@ public class BNDataEditorWindow : EditorWindow
                         var folder = settingsAsset.BNModulesPath + currentMod.id;
                         if (Directory.Exists(folder))
                             if (EditorUtility.DisplayDialog($"Deleting {currentMod.id} mod Resources?", "Delete also a mod directory in Bannerlord Modules folder?",
-                                "Yes, also remove the Module folder", "Do Not Remove"))
+                                "Yes, also remove the Module folder", "Remove only BDT data"))
                             {
                                 if (EditorUtility.DisplayDialog($"Deleting {currentMod.id} mod Resources?", "SECURE!? \n" +
                                 "Warning!!! This action cannot be undone, you will delete the entire module folder, with all XML, Scenes, Prefabs, 3D Sources and other resources.",
@@ -920,6 +927,42 @@ public class BNDataEditorWindow : EditorWindow
         }
     }
 
+    private void IconButton(int row, int item, Texture icon, string cultName, Action runButton)
+    {
+        var width = 140;
+        var rect = new Rect();
+        rect.width = width;
+        rect.height = 64;
+
+        if (row == 0)
+        {
+            rect.y = 410;
+        }
+        else if (row == 1)
+        {
+            rect.y = 480;
+        }
+
+        if (item == 0)
+        {
+            rect.x = 4;
+        }
+        else
+        {
+            rect.x = (12 * item) + (width * item);
+        }
+
+        if (GUI.Button(rect, ""))
+        {
+            runButton?.Invoke();
+        }
+
+        var titleStyle = new GUIStyle(EditorStyles.boldLabel);
+        titleStyle.fontSize = 12;
+
+        GUI.Label(new Rect(rect.x + 36, rect.y, 128, 64), cultName, titleStyle);
+        GUI.DrawTexture(new Rect(rect.x + 4, rect.y + 16, 32, 32), icon, ScaleMode.StretchToFill, true, 1);
+    }
 
     private void DeleteCurrentMod()
     {
