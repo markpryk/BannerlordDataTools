@@ -2440,13 +2440,7 @@ public class BNDataExporter : EditorWindow
                 BNXmlWriter.WriteStartElement("EquipmentRoster");
 
                 CheckAndWriteAttribute(BNXmlWriter, "id", equip.id);
-
-                if (equip.IsCivilianTemplate)
-                {
-                    CheckAndWriteAttribute(BNXmlWriter, "civilian", "true");
-                }
                 CheckAndWriteAttribute(BNXmlWriter, "culture", equip.culture);
-
 
                 foreach (var set in equip.eqpSetID)
                 {
