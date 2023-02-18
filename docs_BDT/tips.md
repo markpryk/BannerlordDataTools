@@ -4,6 +4,7 @@
 ! Note:                                                                          
 All assets is saved automatically. But the tool still in development. 
 I'm recommend use Ctrl+S along work and before exit Unity.
+Also File -> Save Project
 ```
 
 You can use unity browser to easy search and navigate in toons of bannerlord assets.

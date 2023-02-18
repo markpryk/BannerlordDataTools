@@ -43,7 +43,6 @@ public class Culture : ScriptableObject
     public string duel_preset;
     public string prison_guard;
     public string guard;
-    public string steward;
     public string blacksmith;
     public string weaponsmith;
     public string townswoman;
@@ -90,7 +89,6 @@ public class Culture : ScriptableObject
     /// UPDATE 
     public string vassal_reward_party_template;
     public string faction_banner_key;
-    public string basic_mercenary_troop;
     public string militia_bonus;
     public string is_bandit;
 
@@ -117,5 +115,7 @@ public class Culture : ScriptableObject
     public string[] notable_and_wanderer_templates;
     public string[] lord_templates;
     public string[] rebellion_hero_templates;
+
+    public string[] banner_bearer_replacement_weapons;
 
 }

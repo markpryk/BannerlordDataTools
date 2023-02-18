@@ -2311,10 +2311,6 @@ public class ModFilesManager : Editor
         {
             cultAsset.guard = node.Attributes["guard"].Value;
         }
-        if (node.Attributes["steward"] != null)
-        {
-            cultAsset.steward = node.Attributes["steward"].Value;
-        }
         if (node.Attributes["blacksmith"] != null)
         {
             cultAsset.blacksmith = node.Attributes["blacksmith"].Value;
@@ -2480,10 +2476,6 @@ public class ModFilesManager : Editor
         if (node.Attributes["faction_banner_key"] != null)
         {
             cultAsset.faction_banner_key = node.Attributes["faction_banner_key"].Value;
-        }
-        if (node.Attributes["basic_mercenary_troop"] != null)
-        {
-            cultAsset.basic_mercenary_troop = node.Attributes["basic_mercenary_troop"].Value;
         }
         if (node.Attributes["militia_bonus"] != null)
         {
@@ -2758,6 +2750,35 @@ public class ModFilesManager : Editor
                         if (childRelation.Attributes["id"] != null)
                         {
                             cultAsset.reward_item_id[i] = childRelation.Attributes["id"].Value;
+                        }
+
+                        i++;
+                    }
+                }
+            }
+
+            if (relNode.LocalName == "banner_bearer_replacement_weapons")
+            {
+
+                int countArray = 0;
+                foreach (XmlNode childRelation in relNode.ChildNodes)
+                {
+                    if (childRelation.LocalName != "#comment")
+                    {
+                        countArray++;
+                    }
+                }
+
+                int i = 0;
+                cultAsset.banner_bearer_replacement_weapons = new string[countArray];
+
+                foreach (XmlNode childRelation in relNode.ChildNodes)
+                {
+                    if (childRelation.LocalName == "item" && childRelation.Attributes["id"] != null)
+                    {
+                        if (childRelation.Attributes["id"] != null)
+                        {
+                            cultAsset.banner_bearer_replacement_weapons[i] = childRelation.Attributes["id"].Value;
                         }
 
                         i++;

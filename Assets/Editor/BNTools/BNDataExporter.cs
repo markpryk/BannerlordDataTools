@@ -314,7 +314,12 @@ public class BNDataExporter : EditorWindow
             FillModuleCoreValues(xmlDoc, "Id", "value", exported_Mod.id);
             FillModuleCoreValues(xmlDoc, "Version", "value", exported_Mod.version);
             FillModuleCoreValues(xmlDoc, "DefaultModule", "value", exported_Mod.defaultModule.ToString().ToLower());
-            FillModuleCoreValues(xmlDoc, "ModuleCategory", "value", exported_Mod.moduleCategory);
+
+            var category = exported_Mod.moduleCategory;
+            if (category == "")
+                category = "Singleplayer";
+
+            FillModuleCoreValues(xmlDoc, "ModuleCategory", "value", category);
             FillModuleCoreValues(xmlDoc, "Official", "value", exported_Mod.official.ToString().ToLower());
 
             FillModuleDependenciesList(xmlDoc);
@@ -1534,7 +1539,6 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "duel_preset", cult.duel_preset);
                 CheckAndWriteAttribute(BNXmlWriter, "prison_guard", cult.prison_guard);
                 CheckAndWriteAttribute(BNXmlWriter, "guard", cult.guard);
-                CheckAndWriteAttribute(BNXmlWriter, "steward", cult.steward);
                 CheckAndWriteAttribute(BNXmlWriter, "blacksmith", cult.blacksmith);
                 CheckAndWriteAttribute(BNXmlWriter, "weaponsmith", cult.weaponsmith);
                 CheckAndWriteAttribute(BNXmlWriter, "townswoman", cult.townswoman);
@@ -1578,7 +1582,6 @@ public class BNDataExporter : EditorWindow
 
                 CheckAndWriteAttribute(BNXmlWriter, "vassal_reward_party_template", cult.vassal_reward_party_template);
                 CheckAndWriteAttribute(BNXmlWriter, "faction_banner_key", cult.faction_banner_key);
-                CheckAndWriteAttribute(BNXmlWriter, "basic_mercenary_troop", cult.basic_mercenary_troop);
                 CheckAndWriteAttribute(BNXmlWriter, "militia_bonus", cult.militia_bonus);
                 CheckAndWriteAttribute(BNXmlWriter, "is_bandit", cult.is_bandit);
                 CheckAndWriteAttribute(BNXmlWriter, "bandit_chief", cult.bandit_chief);
@@ -1588,6 +1591,7 @@ public class BNDataExporter : EditorWindow
                 CheckAndWriteAttribute(BNXmlWriter, "bandit_boss_party_template", cult.bandit_boss_party_template);
 
                 WriteVassalRewards(BNXmlWriter, "vassal_reward_items", cult.reward_item_id);
+                WriteVassalRewards(BNXmlWriter, "banner_bearer_replacement_weapons", cult.banner_bearer_replacement_weapons);
 
                 WriteNamesNodes(BNXmlWriter, "male_names", cult.male_names);
                 WriteNamesNodes(BNXmlWriter, "female_names", cult.female_names);
@@ -1596,7 +1600,6 @@ public class BNDataExporter : EditorWindow
                 WriteCulturalFeats(BNXmlWriter, "cultural_feats", cult.cultural_feat_id);
                 WritePossibleClanIcons(BNXmlWriter, "possible_clan_banner_icon_ids", cult.banner_icon_id);
 
-                // 1.72 update 
                 //WriteNPCTemplatesNodes(BNXmlWriter, "child_character_templates", cult.child_character_templates);
                 WriteNPCTemplatesNodes(BNXmlWriter, "notable_and_wanderer_templates", cult.notable_and_wanderer_templates);
                 WriteNPCTemplatesNodes(BNXmlWriter, "lord_templates", cult.lord_templates);
@@ -1605,13 +1608,6 @@ public class BNDataExporter : EditorWindow
                 WriteNPCTemplatesNodes(BNXmlWriter, "tournament_team_templates_one_participant", cult.TTT_one_participants);
                 WriteNPCTemplatesNodes(BNXmlWriter, "tournament_team_templates_two_participant", cult.TTT_two_participants);
                 WriteNPCTemplatesNodes(BNXmlWriter, "tournament_team_templates_four_participant", cult.TTT_four_participants);
-
-
-
-
-
-
-
 
                 BNXmlWriter.WriteFullEndElement();
             }

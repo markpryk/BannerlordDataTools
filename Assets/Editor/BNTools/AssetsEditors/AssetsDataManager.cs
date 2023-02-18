@@ -153,7 +153,7 @@ public class AssetsDataManager : EditorWindow
                         //EditorUtility.SetDirty(cult);
                         EditorWindow.GetWindow<CulturesEditor>();
                         //AssetDatabase.Refresh();
-						
+
                         this.Close();
 
                     }
@@ -381,7 +381,7 @@ public class AssetsDataManager : EditorWindow
 
                         //EditorUtility.SetDirty(npc);
                         EditorWindow.GetWindow<NPCEditor>();
-                       // AssetDatabase.Refresh();
+                        // AssetDatabase.Refresh();
 
                         this.Close();
 
@@ -450,7 +450,7 @@ public class AssetsDataManager : EditorWindow
 
                         //EditorUtility.SetDirty(hero);
                         EditorWindow.GetWindow<NPCEditor>();
-                       // AssetDatabase.Refresh();
+                        // AssetDatabase.Refresh();
 
                         this.Close();
 
@@ -583,7 +583,7 @@ public class AssetsDataManager : EditorWindow
                         //}
                         //EditorUtility.SetDirty(PT);
                         EditorWindow.GetWindow<PartyTemplatesEditor>();
-                       // AssetDatabase.Refresh();
+                        // AssetDatabase.Refresh();
 
                         this.Close();
 
@@ -656,7 +656,7 @@ public class AssetsDataManager : EditorWindow
                         //}
                         //EditorUtility.SetDirty(item);
                         EditorWindow.GetWindow<ItemsEditor>();
-                      //  AssetDatabase.Refresh();
+                        //  AssetDatabase.Refresh();
 
                         this.Close();
 
@@ -730,7 +730,7 @@ public class AssetsDataManager : EditorWindow
 
                         //EditorUtility.SetDirty(equip);
                         EditorWindow.GetWindow<EquipmentsEditor>();
-                      //  AssetDatabase.Refresh();
+                        //  AssetDatabase.Refresh();
 
                         this.Close();
 
@@ -860,7 +860,6 @@ public class AssetsDataManager : EditorWindow
             OverrideAsset(ref cult.duel_preset, "NPCCharacter.", assetName_org, assetName_new);
             OverrideAsset(ref cult.prison_guard, "NPCCharacter.", assetName_org, assetName_new);
             OverrideAsset(ref cult.guard, "NPCCharacter.", assetName_org, assetName_new);
-            OverrideAsset(ref cult.steward, "NPCCharacter.", assetName_org, assetName_new);
             OverrideAsset(ref cult.blacksmith, "NPCCharacter.", assetName_org, assetName_new);
             OverrideAsset(ref cult.weaponsmith, "NPCCharacter.", assetName_org, assetName_new);
             OverrideAsset(ref cult.townswoman, "NPCCharacter.", assetName_org, assetName_new);
@@ -1392,7 +1391,6 @@ public class AssetsDataManager : EditorWindow
                                 OverrideAsset(ref cult.duel_preset, "NPCCharacter.", assetName_org, assetName_new);
                                 OverrideAsset(ref cult.prison_guard, "NPCCharacter.", assetName_org, assetName_new);
                                 OverrideAsset(ref cult.guard, "NPCCharacter.", assetName_org, assetName_new);
-                                OverrideAsset(ref cult.steward, "NPCCharacter.", assetName_org, assetName_new);
                                 OverrideAsset(ref cult.blacksmith, "NPCCharacter.", assetName_org, assetName_new);
                                 OverrideAsset(ref cult.weaponsmith, "NPCCharacter.", assetName_org, assetName_new);
                                 OverrideAsset(ref cult.townswoman, "NPCCharacter.", assetName_org, assetName_new);
@@ -1813,11 +1811,19 @@ public class AssetsDataManager : EditorWindow
 
                             currentMod.modFilesData.itemsData.items.Add(copiedItem);
 
-                            // OVERRIDE
-                            // foreach (var cult in currentMod.modFilesData.culturesData.cultures)
-                            // {
-
-                            // }
+                            //OVERRIDE
+                            foreach (var cult in currentMod.modFilesData.culturesData.cultures)
+                            {
+                                for (int i =0; i < cult.reward_item_id.Length; i++)
+                                {
+                                    OverrideAsset(ref cult.reward_item_id[i], "Item.", assetName_org, assetName_new);
+                                }
+                              
+                                for (int i = 0; i < cult.banner_bearer_replacement_weapons.Length; i++)
+                                {
+                                    OverrideAsset(ref cult.banner_bearer_replacement_weapons[i], "Item.", assetName_org, assetName_new);
+                                }
+                            }
 
 
 

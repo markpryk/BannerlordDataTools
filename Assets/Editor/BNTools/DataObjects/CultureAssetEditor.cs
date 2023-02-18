@@ -154,7 +154,6 @@ public class CultureAssetEditor : Editor
     public PartyTemplate vassal_reward_party_template;
     public PartyTemplate bandit_boss_party_template;
 
-    //Update 1.8.0
     public Equipment default_battle_equipment_roster;
     public Equipment default_civilian_equipment_roster;
 
@@ -164,6 +163,9 @@ public class CultureAssetEditor : Editor
 
     bool showRewardItems;
     public Item[] vassal_reward_items;
+
+    bool showBannerBearerItems;
+    public Item[] bannerBearer_replacement_weapons;
 
     //  public string[] cultural_feats;
     bool showCulturalFeatsEditor;
@@ -251,6 +253,11 @@ public class CultureAssetEditor : Editor
             vassal_reward_items = new Item[cult.reward_item_id.Length];
         else
             vassal_reward_items = new Item[0];
+
+        if (cult.banner_bearer_replacement_weapons != null && cult.banner_bearer_replacement_weapons.Length > 0)
+            bannerBearer_replacement_weapons = new Item[cult.banner_bearer_replacement_weapons.Length];
+        else
+            bannerBearer_replacement_weapons = new Item[0];
 
         if (cult.banner_icon_id != null && cult.banner_icon_id.Length > 0)
             possible_clan_banner_icon_ids = new int[cult.banner_icon_id.Length];
@@ -710,7 +717,7 @@ public class CultureAssetEditor : Editor
         EditorGUILayout.LabelField("Default Face Key:", EditorStyles.boldLabel);
         cult.default_face_key = EditorGUILayout.TextField(cult.default_face_key);
 
-        DrawUILine(colUILine, 3, 12);
+        DrawUILine(colUILine, 12, 16);
 
         //// Assign Equipments (WIP) - Temporary unused
         ///
@@ -738,144 +745,165 @@ public class CultureAssetEditor : Editor
 
         if (showPT)
         {
-            // EditorGUILayout.LabelField("Party Templates:", EditorStyles.boldLabel);
             GUILayout.Space(4);
-            AssignPT(ref cult.default_party_template, default_party_template, "Deafult Party Template");
-            AssignPT(ref cult.villager_party_template, villager_party_template, "Villager Party Template");
-            AssignPT(ref cult.caravan_party_template, caravan_party_template, "Caravan Party Template");
-            AssignPT(ref cult.elite_caravan_party_template, elite_caravan_party_template, "Elite Caravan Party Template");
-            AssignPT(ref cult.militia_party_template, militia_party_template, "Militia Party Template");
-            AssignPT(ref cult.rebels_party_template, rebels_party_template, "Rebels Party Template");
 
-            // Update 1.7.2
-            AssignPT(ref cult.vassal_reward_party_template, vassal_reward_party_template, "Vassal Reward Party Template");
-            AssignPT(ref cult.bandit_boss_party_template, bandit_boss_party_template, "Bandit Boss Party Template");
+            if (!is_bandit)
+            {
+                AssignPT(ref cult.default_party_template, default_party_template, "Deafult Party Template");
+                AssignPT(ref cult.villager_party_template, villager_party_template, "Villager Party Template");
+                AssignPT(ref cult.caravan_party_template, caravan_party_template, "Caravan Party Template");
+                AssignPT(ref cult.elite_caravan_party_template, elite_caravan_party_template, "Elite Caravan Party Template");
+                AssignPT(ref cult.militia_party_template, militia_party_template, "Militia Party Template");
+                AssignPT(ref cult.rebels_party_template, rebels_party_template, "Rebels Party Template");
+                AssignPT(ref cult.vassal_reward_party_template, vassal_reward_party_template, "Vassal Reward Party Template");
+            }
+            else
+            {
+                AssignPT(ref cult.bandit_boss_party_template, bandit_boss_party_template, "Bandit Boss Party Template");
+            }
         }
-        DrawUILine(colUILine, 3, 12);
+      
+        
+            DrawUILine(colUILine, 3, 12);
 
-        ColorUtility.TryParseHtmlString("#C72C41", out col);
-        ColorUtility.TryParseHtmlString("#EE4540", out col_opened);
+            ColorUtility.TryParseHtmlString("#C72C41", out col);
+            ColorUtility.TryParseHtmlString("#EE4540", out col_opened);
 
-        foldoutHeader.normal.textColor = col;
-        foldoutHeader.onNormal.textColor = col_opened;
+            foldoutHeader.normal.textColor = col;
+            foldoutHeader.onNormal.textColor = col_opened;
+
+            showNPC_Battle = EditorGUILayout.Foldout(showNPC_Battle, "Battle NPC", foldoutHeader);
+            if (showNPC_Battle)
+            {
+                // DrawUILine(colUILine, 1, 4);
+                // EditorGUILayout.LabelField("NPC Battle Templates:", headerBoldStyle);
+                GUILayout.Space(8);
 
 
-        showNPC_Battle = EditorGUILayout.Foldout(showNPC_Battle, "Battle NPC", foldoutHeader);
-        if (showNPC_Battle)
+                AssignNPC(ref cult.basic_troop, basic_troop, "Basic troop:");
+                AssignNPC(ref cult.elite_basic_troop, elite_basic_troop, "Elite basic troop:");
+                AssignNPC(ref cult.melee_militia_troop, melee_militia_troop, "Melee militia troop:");
+                AssignNPC(ref cult.ranged_militia_troop, ranged_militia_troop, "Ranged militia troop:");
+                AssignNPC(ref cult.melee_elite_militia_troop, melee_elite_militia_troop, "Melee Elite militia troop:");
+                AssignNPC(ref cult.ranged_elite_militia_troop, ranged_elite_militia_troop, "Ranged Elite militia troop:");
+
+
+            }
+
+            if (isMainCulture)
+            {
+                DrawUILine(colUILine, 3, 12);
+
+                ColorUtility.TryParseHtmlString("#4b86b4", out col);
+                ColorUtility.TryParseHtmlString("#63ace5", out col_opened);
+
+                foldoutHeader.normal.textColor = col;
+                foldoutHeader.onNormal.textColor = col_opened;
+
+                showNPC_Civillian = EditorGUILayout.Foldout(showNPC_Civillian, "Civilian NPC", foldoutHeader);
+                if (showNPC_Civillian)
+                {
+                    ///Civilian Templates
+                    /// 
+
+                    // DrawUILine(colUILine, 1, 4);
+                    // EditorGUILayout.LabelField("NPC Civilian Templates:", headerBoldStyle);
+                    GUILayout.Space(8);
+
+                    AssignNPC(ref cult.townsman, townsman, "Townsman:");
+                    AssignNPC(ref cult.townsman_child, townsman_child, "Townsman child:");
+                    AssignNPC(ref cult.townsman_infant, townsman_infant, "Townsman infant:");
+                    AssignNPC(ref cult.townsman_teenager, townsman_teenager, "Townsman teenager:");
+
+                    AssignNPC(ref cult.townswoman, townswoman, "Townswoman:");
+                    AssignNPC(ref cult.townswoman_child, townswoman_child, "Townswoman child:");
+                    AssignNPC(ref cult.townswoman_infant, townswoman_infant, "Townswoman infant:");
+                    AssignNPC(ref cult.townswoman_teenager, townswoman_teenager, "Townswoman teenager:");
+
+                    DrawUILine(colUILine, 1, 6);
+
+                    AssignNPC(ref cult.villager, villager, "Villager:");
+                    AssignNPC(ref cult.villager_male_child, villager_male_child, "Villager male child:");
+                    AssignNPC(ref cult.villager_male_teenager, villager_male_teenager, "Villager male teenager:");
+
+                    AssignNPC(ref cult.village_woman, village_woman, "Village woman:");
+                    AssignNPC(ref cult.villager_female_child, villager_female_child, "Villager female child:");
+                    AssignNPC(ref cult.villager_female_teenager, villager_female_teenager, "Villager female teenager:");
+                    DrawUILine(colUILine, 1, 6);
+
+                    AssignNPC(ref cult.armed_trader, armed_trader, "Armed Trader:");
+                    AssignNPC(ref cult.caravan_master, caravan_master, "Caravan Master:");
+                    AssignNPC(ref cult.caravan_guard, caravan_guard, "Caravan Guard:");
+                    AssignNPC(ref cult.veteran_caravan_guard, veteran_caravan_guard, "Veteran Caravan Guard:");
+
+                    DrawUILine(colUILine, 1, 6);
+
+                    AssignNPC(ref cult.tournament_master, tournament_master, "Tournament Master:");
+                    AssignNPC(ref cult.duel_preset, duel_preset, "Duel Preset:");
+                    AssignNPC(ref cult.gear_dummy, gear_dummy, "Gear dummy:");
+                    AssignNPC(ref cult.gear_practice_dummy, gear_practice_dummy, "Gear practice dummy:");
+                    AssignNPC(ref cult.weapon_practice_stage_1, weapon_practice_stage_1, "Weapon practice stage 1:");
+                    AssignNPC(ref cult.weapon_practice_stage_2, weapon_practice_stage_2, "Weapon practice stage 3:");
+                    AssignNPC(ref cult.weapon_practice_stage_3, weapon_practice_stage_3, "Weapon practice stage 3:");
+
+                    DrawUILine(colUILine, 1, 6);
+
+                    AssignNPC(ref cult.merchant, merchant, "Merchant:");
+                    AssignNPC(ref cult.merchant_notary, merchant_notary, "Merchant notary:");
+                    AssignNPC(ref cult.horseMerchant, horseMerchant, "Horse merchant:");
+                    AssignNPC(ref cult.armorer, armorer, "Armorer:");
+                    AssignNPC(ref cult.blacksmith, blacksmith, "Blacksmith:");
+                    AssignNPC(ref cult.weaponsmith, weaponsmith, "Weaponsmith:");
+                    AssignNPC(ref cult.artisan_notary, artisan_notary, "Artisan notary:");
+                    AssignNPC(ref cult.preacher_notary, preacher_notary, "Preacher notary:");
+
+                    DrawUILine(colUILine, 1, 6);
+
+                    AssignNPC(ref cult.tavernkeeper, tavernkeeper, "Tavernkeeper:");
+                    AssignNPC(ref cult.taverngamehost, taverngamehost, "Taverngamehost:");
+                    AssignNPC(ref cult.tavern_wench, tavern_wench, "Tavern wench:");
+                    AssignNPC(ref cult.musician, musician, "Musician:");
+                    AssignNPC(ref cult.female_dancer, female_dancer, "Female dancer:");
+                    AssignNPC(ref cult.ransom_broker, ransom_broker, "Ransom broker:");
+
+                    DrawUILine(colUILine, 1, 6);
+
+                    AssignNPC(ref cult.prison_guard, prison_guard, "Prision Guard:");
+                    AssignNPC(ref cult.guard, guard, "Guard:");
+                    AssignNPC(ref cult.gangleader_bodyguard, gangleader_bodyguard, "Gangleader bodyguard:");
+                    AssignNPC(ref cult.rural_notable_notary, rural_notable_notary, "Rural notable notary:");
+                    AssignNPC(ref cult.shop_worker, shop_worker, "Shop worker:");
+                    AssignNPC(ref cult.barber, barber, "Barber:");
+                    AssignNPC(ref cult.beggar, beggar, "Beggar:");
+                    AssignNPC(ref cult.female_beggar, female_beggar, "Female beggar:");
+
+                }
+
+            }
+
+        if(is_bandit)
         {
-            // DrawUILine(colUILine, 1, 4);
-            // EditorGUILayout.LabelField("NPC Battle Templates:", headerBoldStyle);
-            GUILayout.Space(8);
+            DrawUILine(colUILine, 3, 12);
 
 
-            AssignNPC(ref cult.basic_troop, basic_troop, "Basic troop:");
-            AssignNPC(ref cult.elite_basic_troop, elite_basic_troop, "Elite basic troop:");
-            AssignNPC(ref cult.melee_militia_troop, melee_militia_troop, "Melee militia troop:");
-            AssignNPC(ref cult.ranged_militia_troop, ranged_militia_troop, "Ranged militia troop:");
-            AssignNPC(ref cult.melee_elite_militia_troop, melee_elite_militia_troop, "Melee Elite militia troop:");
-            AssignNPC(ref cult.ranged_elite_militia_troop, ranged_elite_militia_troop, "Ranged Elite militia troop:");
+            ColorUtility.TryParseHtmlString("#b52e31", out col); 
+            ColorUtility.TryParseHtmlString("#ea1d5d", out col_opened);
 
+            foldoutHeader.normal.textColor = col;
+            foldoutHeader.onNormal.textColor = col_opened;
 
+            showNPC_Civillian = EditorGUILayout.Foldout(showNPC_Civillian, "Bandits NPC", foldoutHeader);
+            if (showNPC_Civillian)
+            {
+                GUILayout.Space(8);
+
+                AssignNPC(ref cult.bandit_boss, bandit_boss, "Bandit Boss:");
+                AssignNPC(ref cult.bandit_chief, bandit_chief, "Bandit Chief:");
+                AssignNPC(ref cult.bandit_bandit, bandit_bandit, "Bandit:");
+                AssignNPC(ref cult.bandit_raider, bandit_raider, "Bandit Raider:");
+            }
         }
-        DrawUILine(colUILine, 3, 12);
-
-        ColorUtility.TryParseHtmlString("#4b86b4", out col);
-        ColorUtility.TryParseHtmlString("#63ace5", out col_opened);
-
-        foldoutHeader.normal.textColor = col;
-        foldoutHeader.onNormal.textColor = col_opened;
-
-        showNPC_Civillian = EditorGUILayout.Foldout(showNPC_Civillian, "Civilian NPC", foldoutHeader);
-        if (showNPC_Civillian)
-        {
-            ///Civilian Templates
-            /// 
-
-            // DrawUILine(colUILine, 1, 4);
-            // EditorGUILayout.LabelField("NPC Civilian Templates:", headerBoldStyle);
-            GUILayout.Space(8);
-
-            AssignNPC(ref cult.townsman, townsman, "Townsman:");
-            AssignNPC(ref cult.townsman_child, townsman_child, "Townsman child:");
-            AssignNPC(ref cult.townsman_infant, townsman_infant, "Townsman infant:");
-            AssignNPC(ref cult.townsman_teenager, townsman_teenager, "Townsman teenager:");
-
-            AssignNPC(ref cult.townswoman, townswoman, "Townswoman:");
-            AssignNPC(ref cult.townswoman_child, townswoman_child, "Townswoman child:");
-            AssignNPC(ref cult.townswoman_infant, townswoman_infant, "Townswoman infant:");
-            AssignNPC(ref cult.townswoman_teenager, townswoman_teenager, "Townswoman teenager:");
-
-            DrawUILine(colUILine, 1, 6);
-
-            AssignNPC(ref cult.villager, villager, "Villager:");
-            AssignNPC(ref cult.villager_male_child, villager_male_child, "Villager male child:");
-            AssignNPC(ref cult.villager_male_teenager, villager_male_teenager, "Villager male teenager:");
-
-            AssignNPC(ref cult.village_woman, village_woman, "Village woman:");
-            AssignNPC(ref cult.villager_female_child, villager_female_child, "Villager female child:");
-            AssignNPC(ref cult.villager_female_teenager, villager_female_teenager, "Villager female teenager:");
-            DrawUILine(colUILine, 1, 6);
-
-            AssignNPC(ref cult.armed_trader, armed_trader, "Armed Trader:");
-            AssignNPC(ref cult.caravan_master, caravan_master, "Caravan Master:");
-            AssignNPC(ref cult.caravan_guard, caravan_guard, "Caravan Guard:");
-            AssignNPC(ref cult.veteran_caravan_guard, veteran_caravan_guard, "Veteran Caravan Guard:");
-
-            DrawUILine(colUILine, 1, 6);
-
-            AssignNPC(ref cult.tournament_master, tournament_master, "Tournament Master:");
-            AssignNPC(ref cult.duel_preset, duel_preset, "Duel Preset:");
-            AssignNPC(ref cult.gear_dummy, gear_dummy, "Gear dummy:");
-            AssignNPC(ref cult.gear_practice_dummy, gear_practice_dummy, "Gear practice dummy:");
-            AssignNPC(ref cult.weapon_practice_stage_1, weapon_practice_stage_1, "Weapon practice stage 1:");
-            AssignNPC(ref cult.weapon_practice_stage_2, weapon_practice_stage_2, "Weapon practice stage 3:");
-            AssignNPC(ref cult.weapon_practice_stage_3, weapon_practice_stage_3, "Weapon practice stage 3:");
-
-            DrawUILine(colUILine, 1, 6);
-
-            AssignNPC(ref cult.merchant, merchant, "Merchant:");
-            AssignNPC(ref cult.merchant_notary, merchant_notary, "Merchant notary:");
-            AssignNPC(ref cult.horseMerchant, horseMerchant, "Horse merchant:");
-            AssignNPC(ref cult.armorer, armorer, "Armorer:");
-            AssignNPC(ref cult.blacksmith, blacksmith, "Blacksmith:");
-            AssignNPC(ref cult.weaponsmith, weaponsmith, "Weaponsmith:");
-            AssignNPC(ref cult.artisan_notary, artisan_notary, "Artisan notary:");
-            AssignNPC(ref cult.preacher_notary, preacher_notary, "Preacher notary:");
-
-            DrawUILine(colUILine, 1, 6);
-
-            AssignNPC(ref cult.tavernkeeper, tavernkeeper, "Tavernkeeper:");
-            AssignNPC(ref cult.taverngamehost, taverngamehost, "Taverngamehost:");
-            AssignNPC(ref cult.tavern_wench, tavern_wench, "Tavern wench:");
-            AssignNPC(ref cult.musician, musician, "Musician:");
-            AssignNPC(ref cult.female_dancer, female_dancer, "Female dancer:");
-            AssignNPC(ref cult.ransom_broker, ransom_broker, "Ransom broker:");
-
-            DrawUILine(colUILine, 1, 6);
-
-            AssignNPC(ref cult.prison_guard, prison_guard, "Prision Guard:");
-            AssignNPC(ref cult.guard, guard, "Guard:");
-            AssignNPC(ref cult.steward, steward, "Steward:");
-            AssignNPC(ref cult.gangleader_bodyguard, gangleader_bodyguard, "Gangleader bodyguard:");
-            AssignNPC(ref cult.rural_notable_notary, rural_notable_notary, "Rural notable notary:");
-            AssignNPC(ref cult.shop_worker, shop_worker, "Shop worker:");
-            AssignNPC(ref cult.barber, barber, "Barber:");
-            AssignNPC(ref cult.beggar, beggar, "Beggar:");
-            AssignNPC(ref cult.female_beggar, female_beggar, "Female beggar:");
-
-            // Update 1.7.2
-            DrawUILine(colUILine, 1, 6);
-
-            AssignNPC(ref cult.basic_mercenary_troop, basic_mercenary_troop, "Basic Mercenary Troop:");
-            AssignNPC(ref cult.bandit_boss, bandit_boss, "Bandit Boss:");
-            AssignNPC(ref cult.bandit_chief, bandit_chief, "Bandit Chief:");
-            AssignNPC(ref cult.bandit_bandit, bandit_bandit, "Bandit:");
-            AssignNPC(ref cult.bandit_raider, bandit_raider, "Bandit Raider:");
-
-
-        }
-
-        DrawUILine(colUILine, 3, 12);
+        DrawUILine(colUILine, 12, 16);
 
         DrawNamesEditor(ref cult.male_names, ref showMaleNamesEditor, ref m_soloName, ref m_name_TranslationString, ref translationStringMale_Names, 0);
 
@@ -942,12 +970,14 @@ public class CultureAssetEditor : Editor
         DrawUILine(colUILine, 3, 12);
 
         DrawCulturalFeatsEditor();
-
         DrawUILine(colUILine, 3, 12);
 
         DrawRewardItemsEditor(titleStyle, newCol);
-
         DrawUILine(colUILine, 3, 12);
+
+        DrawBannerBearerItemsEditor(titleStyle, newCol);
+        DrawUILine(colUILine, 3, 12);
+
         DrawMapIconsID(titleStyle, newCol);
 
         DrawUILine(colUILine, 3, 12);
@@ -1987,7 +2017,148 @@ public class CultureAssetEditor : Editor
         }
 
     }
+    private void DrawBannerBearerItemsEditor(GUIStyle titleStyle, Color newCol)
+    {
+        GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButtonLeft);
+        buttonStyle.fontStyle = FontStyle.Bold;
+        buttonStyle.hover.textColor = Color.green;
 
+        ColorUtility.TryParseHtmlString("#efdf00", out newCol);
+
+        GUIStyle hiderStyle = new GUIStyle(EditorStyles.foldout);
+        hiderStyle.fontSize = 10;
+        hiderStyle.normal.textColor = newCol;
+        titleStyle.normal.textColor = newCol;
+
+        var showEditorLabel = "Hide";
+        if (!showBannerBearerItems)
+        {
+            hiderStyle.fontSize = 16;
+            showEditorLabel = "Banner Bearer Replacement Weapons Editor";
+        }
+
+        showBannerBearerItems = EditorGUILayout.Foldout(showBannerBearerItems, showEditorLabel, hiderStyle);
+
+        if (showBannerBearerItems)
+        {
+            EditorGUILayout.LabelField("Banner Bearer Replacement Weapons Editor", titleStyle, GUILayout.ExpandWidth(true));
+            EditorGUILayout.Space(4);
+            DrawUILine(colUILine, 1, 6);
+
+
+            if (GUILayout.Button((new GUIContent("Add new weapon", "Add new Banner Bearer Replacement Weapon item to this Culture")), buttonStyle, GUILayout.Width(128)))
+            {
+                if (cult.banner_bearer_replacement_weapons == null)
+                    cult.banner_bearer_replacement_weapons = new string[0];
+
+                var temp = new string[cult.banner_bearer_replacement_weapons.Length + 1];
+                cult.banner_bearer_replacement_weapons.CopyTo(temp, 0);
+                cult.banner_bearer_replacement_weapons = temp;
+
+                cult.banner_bearer_replacement_weapons[cult.banner_bearer_replacement_weapons.Length - 1] = "";
+
+                bannerBearer_replacement_weapons = new Item[cult.banner_bearer_replacement_weapons.Length];
+
+                return;
+            }
+
+
+            if (cult.banner_bearer_replacement_weapons != null && cult.banner_bearer_replacement_weapons.Length > 0)
+            {
+
+                int i = 0;
+                foreach (var targetAsset in cult.banner_bearer_replacement_weapons)
+                {
+                    GetItemAsset(ref cult.banner_bearer_replacement_weapons[i], ref bannerBearer_replacement_weapons[i]);
+                    i++;
+                }
+
+                DrawUILine(colUILine, 3, 12);
+
+                i = 0;
+                foreach (var targetAsset in cult.banner_bearer_replacement_weapons)
+                {
+
+                    // EditorGUILayout.LabelField("Upgrade Target:", EditorStyles.label);
+
+
+                    ColorUtility.TryParseHtmlString("#F25022", out newCol);
+                    titleStyle.normal.textColor = newCol;
+
+                    titleStyle.fontSize = 11;
+                    EditorGUILayout.LabelField("Weapon Item - " + i, titleStyle, GUILayout.ExpandWidth(true));
+                    // EditorGUILayout.Space(8);
+                    ColorUtility.TryParseHtmlString("#FF9900", out newCol);
+                    titleStyle.normal.textColor = newCol;
+
+                    titleStyle.fontSize = 12;
+
+                    string nameLabel = "None";
+                    if (bannerBearer_replacement_weapons[i] != null)
+                    {
+                        nameLabel = bannerBearer_replacement_weapons[i].itemName;
+                    }
+
+                    RemoveTSString(ref nameLabel);
+
+                    EditorGUILayout.LabelField(nameLabel, titleStyle, GUILayout.ExpandWidth(true));
+                    // EditorGUILayout.Space(8);
+
+                    EditorGUILayout.BeginHorizontal();
+                    bannerBearer_replacement_weapons[i] = (Item)EditorGUILayout.ObjectField(bannerBearer_replacement_weapons[i], typeof(Item), true, GUILayout.MaxWidth(320));
+
+                    if (bannerBearer_replacement_weapons[i] != null)
+                    {
+                        var item = bannerBearer_replacement_weapons[i];
+                        if (item.IsWeapon || item.IsCraftedItem)
+                            cult.banner_bearer_replacement_weapons[i] = "Item." + bannerBearer_replacement_weapons[i].id;
+                        else
+                        {
+                            Debug.LogError($"{bannerBearer_replacement_weapons[i].id} not assigned. You can assign only weapon/crafted type item to this Slot.");
+                            bannerBearer_replacement_weapons[i] = null;
+                            cult.banner_bearer_replacement_weapons[i] = "";
+                        }
+                    }
+                    else
+                    {
+                        cult.banner_bearer_replacement_weapons[i] = "";
+                    }
+
+                    buttonStyle.hover.textColor = Color.red;
+
+                    if (GUILayout.Button((new GUIContent("X", "Remove Item")), buttonStyle, GUILayout.Width(32)))
+                    {
+                        var count = cult.banner_bearer_replacement_weapons.Length - 1;
+                        var pt_troop = new string[count];
+
+                        int i2 = 0;
+                        int i3 = 0;
+                        foreach (string trg in cult.banner_bearer_replacement_weapons)
+                        {
+                            if (i3 != i)
+                            {
+                                pt_troop[i2] = cult.banner_bearer_replacement_weapons[i3];
+
+                                i2++;
+                            }
+                            i3++;
+                        }
+
+                        cult.banner_bearer_replacement_weapons = pt_troop;
+
+                        bannerBearer_replacement_weapons = new Item[cult.banner_bearer_replacement_weapons.Length];
+
+                        return;
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                    DrawUILine(colUILine, 1, 4);
+                    i++;
+                }
+            }
+        }
+
+    }
     private void GetItemAsset(ref string dataName, ref Item item)
     {
         // Face Key Template template
